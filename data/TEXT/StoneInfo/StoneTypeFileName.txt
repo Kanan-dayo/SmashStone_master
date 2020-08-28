@@ -1,0 +1,14 @@
+ƒƒ‚
+# ŒÂ”‚Ístone.h‚Ì—ñ‹“Œ^‚É‡‚í‚¹‚é
+
+SCRIPT
+
+# ŒÂ”
+NUMBER = 3
+
+# ƒtƒ@ƒCƒ‹–¼
+FILENAME = data/MODEL/stone/Stone_R.x
+FILENAME = data/MODEL/stone/Stone_G.x
+FILENAME = data/MODEL/stone/Stone_B.x
+
+END_SCRIPT

@@ -1,0 +1,14 @@
+
+SCRIPT
+
+FILENAME = data/TEXTURE/wall/publicdomainq-0013684agf.jpg
+
+CENTER = -65.0 0.0 -17.5
+
+LENGTH = 125.0 150.5
+
+HEIGHT = 500.0
+
+END_SCRIPT
+
+

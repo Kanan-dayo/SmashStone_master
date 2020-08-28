@@ -1,0 +1,13 @@
+#============================================================
+#
+# ImGui設定
+# Author : KANAN NAGANAWA
+#
+#============================================================
+SCRIPT	# 消さないで
+
+SHOW_DEBUG_WINDOW = 0 # ImGuiウィンドウ表示の有無
+SHOW_OBJECT_WINDOW = 0 # オブジェクト情報表示の有無
+SHOW_CHARAPARAM_WINDOW = 0 # キャラパラメーター表示の有無
+
+END_SCRIPT	# 消さないで 
