@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+*imgui.ini
+*Debug
+*Release
+*.vs
+*3 Power Stone0525.ilk
+*3 Power Stone0525.VC.db
+*3 Power Stone0525.vcxproj.user
+*ImGuiInfo.txt
