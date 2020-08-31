@@ -186,8 +186,10 @@ void CPolygonCollider::Draw(void)
 	//テクスチャの設定
 	pDevice->SetTexture(0, NULL);
 
+#ifdef  _DEBUG
 	// ポリゴンの描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+#endif
 
 	// Fill Mode の設定
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);

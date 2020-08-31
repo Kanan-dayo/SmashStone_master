@@ -544,7 +544,7 @@ HRESULT CKananLibrary::Up(CInputKeyboard * Key, CInputGamepad * pGamepad)
 {
 	// キーボード入力
 	if (Key && Key->GetKeyboardTrigger(DIK_W))
-		return TRUE;
+		return S_OK;
 
 	// ゲームパッド接続確認
 	if (pGamepad->GetbConnect())
@@ -555,15 +555,15 @@ HRESULT CKananLibrary::Up(CInputKeyboard * Key, CInputGamepad * pGamepad)
 
 		// スティック入力
 		if (fValueX <= 1.0f && fValueZ > 0.0f)
-			return TRUE;
+			return S_OK;
 
 		// キー入力
 		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_UP))
-			return TRUE;
+			return S_OK;
 	}
 
 	// 入力無し
-	return FALSE;
+	return E_FAIL;
 }
 
 //=============================================================================
@@ -573,7 +573,7 @@ HRESULT CKananLibrary::Down(CInputKeyboard * Key, CInputGamepad * pGamepad)
 {
 	// キーボード入力
 	if (Key && Key->GetKeyboardTrigger(DIK_S))
-		return TRUE;
+		return S_OK;
 
 	// ゲームパッド接続確認
 	if (pGamepad->GetbConnect())
@@ -584,15 +584,15 @@ HRESULT CKananLibrary::Down(CInputKeyboard * Key, CInputGamepad * pGamepad)
 
 		// スティック入力
 		if (fValueX >= -1.0f && fValueZ < 0.0f)
-			return TRUE;
+			return S_OK;
 
 		// キー入力
 		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_DOWN))
-			return TRUE;
+			return S_OK;
 	}
 
 	// 入力無し
-	return FALSE;
+	return E_FAIL;
 }
 
 //=============================================================================
@@ -660,18 +660,18 @@ HRESULT CKananLibrary::Decide(CInputKeyboard * Key, CInputGamepad * pGamepad)
 {
 	// キーボード入力
 	if (Key && Key->GetKeyboardTrigger(DIK_RETURN))
-		return TRUE;
+		return S_OK;
 
 	// ゲームパッド接続確認
 	if (pGamepad->GetbConnect())
 	{
 		// スティック入力
 		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
-			return TRUE;
+			return S_OK;
 	}
 
 	// 入力無し
-	return FALSE;
+	return E_FAIL;
 }
 
 //=============================================================================
@@ -681,18 +681,18 @@ HRESULT CKananLibrary::Return(CInputKeyboard * Key, CInputGamepad * pGamepad)
 {
 	// キーボード入力
 	if (Key && Key->GetKeyboardTrigger(DIK_BACKSPACE))
-		return TRUE;
+		return S_OK;
 
 	// ゲームパッド接続確認
 	if (pGamepad->GetbConnect())
 	{
 		// スティック入力
 		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B))
-			return TRUE;
+			return S_OK;
 	}
 
 	// 入力無し
-	return FALSE;
+	return E_FAIL;
 }
 
 //=============================================================================
@@ -783,6 +783,10 @@ int CKananLibrary::DecideRandomValue(int nMaxValue, bool * bSelect)
 
 	// 選択肢の数だけメモリ確保
 	int *RandType = new int[RandRange];
+	for (int nCnt = 0; nCnt < RandRange; nCnt++)
+	{
+		RandType[nCnt] = 0;
+	}
 	// 番号カウンタ
 	int nCntRand = 0;
 
