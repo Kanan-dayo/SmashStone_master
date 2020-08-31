@@ -86,8 +86,8 @@ void CDebugProc::Print(char * fmt, ...)
 	va_list list;					// ’è‹`‚·‚é‚¾‚¯‚Å’l‚ÍÝ’è‚µ‚È‚¢
 	int nCount;
 	char * cp;
-	int nLengh = strlen(m_aStr);	// •¶Žš‚ÌŒÂ”‚ð”‚¦‚é
-	int nFmtLengh = strlen(fmt);	
+	int nLengh = (int)strlen(m_aStr);	// •¶Žš‚ÌŒÂ”‚ð”‚¦‚é
+	int nFmtLengh = (int)strlen(fmt);	
 	if ((nLengh + nFmtLengh) > MAX_CHARACTER)
 	{
 		cout << "’´‚¦‚½\n";
