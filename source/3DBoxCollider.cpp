@@ -867,6 +867,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 				pOwnerCollider->pos.z = pOtherCollider->pos.z + cosf(fRadian)*(fRadius);
 				pos.x = pOwnerCollider->pos.x;
 				pos.z = pOwnerCollider->pos.z;
+				move.y = 0.0f;
 			}
 		}
 		else if (pOtherCollider->ColliderType == C3DBoxCollider::COLLIDER_TYPE_CYLINDER_CANRIDE)
