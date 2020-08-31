@@ -703,7 +703,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			// ImGuiの更新
 			m_stageInfo[m_stageType].pObject[nCnt]->ShowObjectInfo(cText);
 			// メモリを破棄
-			delete cObjName;
+			delete[] cObjName;
 		}
 
 		// リリースが有効

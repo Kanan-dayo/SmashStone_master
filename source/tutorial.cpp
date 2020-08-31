@@ -59,7 +59,8 @@ CTutorial::~CTutorial()
 //==================================================================================================================
 void CTutorial::Init(void)
 {
-	m_bCharaDecide[MAX_PLAYER] = false;	// キャラクターが選ばれたどうか
+	m_bCharaDecide[0] = false;	// キャラクターが選ばれたどうか
+	m_bCharaDecide[1] = false;	// キャラクターが選ばれたどうか
 
 	CMeshField::Load();				// メッシュフィールドテクスチャロード
 	CMeshSphere::Load();			// メッシュ球のテクスチャロード

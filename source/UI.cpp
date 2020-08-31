@@ -168,34 +168,42 @@ void CUI::Init(void)
 	m_nMode = 0;				// モード番号
 	m_nCharaNum[0] = 0;			// キャラ番号
 	m_nCharaNum[1] = 3;			// キャラ番号
-	m_nCntRot[MAX_PLAYER] = 0;	// 時計の針の回転用カウンタ
-	m_nCntWait[MAX_PLAYER] = 0;	// 待機時間用カウンタ
-	m_nCntMove[MAX_PLAYER] = 0;	// 移動用カウンタ
 	m_nMapID = 0;				// マップ番号
 	m_fCntUITitle0 = 0;			// タイトルUI用カウンタ0
 	m_fCntUITitle1 = 0;			// タイトルUI用カウンタ1
 	m_fCntEnter = 0;			// エンター用カウンタ
 	m_fCntUISign = 0;			// 看板用カウンタ
 	m_nPlayer = 0;				// プレイヤー番号
-	m_fPosMove[MAX_PLAYER] = 0;	// 位置移動変数
 	m_fPos[0] = 370;			// 現在の枠線テクスチャの位置X
 	m_fPos[1] = 910;			// 現在の枠線テクスチャの位置X
-	m_fPosDiff[MAX_PLAYER] = 0;	// 目標の枠線テクスチャの位置X
-	m_fPosOld[MAX_PLAYER] = 0;	// 前回の枠線テクスチャの位置X
-	m_fRotGear[MAX_PLAYER] = 0;	// 歯車の回転格納変数
-	m_fPosCul[MAX_PLAYER] = 0;	// 位置計算用変数
-	m_fDiff[MAX_PLAYER] = 0;	// 1フレーム前との距離
-	m_fAngle[MAX_PLAYER] = 0;	// 歯車の回転角度
-	m_fRad[MAX_PLAYER] = 0;		// ラジアン値
 	m_bUITitle0 = false;		// タイトルを動かすかどうか
 	m_bUITitle1 = false;		// タイトルを動かすかどうか
 	m_bUIEnter = false;			// エンターのα値用変数
-	m_bUIClockHands[MAX_PLAYER] = false;// 時計の針が動いたかどうか0
-	m_bCharaDecide[MAX_PLAYER] = false;// 自分のキャラクターを選択したかどうか
-	m_bStickReturn[MAX_PLAYER] = false;// パッドスティックを戻したかどうか
 	m_bMapSelect = false;		// マップを選択したかどうか
-	m_bTransform[MAX_PLAYER] = false;// 変身したかどうか
-	m_bStoneID[MAX_PLAYER][CStone::STONE_ID_MAX] = false;// ストーンを取得したかどうか
+
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		m_nCntRot[nCnt] = 0;	// 時計の針の回転用カウンタ
+		m_nCntWait[nCnt] = 0;	// 待機時間用カウンタ
+		m_nCntMove[nCnt] = 0;	// 移動用カウンタ
+		m_fPosMove[nCnt] = 0;	// 位置移動変数
+		m_fPosDiff[nCnt] = 0;	// 目標の枠線テクスチャの位置X
+		m_fPosOld[nCnt] = 0;	// 前回の枠線テクスチャの位置X
+		m_fRotGear[nCnt] = 0;	// 歯車の回転格納変数
+		m_fPosCul[nCnt] = 0;	// 位置計算用変数
+		m_fDiff[nCnt] = 0;	// 1フレーム前との距離
+		m_fAngle[nCnt] = 0;	// 歯車の回転角度
+		m_fRad[nCnt] = 0;		// ラジアン値
+		m_bUIClockHands[nCnt] = false;// 時計の針が動いたかどうか0
+		m_bCharaDecide[nCnt] = false;// 自分のキャラクターを選択したかどうか
+		m_bStickReturn[nCnt] = false;// パッドスティックを戻したかどうか
+		m_bTransform[nCnt] = false;// 変身したかどうか
+
+		for (int nCntType = 0; nCntType < CStone::STONE_ID_MAX; nCntType++)
+		{
+			m_bStoneID[nCnt][nCntType] = false;// ストーンを取得したかどうか
+		}
+	}
 
 	// ロゴの最大枚数カウント
 	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)

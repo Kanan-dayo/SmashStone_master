@@ -246,7 +246,7 @@ void CUI_GameResult::Result(void)
 	CInputGamepad *pGamepad = CManager::GetInputGamepad((int)(CGame::GetLosePlayer()));
 
 	// åàíË
-	if (CKananLibrary::Decide(pKey, pGamepad))
+	if (CKananLibrary::Decide(pKey, pGamepad) == S_OK)
 		CursorDecide();
 
 	static int nCntInput = 0;
@@ -257,13 +257,13 @@ void CUI_GameResult::Result(void)
 	}
 	
 	// è„è∏
-	if (CKananLibrary::Up(pKey, pGamepad))
+	if (CKananLibrary::Up(pKey, pGamepad) == S_OK)
 	{
 		CursorUp();
 		nCntInput = 0;
 	}
 	// â∫ç~
-	else if (CKananLibrary::Down(pKey, pGamepad))
+	else if (CKananLibrary::Down(pKey, pGamepad) == S_OK)
 	{
 		CursorDown();
 		nCntInput = 0;
