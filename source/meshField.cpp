@@ -229,8 +229,9 @@ void CMeshField::Update(void)
 				m_pVtx[0].pos = D3DXVECTOR3((-WhileX * m_nWidth) / 2 + WhileX * nWide, 
 					cosf(D3DX_PI / 3 * nDepth + fDivide) * WhileY, 
 					(WhileZ / 2 * m_nDepth) - WhileZ * nDepth);
+
 				// テクスチャ描写の位置
-				m_pVtx[0].tex = D3DXVECTOR2(1.0f * nWide + (0.0005f * m_nCntAnim), 1.0f * nDepth + (0.0005f * m_nCntAnim));
+				m_pVtx[0].tex = D3DXVECTOR2((1.0f / m_nWidth) * nWide, (1.0f / m_nDepth) * nDepth);
 
 				m_pVtx++;
 			}
