@@ -17,8 +17,7 @@
 //==================================================================================================================
 class CCamera;
 class CLight;
-class CPolygon;
-class CUI;
+class CUI_mapSelect;
 
 //==================================================================================================================
 //
@@ -43,8 +42,7 @@ private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャの情報ポインタ
 	static CCamera *m_pCamera;					// カメラのの情報ポインタ
 	static CLight *m_pLight;					// ライトのの情報ポインタ
-	static CPolygon *m_pPolygon;				// ポリゴンの情報ポインタ
-	static CUI *m_pUI;							// UIの情報ポインタ
+	static CUI_mapSelect *m_pUI;				// UIの情報ポインタ
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVertexBuff;		// 頂点バッファ
 

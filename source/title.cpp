@@ -22,7 +22,7 @@
 #include "character.h"
 #include "inputGamepad.h"
 #include "meshSphere.h"
-#include "UI.h"
+#include "UI_title.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -35,12 +35,9 @@
 LPDIRECT3DTEXTURE9 CTitle::m_pTexture = NULL;		// テクスチャ情報
 CCamera *CTitle::m_pCamera = NULL;					// カメラ情報
 CLight *CTitle::m_pLight = NULL;					// ライト情報
-CPolygon *CTitle::m_pPolygon = NULL;				// ポリゴン情報
 CMeshField *CTitle::m_pMeshField = NULL;			// メッシュフィールド情報
 CMeshSphere *CTitle::m_pMeshSphere = NULL;			// メッシュ球情報
-CUI *CTitle::m_pUI = NULL;							// UI情報
-CCharacter *CTitle::m_pCharacter = NULL;			// キャラクター情報
-bool CTitle::m_bNextScreen = false;					// 次のモードにいくかどうか
+CUI_title *CTitle::m_pUI = NULL;					// UI情報
 
 //==================================================================================================================
 //	コンストラクタ
@@ -63,13 +60,9 @@ CTitle::~CTitle()
 //==================================================================================================================
 void CTitle::Init(void)
 {
-	// 初期化
-	m_nNextMode = 0;			// 次のモード番号
-	m_bNextScreen = false;		// 次の画面に行くかどうか
-
 	CMeshField::Load();			// メッシュフィールドロード
 	CMeshSphere::Load();		// メッシュ球のテクスチャロード
-	CUI::Load();				// UIのテクスチャロード
+	CUI_title::Load();			// UIのテクスチャロード
 
 	// ライトの生成処理
 	m_pLight = CLight::Create();
@@ -84,7 +77,7 @@ void CTitle::Init(void)
 	m_pMeshField = CMeshField::Create(INTEGER2(10, 10), D3DXVECTOR3(250.0f, 0.0f, 250.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	// UIの生成処理
-	m_pUI = CUI::Create();
+	m_pUI = CUI_title::Create();
 }
 
 //==================================================================================================================
@@ -99,7 +92,7 @@ void CTitle::Uninit(void)
 	CScene3D::ReleaseAll();
 
 	CMeshField::Unload();			// 床テクスチャアンロード
-	CUI::Unload();					// UIテクスチャアンロード
+	CUI_title::Unload();			// UIテクスチャアンロード
 
 	delete m_pLight;				// メモリ削除
 	m_pLight = nullptr;				// ポインタNULL
@@ -127,7 +120,7 @@ void CTitle::Update(void)
 	}
 	if (!pInputGamepad[PLAYER_ONE]->GetbConnect() ||
 		!pInputGamepad[PLAYER_TWO]->GetbConnect())
-			pInputKeyboard = CManager::GetInputKeyboard();
+		pInputKeyboard = CManager::GetInputKeyboard();
 
 	// フェード取得
 	CFade::FADE fade = CFade::GetFade();
@@ -140,25 +133,16 @@ void CTitle::Update(void)
 
 	// キーボードの[Enter] 又は コントローラーの[START]を押したとき
 	if ((pInputGamepad[PLAYER_ONE]->GetTrigger(CInputGamepad::JOYPADKEY_START)) ||
-		(pInputGamepad[PLAYER_TWO]->GetTrigger(CInputGamepad::JOYPADKEY_START)) || 
+		(pInputGamepad[PLAYER_TWO]->GetTrigger(CInputGamepad::JOYPADKEY_START)) ||
 		(pInputKeyboard && pInputKeyboard->GetKeyboardTrigger(DIK_RETURN)))
 	{
 		// 効果音再生
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_DECISION);
-		// 次の画面のとき
-		if (!m_bNextScreen)
+		// フェードが何もない時
+		if (fade == CFade::FADE_NONE)
 		{
-			// フェードが何もない時
-			if (fade == CFade::FADE_NONE)
-			{
-				// フェードの設定
-				CFade::SetFade(CRenderer::MODE_TUTORIAL, DEFAULT_FADE_TIME);
-			}
-		}
-		else
-		{// 次の画面にいくかどうか
-			// 次の画面に進む状態にする
-			m_bNextScreen = true;
+			// フェードの設定
+			CFade::SetFade(CRenderer::MODE_TUTORIAL, DEFAULT_FADE_TIME);
 		}
 	}
 }
@@ -190,25 +174,9 @@ CTitle * CTitle::Create(void)
 }
 
 //==================================================================================================================
-// キャラクター情報取得
-//==================================================================================================================
-CCharacter * CTitle::GetCharacter(void)
-{
-	return m_pCharacter;
-}
-
-//==================================================================================================================
 // カメラ情報取得
 //==================================================================================================================
 CCamera * CTitle::GetCamera(void)
 {
 	return m_pCamera;
-}
-
-//==================================================================================================================
-// 次のモード設定処理
-//==================================================================================================================
-void CTitle::SetNextMode(int nNextMode)
-{
-	m_nNextMode = nNextMode;
 }

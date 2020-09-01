@@ -36,7 +36,7 @@
 #include "UI_KO.h"
 #include "UI_gameStart.h"
 #include "UI_gameResult.h"
-#include "UI.h"
+#include "UI_game.h"
 #include "3DEffect.h"
 #include "CharEffectOffset.h"
 #include "3DParticle.h"
@@ -69,7 +69,7 @@ CPause				*CGame::m_pPause				= NULL;							// ポーズ情報
 CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
-CUI					*CGame::m_pUI					= NULL;							// UIポインタ
+CUI_game			*CGame::m_pUI					= NULL;							// UIポインタ
 CUIKO				*CGame::m_pUIKO					= nullptr;						// KOのポインタ
 CUI_GameStart		*CGame::m_pUIGameStart			= nullptr;						// ゲーム開始時のUIのポインタ
 CUI_GameResult		*CGame::m_pUIGameResult			= nullptr;						// ゲームリザルトのUIのポインタ
@@ -125,7 +125,7 @@ void CGame::Init(void)
 	CUIKO::Load();							// KOのロード
 	CUI_GameStart::Load();					// 開始UIのロード
 	CUI_GameResult::Load();
-	CUI::Load();							// UIロード
+	CUI_game::Load();						// UIロード
 
 	// 3Dエフェクトの作成
 	C3DEffect *p3DEffect;
@@ -147,7 +147,7 @@ void CGame::Init(void)
 	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
 
 	m_pMeshField  = CMeshField::Create(INTEGER2(4, 4), D3DXVECTOR3(600.0f, 0.0f, 600.0f), D3DXVECTOR3(0.0f, -40.0f, 50.0f));// メッシュフィールド生成
-	m_pUI         = CUI::Create();									// UIの生成処理
+	m_pUI         = CUI_game::Create();								// UIの生成処理
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
 
@@ -202,7 +202,7 @@ void CGame::Uninit(void)
 	CUIKO::Unload();					// KOのアンロード
 	CUI_GameStart::Unload();			// 開始時のUIのアンロード
 	CUI_GameResult::Unload();
-	CUI::Unload();						// UIアンロード
+	CUI_game::Unload();					// UIアンロード
 
 	// 万が一残っていた場合
 	if (m_pUIGameStart)
