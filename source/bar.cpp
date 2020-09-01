@@ -22,16 +22,20 @@
 LPDIRECT3DTEXTURE9 CBar::m_pTexture[BARTYPE_MAX] = {};		// テクスチャ情報
 char *CBar::m_apFileName[BARTYPE_MAX] =						// 読み込むモデルのソース先
 {
-	{ "data/TEXTURE/図1.png" },			// 0番目のフレーム
+	{ "data/TEXTURE/fream.png" },		// 0番目のフレーム
 	{ "data/TEXTURE/HPbar.png" },		// 0番目の体力バー
-	{ "data/TEXTURE/図1.png" },			// 1番目のフレーム
+	{ "data/TEXTURE/fream.png" },		// 1番目のフレーム
 	{ "data/TEXTURE/HPbar.png" },		// 1番目の体力バー
-	{ "data/TEXTURE/図1.png" },			// 2番目のフレーム
+	{ "data/TEXTURE/fream.png" },		// 2番目のフレーム
 	{ "data/TEXTURE/HPbar.png" },		// 2番目の体力バー
-	{ "data/TEXTURE/図1.png" },			// 3番目のフレーム
+	{ "data/TEXTURE/fream.png" },		// 3番目のフレーム
 	{ "data/TEXTURE/HPbar.png" },		// 3番目の体力バー
-	{ "data/TEXTURE/図1.png" },			// 4番目のフレーム
+	{ "data/TEXTURE/fream.png" },		// 4番目のフレーム
 	{ "data/TEXTURE/HPbar.png" },		// 4番目の体力バー
+	{ "data/TEXTURE/fream0.png" },		// 変身のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 変身の体力バー
+	{ "data/TEXTURE/fream1.png" },		// 変身のフレーム
+	{ "data/TEXTURE/HPbar.png" },		// 変身の体力バー
 };
 
 //==================================================================================================================
@@ -214,7 +218,104 @@ void CBar::SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth,
 
 	// 頂点データをアンロック
 	m_pVtxBuff->Unlock();
+}
 
+//==================================================================================================================
+// 頂点の設定(横)
+//==================================================================================================================
+void CBar::SetVertexBarW(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight)
+{
+	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
+	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
+
+	m_pVtx += index * 4;	// 頂点を4つずつ加算
+
+	// 頂点座標の設定(右回りで設定する)
+	m_pVtx[0].pos.x = pos.x;
+	m_pVtx[0].pos.y = pos.y - fHeight / 2;
+	m_pVtx[0].pos.z = 0.0f;
+
+	m_pVtx[1].pos.x = pos.x + fWidth;
+	m_pVtx[1].pos.y = pos.y - fHeight / 2;
+	m_pVtx[1].pos.z = 0.0f;
+
+	m_pVtx[2].pos.x = pos.x;
+	m_pVtx[2].pos.y = pos.y + fHeight / 2;
+	m_pVtx[2].pos.z = 0.0f;
+
+	m_pVtx[3].pos.x = pos.x + fWidth;
+	m_pVtx[3].pos.y = pos.y + fHeight / 2;
+	m_pVtx[3].pos.z = 0.0f;
+
+	// 同次座標(1.0で固定)
+	m_pVtx[0].rhw = 1.0f;
+	m_pVtx[1].rhw = 1.0f;
+	m_pVtx[2].rhw = 1.0f;
+	m_pVtx[3].rhw = 1.0f;
+
+	// 色の設定
+	m_pVtx[0].col = col;
+	m_pVtx[1].col = col;
+	m_pVtx[2].col = col;
+	m_pVtx[3].col = col;
+
+	// テクスチャ座標の設定
+	m_pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+	m_pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+	m_pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+	m_pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
+	// 頂点データをアンロック
+	m_pVtxBuff->Unlock();
+}
+
+//==================================================================================================================
+// 頂点の設定(横)(左から右減少)
+//==================================================================================================================
+void CBar::SetVertexBarWL(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight)
+{
+	// 頂点データの範囲をロックし、頂点バッファへのポインタ取得
+	m_pVtxBuff->Lock(0, 0, (void**)&m_pVtx, 0);
+
+	m_pVtx += index * 4;	// 頂点を4つずつ加算
+
+							// 頂点座標の設定(右回りで設定する)
+	m_pVtx[0].pos.x = pos.x - fWidth;
+	m_pVtx[0].pos.y = pos.y - fHeight / 2;
+	m_pVtx[0].pos.z = 0.0f;
+
+	m_pVtx[1].pos.x = pos.x;
+	m_pVtx[1].pos.y = pos.y - fHeight / 2;
+	m_pVtx[1].pos.z = 0.0f;
+
+	m_pVtx[2].pos.x = pos.x - fWidth;
+	m_pVtx[2].pos.y = pos.y + fHeight / 2;
+	m_pVtx[2].pos.z = 0.0f;
+
+	m_pVtx[3].pos.x = pos.x;
+	m_pVtx[3].pos.y = pos.y + fHeight / 2;
+	m_pVtx[3].pos.z = 0.0f;
+
+	// 同次座標(1.0で固定)
+	m_pVtx[0].rhw = 1.0f;
+	m_pVtx[1].rhw = 1.0f;
+	m_pVtx[2].rhw = 1.0f;
+	m_pVtx[3].rhw = 1.0f;
+
+	// 色の設定
+	m_pVtx[0].col = col;
+	m_pVtx[1].col = col;
+	m_pVtx[2].col = col;
+	m_pVtx[3].col = col;
+
+	// テクスチャ座標の設定
+	m_pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+	m_pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+	m_pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+	m_pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
+	// 頂点データをアンロック
+	m_pVtxBuff->Unlock();
 }
 
 //==================================================================================================================

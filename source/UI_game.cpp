@@ -178,6 +178,10 @@ void CUI_game::GameUpdate(void)
 			m_nCharaNum[0] = pPlayer0->GetCharaType();
 			m_nCharaNum[1] = pPlayer1->GetCharaType();
 
+			// 変身状況取得
+			m_bTransform[0] = pPlayer0->GetTrans();
+			m_bTransform[1] = pPlayer1->GetTrans();
+
 			// 最大石までカウント
 			for (int nCntStone = 0; nCntStone < CStone::STONE_ID_MAX; nCntStone++)
 			{
