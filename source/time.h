@@ -38,27 +38,29 @@ class CTime : public CScene
 {
 public:
 
-	CTime(PRIORITY type);						// コンストラクタ
-	~CTime();									// デストラクタ
-	void Init(void);							// 初期化処理
-	void Uninit(void);							// 終了処理
-	void Update(void);							// 更新処理
-	void Draw(void);							// 描画処理
+	CTime(PRIORITY type);			// コンストラクタ
+	~CTime();						// デストラクタ
+	void Init(void);				// 初期化処理
+	void Uninit(void);				// 終了処理
+	void Update(void);				// 更新処理
+	void Draw(void);				// 描画処理
 
-	static int GetTime(void);					// 時間取得処理
-	static CTime *Create(void);					// 生成処理
+	static int GetTime(void);		// 時間取得処理
+	static CTime *Create(void);		// 生成処理
 
-	void SetPos(D3DXVECTOR3 pos);				// 位置設定処理
-	void SetTime(int nTime);					// タイム設定処理
+	void SetPos(D3DXVECTOR3 pos);	// 位置設定処理
+	void SetTime(int nTime);		// タイム設定処理
 
 protected:
 
 private:
-	static int	m_nTime;						// タイム
+	static int	m_nTime;			// タイム
 
-	DWORD m_dStartTime;							// 始まるタイム
-	CNumber *m_apNumber[MAX_TIME];				// タイムの変数
+	DWORD m_dStartTime;				// 始まるタイム
+	CNumber *m_apNumber[MAX_TIME];	// タイムの変数
 
-	D3DXVECTOR3 m_pos;							// 位置
+	D3DXVECTOR3 m_pos;				// 位置
+
+	bool m_bDisplay;				// UIを表示させるかどうか
 };
 #endif

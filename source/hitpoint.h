@@ -82,6 +82,7 @@ private:
 	float m_fHeight;		// c‚Ì’·‚³
 
 	bool m_bBar[MAX_BAR];	// ƒo[‚ª‚ ‚é‚©‚Ç‚¤‚©
+	bool m_bDisplay;		// UI‚ğ•\¦‚³‚¹‚é‚©‚Ç‚¤‚©
 };
 
 #endif
