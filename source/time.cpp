@@ -11,6 +11,7 @@
 #include "game.h"
 #include "debugProc.h"
 #include "player.h"
+#include "inputKeyboard.h"
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -44,7 +45,8 @@ CTime::~CTime()
 void CTime::Init(void)
 {
 	// 初期化
-	m_dStartTime = (int)(START_TIMU * FRAME_TIMU);				// 始まるタイム
+	m_dStartTime = (int)(START_TIMU * FRAME_TIMU);		// 始まるタイム
+	m_bDisplay = true;									// UIを表示させるかどうか
 
 	// 最大桁数までカウント
 	for (int nCntScore = 0; nCntScore < MAX_TIME; nCntScore++)
@@ -88,6 +90,9 @@ void CTime::Uninit(void)
 //==================================================================================================================
 void CTime::Update(void)
 {
+	// キーボード取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
 	// フェード取得
 	CFade::FADE fade = CFade::GetFade();
 
@@ -122,6 +127,28 @@ void CTime::Update(void)
 			//CFade::SetFade(CRenderer::MODE_RESULT, DEFAULT_FADE_TIME);
 		}
 	}
+
+#ifdef _DEBUG
+	// 表示しているとき
+	if (m_bDisplay)
+	{
+		// キーボードのF3を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
+		{
+			// 表示させないようにする
+			m_bDisplay = false;
+		}
+	}
+	else
+	{// 表示していないとき
+	 // キーボードのF3を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
+		{
+			// 表示させるようにする
+			m_bDisplay = true;
+		}
+	}
+#endif // DEBUG
 }
 
 //==================================================================================================================
@@ -129,14 +156,18 @@ void CTime::Update(void)
 //==================================================================================================================
 void CTime::Draw(void)
 {
-	// 最大桁数までカウント
-	for (int nCntScore = 0; nCntScore < MAX_TIME; nCntScore++)
+	// UIを表示させていいとき
+	if (m_bDisplay)
 	{
-		// 数字があるとき
-		if (m_apNumber[nCntScore] != NULL)
+		// 最大桁数までカウント
+		for (int nCntScore = 0; nCntScore < MAX_TIME; nCntScore++)
 		{
-			// 描画処理
-			m_apNumber[nCntScore]->Draw();
+			// 数字があるとき
+			if (m_apNumber[nCntScore] != NULL)
+			{
+				// 描画処理
+				m_apNumber[nCntScore]->Draw();
+			}
 		}
 	}
 }

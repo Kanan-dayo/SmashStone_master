@@ -101,6 +101,7 @@ void CHitPoint::Init(void)
 	m_nCntPos3 = 21;				// 位置変更用カウンタ
 	m_fNowHP = m_fMaxHP;			// 現在のHP
 	m_fHeight = MAX_HEIGHT;			// 高さ
+	m_bDisplay = true;				// UIを表示させるかどうか
 
 	// 最大本数までカウント
 	for (int nCnt = 0; nCnt < MAX_HPBAR; nCnt++)
@@ -196,6 +197,9 @@ void CHitPoint::Uninit(void)
 //==================================================================================================================
 void CHitPoint::Update(void)
 {
+	// キーボード取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
 	// Barの更新処理
 	m_pBar->Update();
 
@@ -221,7 +225,6 @@ void CHitPoint::Update(void)
 	// HPバーが三本目のとき
 	if (NowHP > (m_fMaxHP / 5) * 2)
 	{
-
 		// バー2の更新処理
 		Bar2Update(NowHP);
 	}
@@ -240,6 +243,28 @@ void CHitPoint::Update(void)
 		Bar4Update(NowHP);
 	}
 
+#ifdef _DEBUG
+	// 表示しているとき
+	if (m_bDisplay)
+	{
+		// キーボードのF3を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
+		{
+			// 表示させないようにする
+			m_bDisplay = false;
+		}
+	}
+	else
+	{// 表示していないとき
+		// キーボードのF3を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
+		{
+			// 表示させるようにする
+			m_bDisplay = true;
+		}
+	}
+#endif // DEBUG
+
 }
 
 //==================================================================================================================
@@ -247,8 +272,12 @@ void CHitPoint::Update(void)
 //==================================================================================================================
 void CHitPoint::Draw(void)
 {
-	//Barの描画処理
-	m_pBar->Draw();
+	// UIを表示させていいとき
+	if (m_bDisplay)
+	{
+		//Barの描画処理
+		m_pBar->Draw();
+	}
 }
 
 //==================================================================================================================
@@ -311,9 +340,9 @@ void CHitPoint::Bar0Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos0 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(1, D3DXVECTOR3(BAR0_LEFT_POSX, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos0, 0), 
+				m_pBar->SetVertexBar(1, D3DXVECTOR3(BAR0_LEFT_POSX, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos0, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(0, D3DXVECTOR3(BAR0_LEFT_POSX, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), 
+				m_pBar->SetVertexBar(0, D3DXVECTOR3(BAR0_LEFT_POSX, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -342,9 +371,9 @@ void CHitPoint::Bar0Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos0 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(1, D3DXVECTOR3(BAR0_RIGHT_POSX, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos0, 0), 
+				m_pBar->SetVertexBar(1, D3DXVECTOR3(BAR0_RIGHT_POSX, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos0, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(0, D3DXVECTOR3(BAR0_RIGHT_POSX, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0), 
+				m_pBar->SetVertexBar(0, D3DXVECTOR3(BAR0_RIGHT_POSX, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos0, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -404,9 +433,9 @@ void CHitPoint::Bar1Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos1 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(3, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos1, 0), 
+				m_pBar->SetVertexBar(3, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos1, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(2, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), 
+				m_pBar->SetVertexBar(2, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -435,9 +464,9 @@ void CHitPoint::Bar1Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos1 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(3, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos1, 0), 
+				m_pBar->SetVertexBar(3, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos1, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(2, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0), 
+				m_pBar->SetVertexBar(2, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos1, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -550,9 +579,9 @@ void CHitPoint::Bar2Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos2 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(5, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 2, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos2, 0), 
+				m_pBar->SetVertexBar(5, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 2, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos2, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(4, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 2, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), 
+				m_pBar->SetVertexBar(4, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 2, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -581,9 +610,9 @@ void CHitPoint::Bar2Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos2 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(5, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 2, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos2, 0), 
+				m_pBar->SetVertexBar(5, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 2, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos2, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(4, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 2, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0), 
+				m_pBar->SetVertexBar(4, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 2, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos2, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -695,9 +724,9 @@ void CHitPoint::Bar3Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos3 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(7, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 3, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos3, 0), 
+				m_pBar->SetVertexBar(7, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 3, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos3, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(6, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 3, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), 
+				m_pBar->SetVertexBar(6, D3DXVECTOR3(BAR0_LEFT_POSX - BAR_SPACE * 3, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算
@@ -726,9 +755,9 @@ void CHitPoint::Bar3Update(float NowHP)
 			if (DROP_SPEED * m_nCntPos3 < BAR_HPFRAME_HEIGHT)
 			{
 				// BarHPの設定
-				m_pBar->SetVertexBar(7, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 3, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos3, 0), 
+				m_pBar->SetVertexBar(7, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 3, DROP_DIFFRENCE - ROT_DIFF + DROP_SPEED * m_nCntPos3, 0),
 					D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f), MAX_WIDTH, fHeight);
-				m_pBar->SetVertexBar(6, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 3, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0), 
+				m_pBar->SetVertexBar(6, D3DXVECTOR3(BAR0_RIGHT_POSX + BAR_SPACE * 3, DROP_DIFFRENCE + DROP_SPEED * m_nCntPos3, 0),
 					NORMAL_COLOR, MAX_WIDTH_FREAM, MAX_HEIGHT_FREAME);
 
 				// 位置加算

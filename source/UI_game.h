@@ -27,9 +27,23 @@ class CScene2D;
 class CUI_game : public CScene
 {
 public:
-	//=============================================================================
-	// 列挙型定義
-	//=============================================================================
+	CUI_game(PRIORITY type);		// コンストラクタ
+	~CUI_game();					// デストラクタ
+	void Init(void);				// 初期化処理
+	void Uninit(void);				// 終了処理
+	void Update(void);				// 更新処理
+	void Draw(void);				// 描画処理
+
+	static CUI_game *Create(void);	// 生成処理
+	static HRESULT Load(void);		// テクスチャ情報ロード処理
+	static void Unload(void);		// テクスチャ情報アンロード処理
+
+	void SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col, bool bDisplay);	// ロゴ設定処理
+
+protected:
+
+private:
+	// テクスチャの種類
 	typedef enum
 	{
 		LOGOTYPE_GAMEBG,			// ゲーム背景
@@ -43,24 +57,8 @@ public:
 		LOGOTYPE_CHARANAME0,		// 1Pのキャラクターネーム
 		LOGOTYPE_CHARANAME1,		// 2Pのキャラクターネーム
 		LOGOTYPE_MAX				// 最大
-	} UITYPE;
+	} UI_GAME_TYPE;
 
-	CUI_game(PRIORITY type);		// コンストラクタ
-	~CUI_game();					// デストラクタ
-	void Init(void);				// 初期化処理
-	void Uninit(void);				// 終了処理
-	void Update(void);				// 更新処理
-	void Draw(void);				// 描画処理
-
-	static CUI_game *Create(void);	// 生成処理
-	static HRESULT Load(void);		// テクスチャ情報ロード処理
-	static void Unload(void);		// テクスチャ情報アンロード処理
-
-	void SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col);	// ロゴ設定処理
-
-protected:
-
-private:
 	void GameUpdate(void);								// ゲームの更新処理
 
 	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];	// テクスチャ情報
@@ -72,6 +70,6 @@ private:
 
 	bool m_bTransform[MAX_PLAYER];						// 変身したかどうか
 	bool m_bStoneID[MAX_PLAYER][CStone::STONE_ID_MAX];	// ストーンID
-
+	bool m_bDisplay;									// UIを表示するかどうか
 };
 #endif
