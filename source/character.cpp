@@ -217,17 +217,6 @@ void CCharacter::SetCylinderCoillider(void)
 }
 
 //=============================================================================
-// モーションの攻撃判定の取得
-//=============================================================================
-inline bool CCharacter::GetbMotionAttack(void)
-{
-	// 現在のモーションキーが攻撃中かを取得
-	bool bMotionAttack = CMotion::GetbAttack((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
-	// 値を返す
-	return bMotionAttack;
-}
-
-//=============================================================================
 // ひるみ処理
 //=============================================================================
 void CCharacter::Daunted(const int nGap)

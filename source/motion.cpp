@@ -264,7 +264,7 @@ HRESULT CMotion::LoadMotion(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 						// キー数分メモリ確保
 						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].pKey = new KEY[nKey];
 						// 攻撃しない
-						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].bAttack = false;
+						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].nAttackIndex = -1;
 						// 攻撃パーツ無し
 						m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].nAttackIndex = -1;
 
@@ -284,7 +284,8 @@ HRESULT CMotion::LoadMotion(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 							// 攻撃
 							if (strcmp(cHeadText, "ATTACK_ON") == 0)
 							{
-								m_pMotionInfo[charaType][motiontype].pKeyInfo[nCntkeyInfo].bAttack = true;
+								// 攻撃キーを保存
+								m_pMotionInfo[charaType][motiontype].nAttackKey = nCntkeyInfo;
 							}
 							// 攻撃
 							if (strcmp(cHeadText, "ATTACK_INDEX") == 0)
