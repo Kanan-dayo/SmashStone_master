@@ -15,7 +15,7 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define TEXTURE_BAR 10												// テクスチャの最大数
+#define TEXTURE_BAR 14												// テクスチャの最大数
 #define MAX_WIDTH 20.0f												// 横の最大サイズ
 #define MAX_WIDTH_FREAM 35.0f										// フレームの横サイズ
 #define MAX_HEIGHT 80.0f											// 縦の最大サイズ
@@ -43,6 +43,10 @@ public:
 		BARTYPE_HP3,			// 3番目の体力バー
 		BARTYPE_FREAME4,		// 4番目のフレーム
 		BARTYPE_HP4,			// 4番目の体力バー
+		BARTYPE_TRANSFREAM1p,	// 変身のフレーム1p
+		BARTYPE_TRANSHP1p,		// 変身の体力バー1p
+		BARTYPE_TRANSFREAM2p,	// 変身のフレーム2p
+		BARTYPE_TRANSHP2p,		// 変身の体力バー2p
 		BARTYPE_MAX				// 最大数
 	} BARTYPE;					// Barタイプ
 
@@ -58,6 +62,8 @@ public:
 	static void Unload(void);			// テクスチャ破棄処理
 
 	void SetVertexBar(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);	// 頂点設定処理
+	void SetVertexBarW(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);	// 頂点設定処理横
+	void SetVertexBarWL(int index, D3DXVECTOR3 pos, D3DXCOLOR col, float fWidth, float fHeight);	// 頂点設定処理横
 	void RotBar(int index, D3DXVECTOR3 pos, float fAngle, D3DXVECTOR3 diff);					// バー回転処理
 	void SetColBar(int index, D3DXCOLOR col);													// バー色設定処理
 

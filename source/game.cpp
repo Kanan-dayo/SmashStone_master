@@ -40,6 +40,7 @@
 #include "3DEffect.h"
 #include "CharEffectOffset.h"
 #include "3DParticle.h"
+#include "transformBar.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -82,6 +83,7 @@ int					CGame::m_nRoundAll				= 0;							// 全ラウンド数
 NUM_PLAYER			CGame::m_winPlayer				= NUM_PLAYER::PLAYER_NONE;		// 勝利したプレイヤー
 NUM_PLAYER			CGame::m_losePlayer				= NUM_PLAYER::PLAYER_NONE;		// 負けたプレイヤー
 CObjectManager		*CGame::m_pObjMana				= nullptr;						// オブジェクトマネージャーのポインタ
+CTransformBar		*CGame::m_pTransformBar			= nullptr;						// 変身バーポインタ
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ストーンの生成場所に生成されているか
 bool				CGame::m_bGetType[CStone::STONE_ID_MAX] = {};					// ストーンの生成場所に生成されているか
 int					CGame::m_nStageType				= 0;							// ステージのタイプ
@@ -148,6 +150,7 @@ void CGame::Init(void)
 
 	m_pMeshField  = CMeshField::Create(INTEGER2(4, 4), D3DXVECTOR3(600.0f, 0.0f, 600.0f), D3DXVECTOR3(0.0f, -40.0f, 50.0f));// メッシュフィールド生成
 	m_pUI         = CUI_game::Create();								// UIの生成処理
+	m_pTransformBar = CTransformBar::Create(TIME_TRANS);			// 変身バー生成処理
 	m_pTime       = CTime::Create();								// タイム生成
 	m_pPause      = CPause::Create();								// ポーズの生成処理
 

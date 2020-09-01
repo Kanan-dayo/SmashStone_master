@@ -210,8 +210,8 @@
     <ClCompile Include="source\stone.cpp" />
     <ClCompile Include="source\time.cpp" />
     <ClCompile Include="source\title.cpp" />
+    <ClCompile Include="source\transformBar.cpp" />
     <ClCompile Include="source\tutorial.cpp" />
-    <ClCompile Include="source\UI.cpp" />
     <ClCompile Include="source\UI_game.cpp" />
     <ClCompile Include="source\UI_gameResult.cpp" />
     <ClCompile Include="source\UI_gameStart.cpp" />
@@ -277,8 +277,8 @@
     <ClInclude Include="source\stone.h" />
     <ClInclude Include="source\time.h" />
     <ClInclude Include="source\title.h" />
+    <ClInclude Include="source\transformBar.h" />
     <ClInclude Include="source\tutorial.h" />
-    <ClInclude Include="source\UI.h" />
     <ClInclude Include="source\UI_game.h" />
     <ClInclude Include="source\UI_gameResult.h" />
     <ClInclude Include="source\UI_gameStart.h" />

@@ -9,7 +9,6 @@
 #include "number.h"
 #include "fade.h"
 #include "game.h"
-#include "UI.h"
 #include "debugProc.h"
 #include "player.h"
 

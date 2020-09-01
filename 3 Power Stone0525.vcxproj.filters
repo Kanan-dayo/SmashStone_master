@@ -151,9 +151,6 @@
     <ClCompile Include="source\time.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\UI.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\UI_gameResult.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -188,6 +185,9 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\UI_game.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\transformBar.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -360,9 +360,6 @@
     <ClInclude Include="source\time.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\UI.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\UI_gameResult.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
@@ -385,6 +382,9 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\UI_game.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\transformBar.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>

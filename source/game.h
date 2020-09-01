@@ -43,6 +43,7 @@ class CUI_GameStart;
 class CUI_GameResult;
 class CRenderer;
 class CUI_game;
+class CTransformBar;
 
 //==================================================================================================================
 //
@@ -140,6 +141,7 @@ private:
 	static CUI_GameResult *m_pUIGameResult;			// ゲームリザルトのUIのポインタ
 	static NUM_PLAYER m_winPlayer;					// 勝利したプレイヤー
 	static NUM_PLAYER m_losePlayer;					// 負けたプレイヤー
+	static CTransformBar *m_pTransformBar;			// 変身バーポインタ
 	INTEGER2 m_roundPoint;							// ラウンドのポイント数
 	static int m_nRound;							// 現在のラウンド
 	static int m_nRoundAll;							// 全ラウンド数
