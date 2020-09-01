@@ -178,6 +178,18 @@
     <ClCompile Include="source\sceneX.cpp">
       <Filter>scene</Filter>
     </ClCompile>
+    <ClCompile Include="source\UI_title.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_tutorial.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_mapSelect.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_game.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ImGui\imconfig.h">
@@ -361,6 +373,18 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\wall.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_title.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_tutorial.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_mapSelect.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_game.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>

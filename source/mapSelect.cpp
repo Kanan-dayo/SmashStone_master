@@ -19,7 +19,7 @@
 #include "camera.h"
 #include "light.h"
 #include "inputGamepad.h"
-#include "UI.h"
+#include "UI_mapSelect.h"
 #include "game.h"
 #include "mapSelect.h"
 
@@ -28,9 +28,8 @@
 //==================================================================================================================
 LPDIRECT3DTEXTURE9 CMapSelect::m_pTexture = NULL;		// テクスチャ情報
 CCamera *CMapSelect::m_pCamera = NULL;					// カメラ情報
-CLight *CMapSelect::m_pLight = NULL;						// ライト情報
-CPolygon *CMapSelect::m_pPolygon = NULL;					// ポリゴン情報
-CUI *CMapSelect::m_pUI = NULL;							// UI情報
+CLight *CMapSelect::m_pLight = NULL;					// ライト情報
+CUI_mapSelect *CMapSelect::m_pUI = NULL;				// UI情報
 
 //==================================================================================================================
 //	コンストラクタ
@@ -55,7 +54,7 @@ void CMapSelect::Init(void)
 {
 	m_bSelectMap = false;			// マップが選択されているかどうか
 
-	CUI::Load();					// UIテクスチャロード
+	CUI_mapSelect::Load();			// UIテクスチャロード
 
 	// カメラの生成処理
 	m_pCamera = CCamera::Create();
@@ -64,7 +63,7 @@ void CMapSelect::Init(void)
 	m_pLight = CLight::Create();
 
 	// UI生成処理
-	m_pUI = CUI::Create();
+	m_pUI = CUI_mapSelect::Create();
 }
 
 //==================================================================================================================
@@ -78,7 +77,7 @@ void CMapSelect::Uninit(void)
 	// scene3Dの破棄処理
 	CScene3D::ReleaseAll();
 
-	CUI::Unload();					// UIテクスチャアンロード
+	CUI_mapSelect::Unload();		// UIテクスチャアンロード
 
 	delete m_pLight;				// メモリ削除
 	m_pLight = nullptr;				// ポインタNULL
@@ -116,7 +115,7 @@ void CMapSelect::Update(void)
 		// フェードが何もない時
 		if (fade == CFade::FADE_NONE)
 		{
-			CGame::SetStageType(CUI::GetMapID());
+			CGame::SetStageType(CUI_mapSelect::GetMapID());
 			// フェードの設定
 			CFade::SetFade(CRenderer::MODE_GAME, DEFAULT_FADE_TIME);
 		}

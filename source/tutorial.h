@@ -22,12 +22,11 @@
 //==================================================================================================================
 class CCamera;
 class CLight;
-class CPolygon;
 class CMeshField;
 class CCharacter;
 class CModel;
 class CMeshSphere;
-class CUI;
+class CUI_tutorial;
 
 //==================================================================================================================
 //
@@ -53,10 +52,9 @@ private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャの情報ポインタ
 	static CCamera *m_pCamera;					// カメラのの情報ポインタ
 	static CLight *m_pLight;					// ライトのの情報ポインタ
-	static CPolygon *m_pPolygon;				// ポリゴンの情報ポインタ
 	static CMeshField *m_pMeshField;			// メッシュフィールドの情報ポインタ
 	static CCharacter *m_pCharacter;			// キャラクターの情報ポインタ
-	static CUI *m_pUI;							// UIの情報ポインタ
+	static CUI_tutorial *m_pUI;					// UIの情報ポインタ
 	static CModel *m_pModel[TUTORIAL_MAX_MODEL];// モデルの情報ポインタ
 	static CMeshSphere *m_pMeshSphere;			// メッシュ球の情報ポインタ
 

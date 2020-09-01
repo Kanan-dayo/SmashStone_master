@@ -42,7 +42,7 @@ class CUIKO;
 class CUI_GameStart;
 class CUI_GameResult;
 class CRenderer;
-class CUI;
+class CUI_game;
 
 //==================================================================================================================
 //
@@ -127,7 +127,7 @@ private:
 	static CMeshSphere *m_pMeshSphere;				// メッシュ球の情報ポインタ
 	static CTime *m_pTime;							// タイムの情報ポインタ
 	static CWall *m_pWall;							// 壁のポインタ
-	static CUI *m_pUI;								// UIポインタ
+	static CUI_game *m_pUI;							// UIポインタ
 	static int m_nCounterGameState;					// ゲームの状態管理カウンター
 	static int m_nNumStone;							// 生成したストーンの数
 	static int m_nCntDecide;						// ストーン生成のタイミングを決めるカウンタ
