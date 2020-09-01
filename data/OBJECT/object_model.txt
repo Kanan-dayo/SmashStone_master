@@ -9,7 +9,7 @@ SCRIPT
 #============================================================
 # オブジェクトタイプ数
 #============================================================
-NUM_TYPE = 23
+NUM_TYPE = 24
 
 #============================================================
 # モデルファイル名
@@ -19,8 +19,8 @@ MODEL_FILENAME = data/OBJECT/model/stage1/floor_up.x
 MODEL_FILENAME = data/OBJECT/model/stage1/stairs.x
 MODEL_FILENAME = data/OBJECT/model/stage1/stairs_slope.x
 MODEL_FILENAME = data/OBJECT/model/stage1/stairs_wide.x
-MODEL_FILENAME = data/OBJECT/model/stage1/building_left.x
-MODEL_FILENAME = data/OBJECT/model/stage1/building_right.x
+MODEL_FILENAME = data/OBJECT/model/stage1/Buil00.x
+MODEL_FILENAME = data/OBJECT/model/stage1/Buil01.x
 MODEL_FILENAME = data/OBJECT/model/stage1/roof.x
 MODEL_FILENAME = data/OBJECT/model/stage1/fence.x
 MODEL_FILENAME = data/OBJECT/model/stage1/rail_left.x
@@ -37,6 +37,7 @@ MODEL_FILENAME = data/OBJECT/model/stage2/Stairs03.x
 MODEL_FILENAME = data/OBJECT/model/stage2/Stairs04.x
 MODEL_FILENAME = data/OBJECT/model/stage2/floor.x
 MODEL_FILENAME = data/OBJECT/model/stage2/BackGround.x
+MODEL_FILENAME = data/OBJECT/model/stage1/bridge.x
 
 #============================================================
 # オブジェクトテクスチャ数

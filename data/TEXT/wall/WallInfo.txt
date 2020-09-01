@@ -3,9 +3,9 @@ SCRIPT
 
 FILENAME = data/TEXTURE/wall/publicdomainq-0013684agf.jpg
 
-CENTER = -70.0 0.0 -17.5
+CENTER = -70.0 0.0 -5.5
 
-LENGTH = 110.0 150.5
+LENGTH = 110.0 153.0
 
 HEIGHT = 500.0
 

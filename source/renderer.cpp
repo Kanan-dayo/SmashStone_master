@@ -42,7 +42,7 @@ CResult *CRenderer::m_pResult = NULL;					// リザルト情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
 CMapSelect *CRenderer::m_pMapSelect = NULL;				// マップ選択画面の情報
-CRenderer::MODE CRenderer::m_mode = CRenderer::MODE_TITLE;			// 最初の画面
+CRenderer::MODE CRenderer::m_mode = CRenderer::MODE_GAME;			// 最初の画面
 
 //==================================================================================================================
 // コンストラクタ
