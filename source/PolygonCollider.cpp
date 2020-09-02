@@ -14,110 +14,227 @@
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
-#define POLYCOLLI_COL	D3DXCOLOR(1.0f,1.0f,1.0f,1.0f)
-
-#define POLYCOLLI_STAIRS_POS		D3DXVECTOR3(-15.5f,37.0f,-48.0f)
-
-#define POLYCOLLI_STAIRS_HALFSIZE_X 51.5f
-#define POLYCOLLI_STAIRS_HALFSIZE_Y 23.0f
-#define POLYCOLLI_STAIRS_HALFSIZE_Z 32.0f
-
-#define POLYCOLLI_STAIRS_TOP_POS	D3DXVECTOR3(64.5f,23.0f,0.0f)+POLYCOLLI_STAIRS_POS
-
-#define POLYCOLLI_STAIRS_TOP_HALFSIZE_X 13.0f
-#define POLYCOLLI_STAIRS_TOP_HALFSIZE_Z POLYCOLLI_STAIRS_HALFSIZE_Z
-
-#define POLYCOLLI_LONGSTAIRS_POS	D3DXVECTOR3(-60.0f,10.0f,-111.0f)
-
-#define POLYCOLLI_LONGSTAIRS_HALFSIZE_X 140.0f
-#define POLYCOLLI_LONGSTAIRS_HALFSIZE_Y 13.0f
-#define POLYCOLLI_LONGSTAIRS_HALFSIZE_Z 20.0f
+#define POLYCOLL_FILENAME ("data/COLLIDER/Polygon.csv")
 
 //-------------------------------------------------------------------------------------------------------------
 // 静的メンバ変数の初期化
 //-------------------------------------------------------------------------------------------------------------
-D3DXVECTOR3 CPolygonCollider::m_conSetingVtxPos[MAP_TYPE_MAX][POLYCOLLI_MAX][POLYCOLLI_USE_VTX] = 	// 設定用頂点位置
+CPolygonCollider::POLYCOLLINFO	CPolygonCollider::m_polyCollInfo[MAP_TYPE_MAX] = {};
+
+//-------------------------------------------------------------------------------------------------------------
+// ロード
+//-------------------------------------------------------------------------------------------------------------
+HRESULT CPolygonCollider::Load(void)
 {
-	{// 広場
-		{// 階段
-			POLYCOLLI_STAIRS_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_HALFSIZE_X,POLYCOLLI_STAIRS_HALFSIZE_Y,-POLYCOLLI_STAIRS_HALFSIZE_Z),
-			POLYCOLLI_STAIRS_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_HALFSIZE_X,-POLYCOLLI_STAIRS_HALFSIZE_Y,-POLYCOLLI_STAIRS_HALFSIZE_Z),
-			POLYCOLLI_STAIRS_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_HALFSIZE_X,POLYCOLLI_STAIRS_HALFSIZE_Y,POLYCOLLI_STAIRS_HALFSIZE_Z),
-			POLYCOLLI_STAIRS_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_HALFSIZE_X,-POLYCOLLI_STAIRS_HALFSIZE_Y,POLYCOLLI_STAIRS_HALFSIZE_Z),
-		},
-		{// 階段の上部
-			POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_TOP_HALFSIZE_X,0.0f,-POLYCOLLI_STAIRS_TOP_HALFSIZE_Z),
-			POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_TOP_HALFSIZE_X,0.0f,-POLYCOLLI_STAIRS_TOP_HALFSIZE_Z),
-			POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_TOP_HALFSIZE_X,0.0f,POLYCOLLI_STAIRS_TOP_HALFSIZE_Z),
-			POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_TOP_HALFSIZE_X,0.0f,POLYCOLLI_STAIRS_TOP_HALFSIZE_Z),
+	// ファイル名のロード
+	if (FAILED(LoadFileName()))
+		return E_FAIL;
+	// モデルのロード
+	if (FAILED(LoadModelFile()))
+		return E_FAIL;
 
-		},
-		{// 緩やかな階段
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X,POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X,POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-		},
-		{// 緩やかな階段の上部
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X,POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X,POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-			POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Y,-POLYCOLLI_LONGSTAIRS_HALFSIZE_Z),
-		},
-	},
-};
-
-CPolygonCollider::MAP_POLYCOLII CPolygonCollider::m_PolyPos[MAP_TYPE_MAX] = { NULL };
-
-void CPolygonCollider::CreateDateBase(void)
-{
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos = new VTXPOS[POLYCOLLI_MAX];
-
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS].vtx_0 = POLYCOLLI_STAIRS_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_HALFSIZE_X, POLYCOLLI_STAIRS_HALFSIZE_Y, -POLYCOLLI_STAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS].vtx_1 = POLYCOLLI_STAIRS_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_HALFSIZE_X, -POLYCOLLI_STAIRS_HALFSIZE_Y, -POLYCOLLI_STAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS].vtx_2 = POLYCOLLI_STAIRS_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_HALFSIZE_X, POLYCOLLI_STAIRS_HALFSIZE_Y, POLYCOLLI_STAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS].vtx_3 = POLYCOLLI_STAIRS_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_HALFSIZE_X, -POLYCOLLI_STAIRS_HALFSIZE_Y, POLYCOLLI_STAIRS_HALFSIZE_Z);
-
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS_TOP].vtx_0 = POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_TOP_HALFSIZE_X, 0.0f, -POLYCOLLI_STAIRS_TOP_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS_TOP].vtx_1 = POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_TOP_HALFSIZE_X, 0.0f, -POLYCOLLI_STAIRS_TOP_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS_TOP].vtx_2 = POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(POLYCOLLI_STAIRS_TOP_HALFSIZE_X, 0.0f, POLYCOLLI_STAIRS_TOP_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_STAIRS_TOP].vtx_3 = POLYCOLLI_STAIRS_TOP_POS + D3DXVECTOR3(-POLYCOLLI_STAIRS_TOP_HALFSIZE_X, 0.0f, POLYCOLLI_STAIRS_TOP_HALFSIZE_Z);
-
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS].vtx_0 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X, POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS].vtx_1 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X, POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS].vtx_2 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS].vtx_3 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS_TOP].vtx_0 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X, POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS_TOP].vtx_1 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X, POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS_TOP].vtx_2 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(-POLYCOLLI_LONGSTAIRS_HALFSIZE_X, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-	m_PolyPos[MAP_TYPE_FIELD].pFieldVtxPos[POLYCOLLI_LONGSTAIRS_TOP].vtx_3 = POLYCOLLI_LONGSTAIRS_POS + D3DXVECTOR3(POLYCOLLI_LONGSTAIRS_HALFSIZE_X, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Y, -POLYCOLLI_LONGSTAIRS_HALFSIZE_Z);
-
-
+	return S_OK;
 }
 
-void CPolygonCollider::DeleteDateBase(void)
+//-------------------------------------------------------------------------------------------------------------
+// ファイル名のロード
+//-------------------------------------------------------------------------------------------------------------
+HRESULT CPolygonCollider::LoadFileName(void)
 {
-	for (int nCntDate = 0; nCntDate < MAP_TYPE_MAX;nCntDate++)
+	// ブロックコメント
+	CKananLibrary::StartBlockComment("ポリゴンコライダーのファイル読み込み開始");
+	DWORD start = timeGetTime();		// 計測スタート時間
+
+	// ファイルオープン
+	FILE *pFile = fopen(POLYCOLL_FILENAME, "r");
+
+	// nullcheck
+	if (!pFile)
 	{
-		if (m_PolyPos[nCntDate].pFieldVtxPos == NULL)
+		// 失敗
+		CKananLibrary::EndBlockComment("ファイル読み込み失敗");
+		return E_FAIL;
+	}
+
+	// テキスト保存用
+	char cHeadText[MAX_TEXT] = {};
+	char cReadText[MAX_TEXT] = {};
+	char cDieText[MAX_TEXT] = {};
+	
+	// スクリプトが来るまで繰り返す
+	while (strcmp(cHeadText, "SCRIPT") != 0)
+	{
+		// 1行読み込む
+		fgets(cReadText, sizeof(cReadText), pFile);
+		// 読み込んど文字列代入
+		sscanf(cReadText, "%[^,]s", &cHeadText);
+	}
+
+	// ステージカウンタ
+	int nCntStage = 0;
+	// ポリゴンカウンタ
+	int nCntPolygon = 0;
+
+	// END_SCRIPTまでループ
+	while (strcmp(cHeadText, "END_SCRIPT") != 0)
+	{
+		// 1行読み込む
+		fgets(cReadText, sizeof(cReadText), pFile);
+		// 読み込んど文字列代入
+		sscanf(cReadText, "%[^,]s", &cHeadText);
+
+		if (nCntStage < MAP_TYPE_MAX)
 		{
-			continue;
+			// SET_STAGEが来るまで繰り返す
+			while (strcmp(cHeadText, "SET_STAGE") != 0)
+			{
+				// 1行読み込む
+				fgets(cReadText, sizeof(cReadText), pFile);
+				// 読み込んど文字列代入
+				sscanf(cReadText, "%[^,]s", &cHeadText);
+				// 読み込んだポリゴン数を初期化
+				nCntPolygon = 0;
+			}
+
+			// END_SETSTAGEが来るまでループ
+			while (strcmp(cHeadText, "END_SETSTAGE") != 0)
+			{
+				// 1行読み込む
+				fgets(cReadText, sizeof(cReadText), pFile);
+				char *pRead = &cReadText[0];
+				while (*pRead == ',')
+				{
+					pRead++;
+				}
+
+				// 読み込んど文字列代入
+				sscanf(pRead, "%[^,]s", &cHeadText);
+
+				// 設定する個数
+				if (strcmp(cHeadText, "SET_NUM") == 0)
+				{
+					// 数を取得し、メモリ確保
+					sscanf(pRead, "%[^,],%d", &cDieText, &m_polyCollInfo[nCntStage].nNumPolygon);
+					m_polyCollInfo[nCntStage].polyInfo = new POLGONINFO[m_polyCollInfo[nCntStage].nNumPolygon];
+				}
+				// 設定するもの
+				if (strcmp(cHeadText, "SET") == 0)
+				{
+					while (*pRead == '"')
+					{
+						pRead++;
+					}
+
+					/* 一行分の情報を解析する */
+					//			   SET     メモ   ID   パス
+					sscanf(pRead, "%[^, ], %[^, ], %d, %f, %f, %f, %s",
+						&cDieText, &cDieText,
+						&m_polyCollInfo[nCntStage].polyInfo[nCntPolygon].nPolyID,
+						&m_polyCollInfo[nCntStage].polyInfo[nCntPolygon].pos.x,
+						&m_polyCollInfo[nCntStage].polyInfo[nCntPolygon].pos.y,
+						&m_polyCollInfo[nCntStage].polyInfo[nCntPolygon].pos.z,
+						&m_polyCollInfo[nCntStage].polyInfo[nCntPolygon].modelInfo.cModelName);
+
+					// 情報カウントインクリメント
+					nCntPolygon++;
+				}
+			}
+
+			if (strcmp(cHeadText, "END_SETSTAGE") == 0)
+			{
+				// ステージ数を加算
+				nCntStage++;
+			}
 		}
-		delete []m_PolyPos[nCntDate].pFieldVtxPos;
-		m_PolyPos[nCntDate].pFieldVtxPos = NULL;
+	}
+
+	// ブロックコメント
+	DWORD end = timeGetTime();			// 計測スタート時間
+#ifdef _DEBUG
+	cout << "読み込み終了" << endl;
+	cout << "読み込み 処理速度 = " << (end - start) << "　[" << (end - start) * 0.001f << "sec.]" << endl;
+#endif
+	CKananLibrary::PrintBlockCommentFrame();
+	// 終了
+	return S_OK;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// モデルのロード
+//-------------------------------------------------------------------------------------------------------------
+HRESULT CPolygonCollider::LoadModelFile(void)
+{
+	for (int nCntStage = 0; nCntStage < MAP_TYPE_MAX; nCntStage++)
+	{
+		// 種類数分回す
+		for (int nCntPoly = 0; nCntPoly < m_polyCollInfo[nCntStage].nNumPolygon; nCntPoly++)
+		{
+			// モデル情報の生成
+			CKananLibrary::CreateModelInfo(&m_polyCollInfo[nCntStage].polyInfo[nCntPoly].modelInfo);
+
+			// メッシュを格納
+			LPD3DXMESH mesh = m_polyCollInfo[nCntStage].polyInfo[nCntPoly].modelInfo.mesh;
+
+			// 頂点フォーマットのサイズを取得
+			DWORD sizeFVF = D3DXGetFVFVertexSize(mesh->GetFVF());
+			// 頂点バッファのポインタ
+			BYTE  *pVertexBuffer;
+
+			// 頂点バッファをロック
+			mesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVertexBuffer);
+
+			// バッファから頂点座標を取得
+			m_polyCollInfo[nCntStage].polyInfo[nCntPoly].vtxPos.vtx_2 = *(D3DXVECTOR3*)pVertexBuffer + m_polyCollInfo[nCntStage].polyInfo[nCntPoly].pos;
+			// サイズ分ポインタを進める
+			pVertexBuffer += sizeFVF;
+			// バッファから頂点座標を取得
+			m_polyCollInfo[nCntStage].polyInfo[nCntPoly].vtxPos.vtx_0 = *(D3DXVECTOR3*)pVertexBuffer + m_polyCollInfo[nCntStage].polyInfo[nCntPoly].pos;
+			// サイズ分ポインタを進める
+			pVertexBuffer += sizeFVF;
+			// バッファから頂点座標を取得
+			m_polyCollInfo[nCntStage].polyInfo[nCntPoly].vtxPos.vtx_1 = *(D3DXVECTOR3*)pVertexBuffer + m_polyCollInfo[nCntStage].polyInfo[nCntPoly].pos;
+			// サイズ分ポインタを進める
+			pVertexBuffer += sizeFVF;
+			// バッファから頂点座標を取得
+			m_polyCollInfo[nCntStage].polyInfo[nCntPoly].vtxPos.vtx_3 = *(D3DXVECTOR3*)pVertexBuffer + m_polyCollInfo[nCntStage].polyInfo[nCntPoly].pos;
+			// サイズ分ポインタを進める
+			pVertexBuffer += sizeFVF;
+
+			// 頂点バッファをアンロック
+			mesh->UnlockVertexBuffer();
+		}
+	}
+
+	return S_OK;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// アンロード
+//-------------------------------------------------------------------------------------------------------------
+void CPolygonCollider::Unload(void)
+{
+	for (int nCntStage = 0; nCntStage < MAP_TYPE_MAX; nCntStage++)
+	{
+		for (int nCntPoly = 0; nCntPoly < m_polyCollInfo[nCntStage].nNumPolygon; nCntPoly++)
+		{
+			if (m_polyCollInfo[nCntStage].polyInfo)
+			{
+				delete[] m_polyCollInfo[nCntStage].polyInfo;
+				m_polyCollInfo[nCntStage].polyInfo = nullptr;
+			}
+		}
 	}
 }
 
 //-------------------------------------------------------------------------------------------------------------
 // 生成
 //-------------------------------------------------------------------------------------------------------------
-CPolygonCollider * CPolygonCollider::Create(int nType)
+CPolygonCollider * CPolygonCollider::Create(int nStageType, int nIndex)
 {
 	// 生成
 	CPolygonCollider *pCPolyColli = new CPolygonCollider;
 	// 頂点位置の設定
-	pCPolyColli->SetVtxPos(&m_conSetingVtxPos[0][nType][0]);
+	pCPolyColli->SetVtxPos(m_polyCollInfo[nStageType].polyInfo[nIndex].vtxPos);
 	// 初期化
 	pCPolyColli->Init();
 	return pCPolyColli;
@@ -133,8 +250,8 @@ void CPolygonCollider::Init(void)
 	D3DXVECTOR3 vecB = MYLIB_VEC3_UNSET;				// Bベクトル
 
 	// 法線ベクトルを求める
-	vecA = m_VtxPos[1] - m_VtxPos[2];					// Aベクトル算出
-	vecB = m_VtxPos[0] - m_VtxPos[1];					// Bベクトル算出
+	vecA = m_VtxPos.vtx_1 - m_VtxPos.vtx_2;					// Aベクトル算出
+	vecB = m_VtxPos.vtx_0 - m_VtxPos.vtx_1;					// Bベクトル算出
 	D3DXVec3Cross(&m_SurfaceNor, &vecA, &vecB);			// 直交ベクトル算出
 	D3DXVec3Normalize(&m_SurfaceNor, &m_SurfaceNor);	// 正規化する
 
@@ -211,17 +328,17 @@ bool CPolygonCollider::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVE
 #endif
 		if (bReflection == true)
 		{
-			pPos->y = m_VtxPos[2].y +
-				(-m_SurfaceNor.x  *	(pPos->x - m_VtxPos[2].x) -
-					m_SurfaceNor.z * (pPos->z - m_VtxPos[2].z)) / m_SurfaceNor.y;
+			pPos->y = m_VtxPos.vtx_2.y +
+				(-m_SurfaceNor.x  *	(pPos->x - m_VtxPos.vtx_2.x) -
+					m_SurfaceNor.z * (pPos->z - m_VtxPos.vtx_2.z)) / m_SurfaceNor.y;
 			*pOut_Intersect = *pPos;
 			*SurfaceNor = m_SurfaceNor;
 		}
 		else
 		{
-			pPos->y = m_VtxPos[2].y +
-				(-m_SurfaceNor.x  *	(pPos->x - m_VtxPos[2].x) -
-				m_SurfaceNor.z * (pPos->z - m_VtxPos[2].z))	/ m_SurfaceNor.y;
+			pPos->y = m_VtxPos.vtx_2.y +
+				(-m_SurfaceNor.x  *	(pPos->x - m_VtxPos.vtx_2.x) -
+				m_SurfaceNor.z * (pPos->z - m_VtxPos.vtx_2.z))	/ m_SurfaceNor.y;
 		}
 		return true;
 	}
@@ -233,11 +350,11 @@ bool CPolygonCollider::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVE
 //-------------------------------------------------------------------------------------------------------------
 bool CPolygonCollider::Test3DInsidePolygon(D3DXVECTOR3 * pPos)
 {
-	if (CMylibrary::Test3DInsidePolygon(m_VtxPos[0], m_VtxPos[1], m_VtxPos[2], *pPos, -m_SurfaceNor))
+	if (CMylibrary::Test3DInsidePolygon(m_VtxPos.vtx_0, m_VtxPos.vtx_1, m_VtxPos.vtx_2, *pPos, -m_SurfaceNor))
 	{
 		return true;
 	}
-	else if(CMylibrary::Test3DInsidePolygon(m_VtxPos[1], m_VtxPos[3], m_VtxPos[2], *pPos, -m_SurfaceNor))
+	else if(CMylibrary::Test3DInsidePolygon(m_VtxPos.vtx_1, m_VtxPos.vtx_3, m_VtxPos.vtx_2, *pPos, -m_SurfaceNor))
 	{
 		return true;
 	}
@@ -247,12 +364,9 @@ bool CPolygonCollider::Test3DInsidePolygon(D3DXVECTOR3 * pPos)
 //-------------------------------------------------------------------------------------------------------------
 // 頂点位置の設定
 //-------------------------------------------------------------------------------------------------------------
-void CPolygonCollider::SetVtxPos(D3DXVECTOR3 * pVertexsPos)
+void CPolygonCollider::SetVtxPos(VTXPOS &pVertexsPos)
 {
-	for (int nCntVtx = 0; nCntVtx < POLYCOLLI_USE_VTX; nCntVtx++)
-	{
-		m_VtxPos[nCntVtx] = pVertexsPos[nCntVtx];
-	}
+	m_VtxPos = pVertexsPos;
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -279,10 +393,10 @@ HRESULT CPolygonCollider::MakeVertex(void)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 座標の設定
-	pVtx[0].pos = m_VtxPos[0];
-	pVtx[1].pos = m_VtxPos[1];
-	pVtx[2].pos = m_VtxPos[2];
-	pVtx[3].pos = m_VtxPos[3];
+	pVtx[0].pos = m_VtxPos.vtx_0;
+	pVtx[1].pos = m_VtxPos.vtx_1;
+	pVtx[2].pos = m_VtxPos.vtx_2;
+	pVtx[3].pos = m_VtxPos.vtx_3;
 
 	// 法線ベクトルの設定
 	pVtx[0].nor = m_SurfaceNor;
@@ -291,10 +405,10 @@ HRESULT CPolygonCollider::MakeVertex(void)
 	pVtx[3].nor = m_SurfaceNor;
 
 	// 頂点カラー
-	pVtx[0].col = POLYCOLLI_COL;
-	pVtx[1].col = POLYCOLLI_COL;
-	pVtx[2].col = POLYCOLLI_COL;
-	pVtx[3].col = POLYCOLLI_COL;
+	pVtx[0].col = WhiteColor;
+	pVtx[1].col = WhiteColor;
+	pVtx[2].col = WhiteColor;
+	pVtx[3].col = WhiteColor;
 
 	// テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);

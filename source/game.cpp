@@ -41,6 +41,7 @@
 #include "CharEffectOffset.h"
 #include "3DParticle.h"
 #include "transformBar.h"
+#include "polyCollMana.h"
 
 //==================================================================================================================
 //	ƒ}ƒNƒ’è‹`
@@ -86,11 +87,11 @@ CObjectManager		*CGame::m_pObjMana				= nullptr;						// ƒIƒuƒWƒFƒNƒgƒ}ƒl[ƒWƒƒ
 CTransformBar		*CGame::m_pTransformBar			= nullptr;						// •Ïgƒo[ƒ|ƒCƒ“ƒ^
 bool				CGame::m_bSetPos[STONE_POS]		= {};							// ƒXƒg[ƒ“‚Ì¶¬êŠ‚É¶¬‚³‚ê‚Ä‚¢‚é‚©
 bool				CGame::m_bGetType[CStone::STONE_ID_MAX] = {};					// ƒXƒg[ƒ“‚Ì¶¬êŠ‚É¶¬‚³‚ê‚Ä‚¢‚é‚©
-int					CGame::m_nStageType				= 0;							// ƒXƒe[ƒW‚Ìƒ^ƒCƒv
+int					CGame::m_nStageType				= STAGE_1;							// ƒXƒe[ƒW‚Ìƒ^ƒCƒv
 
 int					CGame::m_nPlayerType[MAX_PLAYER] = {};	// ƒLƒƒƒ‰ƒNƒ^[ƒZƒŒƒNƒg‚Ìƒ^ƒCƒv‚ğ•Û‘¶
 
-CPolygonCollider* CGame::m_pPolyColli[CPolygonCollider::POLYCOLLI_MAX] = {};							// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[‚Ìƒ|ƒCƒ“ƒ^
+CPolyCollMana* CGame::m_pPolyCollMana = {};							// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[‚Ìƒ|ƒCƒ“ƒ^
 
 //==================================================================================================================
 //	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -128,6 +129,7 @@ void CGame::Init(void)
 	CUI_GameStart::Load();					// ŠJnUI‚Ìƒ[ƒh
 	CUI_GameResult::Load();
 	CUI_game::Load();						// UIƒ[ƒh
+	CPolygonCollider::Load();
 
 	// 3DƒGƒtƒFƒNƒg‚Ìì¬
 	C3DEffect *p3DEffect;
@@ -154,11 +156,8 @@ void CGame::Init(void)
 	m_pTime       = CTime::Create();								// ƒ^ƒCƒ€¶¬
 	m_pPause      = CPause::Create();								// ƒ|[ƒY‚Ì¶¬ˆ—
 
-	for (int nCnt = 0; nCnt < CPolygonCollider::POLYCOLLI_MAX; nCnt++)
-	{
-		// ŠÉ‚â‚©‚ÈŠK’i
-		m_pPolyColli[nCnt] = CPolygonCollider::Create(nCnt);
-	}
+	// ƒ|ƒŠƒSƒ“ƒRƒ‰ƒCƒ_[‚Ì¶¬
+	m_pPolyCollMana = CPolyCollMana::Create();
 
 	/* ƒQ[ƒ€‚Ì‰Šú‰» */
 	m_gameState = GAMESTATE_BEFORE;
@@ -206,6 +205,7 @@ void CGame::Uninit(void)
 	CUI_GameStart::Unload();			// ŠJn‚ÌUI‚ÌƒAƒ“ƒ[ƒh
 	CUI_GameResult::Unload();
 	CUI_game::Unload();					// UIƒAƒ“ƒ[ƒh
+	CPolygonCollider::Unload();
 
 	// –œ‚ªˆêc‚Á‚Ä‚¢‚½ê‡
 	if (m_pUIGameStart)

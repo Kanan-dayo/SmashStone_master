@@ -33,6 +33,7 @@
 #include "PolygonCollider.h"
 #include "CapsuleCollider.h"
 #include "sound.h"
+#include "polyCollMana.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -78,9 +79,6 @@ void CPlayer::Init(void)
 	// 初期化
 	CCharacter::Init();
 	CCharacter::SetModelType(m_type);
-
-	// 当たり判定の設定
-	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
 
 	// 当たり判定の設定
 	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
@@ -217,10 +215,12 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	for (int nCntPolyColli = 0; nCntPolyColli < CPolygonCollider::POLYCOLLI_MAX; nCntPolyColli++)
+	CPolyCollMana *pPolyCollMana = CGame::GetpolyCollMana();
+
+	for (int nCntPolyColli = 0; nCntPolyColli < CPolygonCollider::GetNumPoly(CGame::GetStageType()); nCntPolyColli++)
 	{
 		// ポリゴンコライダーの取得
-		CPolygonCollider*pPolyColli = CGame::GetpolyColly(nCntPolyColli);
+		CPolygonCollider*pPolyColli = pPolyCollMana->GetPolyColl(nCntPolyColli);
 
 		// ポリゴンコライダーポインタがNULLだった時
 		if (pPolyColli == NULL)
@@ -229,7 +229,7 @@ void CPlayer::Collision(void)
 		}
 
 		// ポリゴンコライダーの衝突判定
-		if (pPolyColli[0].Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
+		if (pPolyColli->Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
 		{
 			if (m_bSmashBlowAway == false)
 			{

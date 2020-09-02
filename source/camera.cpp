@@ -228,7 +228,7 @@ void CCamera::MoveCamera(void)
 	D3DXVECTOR3 difposR, difposV;	// posÇ∆posDestÇÃç∑ï™äiî[óp
 
 	// ÉQÅ[ÉÄÇÃÇ∆Ç´
-	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	/*if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
 		CPlayer *pPlayer0, *pPlayer1;
 		D3DXVECTOR3 pos0, pos1;
@@ -260,7 +260,7 @@ void CCamera::MoveCamera(void)
 			}
 		}
 	}
-
+	*/
 #ifdef _DEBUG
 	m_posRDest += m_posDebug;
 #endif

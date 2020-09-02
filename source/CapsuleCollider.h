@@ -72,8 +72,9 @@ public:
 	} READINFOFILE_CELL;
 
 	// 読みこんだファイルの全体情報
-	typedef struct
+	typedef struct READINFOFILEBUFFER
 	{
+		READINFOFILEBUFFER() : nNumReadInfo(0), pSetThisID(nullptr), pCell(nullptr){}
 		int				   nNumReadInfo;			// 読みこむ情報の個数
 		int*			   pSetThisID;				// 初期化するIDのポインタ
 		READINFOFILE_CELL* pCell;					// 単体情報ポインタ

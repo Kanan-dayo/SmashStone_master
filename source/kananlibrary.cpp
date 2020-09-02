@@ -458,7 +458,9 @@ void CKananLibrary::SetFog(const float fStartPos, const float fEndPos, const D3D
 //=============================================================================
 void CKananLibrary::PrintBlockCommentFrame(void)
 {
+#ifdef _DEBUG
 	std::cout << "==================================================" << std::endl;
+#endif
 }
 
 //=============================================================================
@@ -466,8 +468,10 @@ void CKananLibrary::PrintBlockCommentFrame(void)
 //=============================================================================
 void CKananLibrary::StartBlockComment(const std::string & str)
 {
+#ifdef _DEBUG
 	PrintBlockCommentFrame();
 	std::cout << str << std::endl;
+#endif
 }
 
 //=============================================================================
@@ -475,8 +479,10 @@ void CKananLibrary::StartBlockComment(const std::string & str)
 //=============================================================================
 void CKananLibrary::EndBlockComment(const std::string & str)
 {
+#ifdef _DEBUG
 	std::cout << str << std::endl;
 	PrintBlockCommentFrame();
+#endif
 }
 
 //=============================================================================

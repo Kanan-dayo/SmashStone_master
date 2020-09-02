@@ -190,6 +190,9 @@
     <ClCompile Include="source\transformBar.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\polyCollMana.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ImGui\imconfig.h">
@@ -386,6 +389,9 @@
     </ClInclude>
     <ClInclude Include="source\transformBar.h">
       <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\polyCollMana.h">
+      <Filter>ソースファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

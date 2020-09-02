@@ -247,6 +247,9 @@ void CCapsuleCollider::Unload(void)
 		delete[]m_ReadInfoFileBuff.pSetThisID;
 		m_ReadInfoFileBuff.pSetThisID = NULL;
 	}
+
+	m_ReadInfoFileBuff.nNumReadInfo = 0;
+
 }
 
 //-------------------------------------------------------------------------------------------------------------

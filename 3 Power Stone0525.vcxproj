@@ -165,6 +165,7 @@
     <ClCompile Include="source\mapSelect.cpp" />
     <ClCompile Include="source\objectLift.cpp" />
     <ClCompile Include="source\player.cpp" />
+    <ClCompile Include="source\polyCollMana.cpp" />
     <ClCompile Include="source\polygon2D.cpp" />
     <ClCompile Include="source\3DBoxCollider.cpp" />
     <ClCompile Include="source\bar.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="source\objManager.h" />
     <ClInclude Include="source\pause.h" />
     <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\polyCollMana.h" />
     <ClInclude Include="source\polygon2D.h" />
     <ClInclude Include="source\PolygonCollider.h" />
     <ClInclude Include="source\Reflection.h" />

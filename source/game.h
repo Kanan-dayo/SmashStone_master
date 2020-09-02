@@ -37,7 +37,7 @@ class CPlayer;
 class CTime;
 class CWall;
 class CObjectManager;
-class CPolygonCollider;
+class CPolyCollMana;
 class CUIKO;
 class CUI_GameStart;
 class CUI_GameResult;
@@ -97,7 +97,7 @@ public:
 	static int GetNumStone(void)				{ return m_nNumStone; }			// ストーンの数を取得
 	static CWall *GetWall(void)					{ return m_pWall; }				// 壁の取得
 	static CObjectManager *GetObjMana(void)		{ return m_pObjMana; }			// オブジェクトマネージャーを取得
-	static CPolygonCollider* GetpolyColly(int nIndex) { return m_pPolyColli[nIndex]; }
+	static CPolyCollMana* GetpolyCollMana(void) { return m_pPolyCollMana; }		// ポリゴンコライダーマネージャーの取得
 	static int GetRound(void)					{ return m_nRound; }			// 現在のラウンド数取得
 	static int GetAllRound(void)				{ return m_nRoundAll; }			// 全ラウンド数の取得
 	static NUM_PLAYER GetLosePlayer(void)		{ return m_losePlayer; }		// 負けたプレイヤーの取得
@@ -135,7 +135,7 @@ private:
 	static bool m_bSetPos[STONE_POS];				// ストーンが生成されているか
 	static bool m_bGetType[CStone::STONE_ID_MAX];		// ストーンが取得されているか
 	static CObjectManager *m_pObjMana;				// オブジェクトマネージャーのポインタ
-	static CPolygonCollider* m_pPolyColli[CPolygonCollider::POLYCOLLI_MAX];		// ポリゴンコライダーのポインタ
+	static CPolyCollMana *m_pPolyCollMana;			// ポリゴンコライダーマネージャーのポインタ
 	static CUIKO *m_pUIKO;							// KOのポインタ
 	static CUI_GameStart *m_pUIGameStart;			// ゲーム開始時のUIのポインタ
 	static CUI_GameResult *m_pUIGameResult;			// ゲームリザルトのUIのポインタ

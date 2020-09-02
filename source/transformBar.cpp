@@ -62,7 +62,11 @@ void CTransformBar::Init(void)
 	m_pos = D3DXVECTOR3(0, 0, 0);	// à íu
 	m_fNowHP = m_fMaxHP;			// åªç›ÇÃHP
 	m_fHeight = BAR_WIDTH;			// çÇÇ≥
-	m_bTrans[MAX_PLAYER] = false;	// ïœêgÇµÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©
+
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		m_bTrans[nCnt] = false;	// ïœêgÇµÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©
+	}
 
 	// BarÇÃê∂ê¨
 	m_pBar = CBar::Create();
