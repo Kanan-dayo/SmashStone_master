@@ -102,6 +102,7 @@ private:
 	D3DPRESENT_PARAMETERS	m_d3dpp;					// ImGuiに必要
 	int						m_nCntWire;					// ワイヤーフレームを連続入力しないためのカウンタ
 	bool					m_bWire;					// ワイヤーフレーム
+	bool					m_bDisplay;					// デバッグ表示させるかどうか
 #endif
 
 };

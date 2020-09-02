@@ -20,6 +20,7 @@
 #include "charaParam.h"
 #include "inputKeyboard.h"
 #include "mapSelect.h"
+#include "inputKeyboard.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -128,6 +129,8 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		}
 	}
 #ifdef _DEBUG
+	m_bDisplay = true;		// デバッグ表示させるかどうか
+
 	//デバッグロゴの初期化処理
 	m_pDebugProc->Init();
 #endif
@@ -329,6 +332,31 @@ void CRenderer::Update(void)
 	}
 
 #ifdef _DEBUG
+	// キーボード取得
+	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+
+	// 表示しているとき
+	if (m_bDisplay)
+	{
+		// キーボードのF4を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_F4))
+		{
+			// 表示させないようにする
+			m_bDisplay = false;
+		}
+		CDebugProc::Print("Debug文字非表示[F4]\n");
+
+	}
+	else
+	{// 表示していないとき
+		// キーボードのF3を押したとき
+		if (pKeyboard->GetKeyboardTrigger(DIK_F4))
+		{
+			// 表示させるようにする
+			m_bDisplay = true;
+		}
+	}
+
 	// ImGuiの更新
 	UpdateImGui();
 #endif
@@ -388,11 +416,15 @@ void CRenderer::Draw(void)
 		// FPSカウンタ取得
 		m_nCountFPS = GetFPS();
 
-		// FPS表示
-		m_pDebugProc->Print("FPS:%d\n", m_nCountFPS);
+		// デバッグ表示させるとき
+		if (m_bDisplay)
+		{
+			// FPS表示
+			m_pDebugProc->Print("FPS:%d\n", m_nCountFPS);
 
-		// デバッグロゴの描画
-		m_pDebugProc->Draw();
+			// デバッグロゴの描画
+			m_pDebugProc->Draw();
+		}
 
 		// ImGuiの描画
 		DrawImGui();
