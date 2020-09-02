@@ -633,7 +633,7 @@ void CObjectManager::ShowObjectManagerInfo(void)
 			m_pFakeObject->Init();
 
 			// ‰Šúƒ‚ƒfƒ‹‚ðÝ’è
-			m_pFakeObject->SetObjInfo(*pCamera->GetPosR(), 
+			m_pFakeObject->SetObjInfo(pCamera->GetPosR(), 
 				ZeroVector3, 
 				OneVector3, 
 				&m_objInfo[0].modelInfo, 

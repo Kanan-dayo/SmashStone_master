@@ -17,6 +17,7 @@
 #include "3DEffect.h"
 #include "CharEffectOffset.h"
 #include "3DParticle.h"
+#include "camera.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -27,7 +28,7 @@ CInputGamepad *CManager::m_pInputGamepad[MAX_PLAYER] = {};		// ゲームパッド情報
 CMouse *CManager::m_pMouse = nullptr;
 
 #ifdef _DEBUG
-char CManager::m_cFileImGui[64]	= "data/TEXT/ImGuiInfo.txt";
+char CManager::m_cFileImGui[64]	= "data/TEXT/DebugInfo.txt";
 bool CManager::m_bShowWindow	= false;
 #endif
 
@@ -108,6 +109,10 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 //==================================================================================================================
 void CManager::Uninit(void)
 {
+#ifdef _DEBUG
+	// デバッグ情報のセーブ
+	SaveDebugInfo();
+#endif
 
 	// 全てを破棄
 	CScene::ReleaseAll();
@@ -163,11 +168,6 @@ void CManager::Uninit(void)
 		delete m_pMouse;
 		m_pMouse = nullptr;
 	}
-
-#ifdef _DEBUG
-	// ImGui情報のアンロード
-	SaveImGuiInfo();
-#endif
 }
 
 //==================================================================================================================
@@ -314,6 +314,26 @@ HRESULT CManager::LoadImGuiInfo(void)
 			if (bShow == 1)
 				CCharaParam::SetShowWindow(true);
 		}
+		// 表示の有無
+		else if (strcmp(cHeadText, "SHOW_DEBUG_TEXT") == 0)
+		{
+			// 表示の読み込み
+			int bShow = 0;
+			sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &bShow);
+			// 表示
+			if (bShow == 1)
+				CRenderer::SetbDisplay(true);
+		}
+		// 表示の有無
+		else if (strcmp(cHeadText, "SHOW_COLLIDER") == 0)
+		{
+			// 表示の読み込み
+			int bShow = 0;
+			sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &bShow);
+			// 表示
+			if (bShow == 1)
+				CRenderer::SetbDisColl(true);
+		}
 	}
 	// ファイルを閉じる
 	fclose(pFile);
@@ -326,7 +346,7 @@ HRESULT CManager::LoadImGuiInfo(void)
 //==================================================================================================================
 // ImGui情報の保存
 //==================================================================================================================
-HRESULT CManager::SaveImGuiInfo(void)
+HRESULT CManager::SaveDebugInfo(void)
 {
 	// 変数宣言
 	FILE *pFile;
@@ -334,11 +354,10 @@ HRESULT CManager::SaveImGuiInfo(void)
 	// テキストファイルを見やすくするコメント
 	char cEqual[2] = "=";
 	// 変数名用と書き込み用の変数
-	char cHeadText[MAX_TEXT];
 	char cWriteText[MAX_TEXT];
 
 	// コンソールに表示
-	CKananLibrary::StartBlockComment("ImGuiの設定のセーブ開始");
+	CKananLibrary::StartBlockComment("デバッグ設定のセーブ開始");
 
 	// ファイルを開く
 	pFile = fopen(m_cFileImGui, "w");
@@ -354,33 +373,42 @@ HRESULT CManager::SaveImGuiInfo(void)
 
 	fputs(COMMENT_BLOCK, pFile);													// #=====================================================
 	fputs(COMMENT_BLOCK_LINE, pFile);												// #
-	fputs("# ImGui設定\n", pFile);													// # ImGui設定
+	fputs("# デバッグ設定\n", pFile);												// # デバッグ設定
 	fputs(COMMENT_AUTHOR, pFile);													// # Author : KANAN NAGANAWA
 	fputs(COMMENT_BLOCK_LINE, pFile);												// #
 	fputs(COMMENT_BLOCK, pFile);													// #=====================================================
 	fputs("SCRIPT	# 消さないで\n", pFile);										// SCRIPT
 	fputs(COMMENT_NEW_LINE, pFile);													// \n
 
-	strcpy(cHeadText, "SHOW_DEBUG_WINDOW");
-	sprintf(cWriteText, "%s %s %d # ImGuiウィンドウ表示の有無\n",
-		&cHeadText,
+	sprintf(cWriteText, "# ImGuiウィンドウ表示の有無\nSHOW_DEBUG_WINDOW %s %d\n",
 		&cEqual,
 		m_bShowWindow);
 	fputs(cWriteText, pFile);														// SHOW_DEBUG_WINDOW = bShow
+	fputs(COMMENT_NEW_LINE, pFile);													// \n
 
-	strcpy(cHeadText, "SHOW_OBJECT_WINDOW");
-	sprintf(cWriteText, "%s %s %d # オブジェクト情報表示の有無\n",
-		&cHeadText,
+	sprintf(cWriteText, "# オブジェクト情報表示の有無\nSHOW_OBJECT_WINDOW %s %d\n",
 		&cEqual,
 		CObjectManager::GetShowObjWindow());
 	fputs(cWriteText, pFile);														// SHOW_OBJECT_WINDOW = bShow
+	fputs(COMMENT_NEW_LINE, pFile);													// \n
 
-	strcpy(cHeadText, "SHOW_CHARAPARAM_WINDOW");
-	sprintf(cWriteText, "%s %s %d # キャラパラメーター表示の有無\n",
-		&cHeadText,
+	sprintf(cWriteText, "# キャラパラメーター表示の有無\nSHOW_CHARAPARAM_WINDOW %s %d\n",
 		&cEqual,
 		CCharaParam::GetShowWindow());
 	fputs(cWriteText, pFile);														// SHOW_CHARAPARAM_WINDOW = bShow
+	fputs(COMMENT_NEW_LINE, pFile);													// \n
+
+	sprintf(cWriteText, "# デバッグテキスト表示の有無\nSHOW_DEBUG_TEXT %s %d\n",
+		&cEqual,
+		(int)CRenderer::GetbDisplay());
+	fputs(cWriteText, pFile);														// SHOW_DEBUG_TEXT = bDisplay
+	fputs(COMMENT_NEW_LINE, pFile);													// \n
+
+	sprintf(cWriteText, "# 当たり判定表示の有無\nSHOW_COLLIDER %s %d\n",
+		&cEqual,
+		(int)CRenderer::GetbDisColl());
+	fputs(cWriteText, pFile);														// SHOW_COLLIDER = bDisColl
+	fputs(COMMENT_NEW_LINE, pFile);													// \n
 
 	fputs(COMMENT_NEW_LINE, pFile);													// \n
 

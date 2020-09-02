@@ -304,16 +304,18 @@ void CPolygonCollider::Draw(void)
 	pDevice->SetTexture(0, NULL);
 
 #ifdef  _DEBUG
-	// ポリゴンの描画
-	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	// 可視化中のみ
+	if (CRenderer::GetbDisColl())
+	{
+		// ポリゴンの描画
+		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+	}
 #endif
 
 	// Fill Mode の設定
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);						// ライティングモード無効
-
-
 }
 
 //-------------------------------------------------------------------------------------------------------------

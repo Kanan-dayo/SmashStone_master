@@ -255,7 +255,12 @@ void CPlayer::Collision(void)
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
 	// 当たり判定
 	if (C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move))
+	{
+		// ジャンプ解除
 		m_bJump = false;
+		// ジャンプカウンタを初期化
+		m_nCntJump = 0;
+	}
 
 	// 高さ制限
 	if (m_pos.y > HEIGHT_CEILING)
@@ -503,7 +508,7 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
 
 	D3DXVECTOR3 rotDest = GetRotDest();				// 目的の向きを格納する変数
-	D3DXVECTOR3 *vecCamera = pCamera->GetVec();		// カメラの向いている方向の取得
+	D3DXVECTOR3 vecCamera = pCamera->GetVec();		// カメラの向いている方向の取得
 	float		CameraRotY = pCamera->GetRotY();	// カメラのY軸回転の取得
 	float		fSpeed = 0.0f;						// プレイヤーの速度
 	float		fAngle;								// スティック角度の計算用変数

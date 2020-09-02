@@ -14,6 +14,7 @@
 //-------------------------------------------------------------------------------------------------------------
 #include "scene.h"
 #include "Mylibrary.h"
+#include "kananlibrary.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -94,13 +95,14 @@ private:
 	// 頂点情報の作成
 	HRESULT MakeVertex(void);
 	/* メンバ変数 */
-	static LPDIRECT3DTEXTURE9 m_pAllTexture[WALLTEX_MAX];	// 全てのテクスチャ情報
-	static D3DXVECTOR2        m_Length;						// 中心からの距離
-	static D3DXVECTOR3        m_CenterPos;					// 中心位置
-	static float              m_fHeight;					// 高さ
-	LPDIRECT3DTEXTURE9        m_pTexture;					// テクスチャ情報のポインタ
-	LPDIRECT3DVERTEXBUFFER9   m_pVtexBuff;					// 頂点バッファのポインタ
-	SINGLEINFO                m_SingleInfo[WALL_MAX];		// 壁単体の情報
+	static LPDIRECT3DTEXTURE9 m_pAllTexture[WALLTEX_MAX];		// 全てのテクスチャ情報
+	static D3DXVECTOR2        m_Length;							// 中心からの距離
+	static D3DXVECTOR3        m_CenterPos;						// 中心位置
+	static float              m_fHeight;						// 高さ
+	static char				  m_cFileName[STAGE_MAX][MYLIB_STRINGSIZE];	// ファイル名
+	LPDIRECT3DTEXTURE9        m_pTexture;						// テクスチャ情報のポインタ
+	LPDIRECT3DVERTEXBUFFER9   m_pVtexBuff;						// 頂点バッファのポインタ
+	SINGLEINFO                m_SingleInfo[WALL_MAX];			// 壁単体の情報
 };
 
 

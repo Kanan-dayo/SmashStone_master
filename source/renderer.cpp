@@ -44,6 +44,8 @@ CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
 CMapSelect *CRenderer::m_pMapSelect = NULL;				// マップ選択画面の情報
 CRenderer::MODE CRenderer::m_mode = CRenderer::MODE_GAME;			// 最初の画面
+bool CRenderer::m_bDisColl = false;						// 当たり判定の可視化フラグ
+bool CRenderer::m_bDisplay = false;						// デバッグテキスト表示のフラグ
 
 //==================================================================================================================
 // コンストラクタ
@@ -129,8 +131,6 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 		}
 	}
 #ifdef _DEBUG
-	m_bDisplay = true;		// デバッグ表示させるかどうか
-
 	//デバッグロゴの初期化処理
 	m_pDebugProc->Init();
 #endif
@@ -332,30 +332,8 @@ void CRenderer::Update(void)
 	}
 
 #ifdef _DEBUG
-	// キーボード取得
-	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
-
-	// 表示しているとき
-	if (m_bDisplay)
-	{
-		// キーボードのF4を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F4))
-		{
-			// 表示させないようにする
-			m_bDisplay = false;
-		}
-		CDebugProc::Print("Debug文字非表示[F4]\n");
-
-	}
-	else
-	{// 表示していないとき
-		// キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F4))
-		{
-			// 表示させるようにする
-			m_bDisplay = true;
-		}
-	}
+	// デバッグコマンド
+	DebugCommand();
 
 	// ImGuiの更新
 	UpdateImGui();
@@ -673,6 +651,66 @@ void CRenderer::ResetDevice()
 }
 
 //==================================================================================================================
+// デバッグコマンド
+//==================================================================================================================
+void CRenderer::DebugCommand(void)
+{
+	// F1キーでモード切替
+	if (CInputKeyboard::GetKeyboardTrigger(DIK_F1))
+	{
+		if (CCamera::GetCameraMode() == CCamera::CAMERA_GAME)
+			CCamera::SetCameraMode(CCamera::CAMERA_DEBUG);
+		else if (CCamera::GetCameraMode() == CCamera::CAMERA_DEBUG)
+			CCamera::SetCameraMode(CCamera::CAMERA_GAME);
+	}
+
+	// デバッグ表示
+	if (CCamera::GetCameraMode() == CCamera::CAMERA_GAME)
+		CDebugProc::Print("カメラモード : ゲーム   [ F1で切替 ]\n");
+	else if (CCamera::GetCameraMode() == CCamera::CAMERA_DEBUG)
+		CDebugProc::Print("カメラモード : デバッグ [ F1で切替 ]\n");
+
+	// F2キーで表示切替
+	if (CInputKeyboard::GetKeyboardTrigger(DIK_F2))
+	{
+		CManager::GetShowImGui() ?
+			CManager::SetShowImGui(false) :
+			CManager::SetShowImGui(true);
+	}
+
+	// デバッグ表示
+	CManager::GetShowImGui() ?
+		CDebugProc::Print("ImGui表示中	 [ F2で非表示 ]\n") :
+		CDebugProc::Print("ImGui非表示中 [ F2で表示 ]\n");
+
+	// F4キーで表示切替
+	if (CInputKeyboard::GetKeyboardTrigger(DIK_F4))
+	{
+		m_bDisplay ?
+			m_bDisplay = false :
+			m_bDisplay = true;
+	}
+
+	// デバッグ表示
+	m_bDisplay ?
+		CDebugProc::Print("デバッグテキスト表示中	[ F4で非表示 ]\n") :
+		CDebugProc::Print("デバッグテキスト非表示中 [ F4で表示 ]\n");
+
+	// F4キーで表示切替
+	if (CInputKeyboard::GetKeyboardTrigger(DIK_F5))
+	{
+		m_bDisColl ?
+			m_bDisColl = false :
+			m_bDisColl = true;
+	}
+
+	// デバッグ表示
+	m_bDisColl ?
+		CDebugProc::Print("当たり判定表示中	  [ F5で非表示 ]\n") :
+		CDebugProc::Print("当たり判定非表示中 [ F5で表示 ]\n");
+}
+
+//==================================================================================================================
 // ImGuiの初期化
 //==================================================================================================================
 void CRenderer::InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd)
@@ -703,19 +741,6 @@ void CRenderer::InitImGui(D3DPRESENT_PARAMETERS d3dpp, HWND hWnd)
 //==================================================================================================================
 void CRenderer::UpdateImGui(void)
 {
-	// ImGui表示確認
-	CManager::GetShowImGui() ?
-		CDebugProc::Print("ImGui表示中	 [ F2で非表示 ]\n") :
-		CDebugProc::Print("ImGui非表示中 [ F2で表示 ]\n");
-
-	// F2キーで表示切替
-	if (CInputKeyboard::GetKeyboardTrigger(DIK_F2))
-	{
-		CManager::GetShowImGui() ?
-			CManager::SetShowImGui(false) :
-			CManager::SetShowImGui(true);
-	}
-
 	// デバッグの基本情報の更新
 	CKananLibrary::ShowDebugInfo();
 

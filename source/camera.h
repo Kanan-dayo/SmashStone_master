@@ -45,19 +45,20 @@ public:
 	void SetRot(const D3DXVECTOR3 &rot)		{ m_rot = rot; }		// 回転設定処理
 	void SetPosV(const D3DXVECTOR3 &posV)	{ m_posV = posV; }		// 視点位置設定処理
 	void SetPosR(const D3DXVECTOR3 &posR)	{ m_posR = posR; }		// 注視点の設定
+	static void SetCameraMode(CAMERA_MODE mode) { m_mode = mode; }	// カメラのモード設定
 
-	D3DXVECTOR3 *GetRot(void)	{ return &m_rot; }	// 回転取得処理
-	D3DXVECTOR3 *GetPosV(void)	{ return &m_posV; }	// 視点位置設定処理
-	D3DXVECTOR3 *GetPosR(void)	{ return &m_posR; }	// 注視点の取得
-	float		GetRotY(void)	{ return m_rot.y; }	// 回転(Y軸)の取得
-	D3DXVECTOR3 *GetVec(void)	{ return &m_vec; }	// ベクトルの取得
+	D3DXVECTOR3 &GetRot(void)			{ return m_rot; }	// 回転取得処理
+	D3DXVECTOR3 &GetPosV(void)			{ return m_posV; }	// 視点位置設定処理
+	D3DXVECTOR3 &GetPosR(void)			{ return m_posR; }	// 注視点の取得
+	float		&GetRotY(void)			{ return m_rot.y; }	// 回転(Y軸)の取得
+	D3DXVECTOR3 &GetVec(void)			{ return m_vec; }	// ベクトルの取得
+	static CAMERA_MODE &GetCameraMode(void)	{ return m_mode; }	// カメラのモード取得
 
 protected:
 
 private:
 #ifdef _DEBUG
 	void ShowDebugInfo(void);			// ImGuiの更新
-	void SwitchMode(void);				// モード切替
 	void DebugControl(void);			// デバッグ時の操作
 	void ControlMouse(void);			// マウスでの操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);	// キーボードでの操作
@@ -66,7 +67,7 @@ private:
 
 	void MoveCamera(void);				// ゲームの移動
 	static CCamera *m_pCamera;			// カメラ情報
-	CAMERA_MODE m_mode;					// カメラの状態
+	static CAMERA_MODE m_mode;			// カメラの状態
 
 	D3DXMATRIX m_mtxProjection;			// プロジェクションマトリックス
 	D3DXMATRIX m_mtxView;				// ビューマトリックス

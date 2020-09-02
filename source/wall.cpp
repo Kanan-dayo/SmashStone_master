@@ -11,20 +11,27 @@
 #include "renderer.h"
 #include "manager.h"
 #include "debugProc.h"
+#include "game.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
-#define WALL_FILENAME	"data/TEXT/wall/WallInfo.txt"	// ファイル名
+#define WALL_FILENAME_1	"data/TEXT/wall/WallInfo_stage1.txt"	// ファイル名
+#define WALL_FILENAME_2	"data/TEXT/wall/WallInfo_stage2.txt"	// ファイル名
 #define WALL_OPENMODE	"r"								// 開くモード
 
 //-------------------------------------------------------------------------------------------------------------
 // 静的メンバ変数の初期化
 //-------------------------------------------------------------------------------------------------------------
-LPDIRECT3DTEXTURE9 CWall::m_pAllTexture[WALLTEX::WALLTEX_MAX] = {};					// 全てのテクスチャ情報
-D3DXVECTOR2        CWall::m_Length                            = MYLIB_VEC2_UNSET;	// 中心からの距離
-D3DXVECTOR3        CWall::m_CenterPos                         = MYLIB_VEC3_UNSET;	// 中心位置
-float              CWall::m_fHeight                           = MYLIB_FLOAT_UNSET;	// 高さ
+LPDIRECT3DTEXTURE9 CWall::m_pAllTexture[WALLTEX::WALLTEX_MAX]			 = {};					// 全てのテクスチャ情報
+D3DXVECTOR2        CWall::m_Length										 = MYLIB_VEC2_UNSET;	// 中心からの距離
+D3DXVECTOR3        CWall::m_CenterPos									 = MYLIB_VEC3_UNSET;	// 中心位置
+float              CWall::m_fHeight										 = MYLIB_FLOAT_UNSET;	// 高さ
+char			   CWall::m_cFileName[STAGE_MAX][MYLIB_STRINGSIZE]		 =						// ファイル名
+{
+	"data/TEXT/wall/WallInfo_stage1.txt",
+	"data/TEXT/wall/WallInfo_stage2.txt"
+};	
 
 //-------------------------------------------------------------------------------------------------------------
 // 読み込み
@@ -55,7 +62,7 @@ HRESULT CWall::Load(void)
 	pDevice = CManager::GetRenderer()->GetDevice();
 
 	// ファイルを開く
-	pFile = fopen(WALL_FILENAME, WALL_OPENMODE);
+	pFile = fopen(m_cFileName[CGame::GetStageType()], WALL_OPENMODE);
 
 	// 開けなかった時
 	if (pFile == NULL)

@@ -59,7 +59,8 @@
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
-CCamera *CCamera::m_pCamera = NULL;					// カメラ情報
+CCamera *CCamera::m_pCamera				= NULL;					// カメラ情報
+CCamera::CAMERA_MODE CCamera::m_mode	= CCamera::CAMERA_GAME;	// カメラの状態
 
 //==================================================================================================================
 // コンストラクタ
@@ -96,11 +97,10 @@ void CCamera::Init(void)
 	nCntRot = 0;										// 回転を始めるカウンタ
 	m_nCntTitleFade = 0;								// タイトルフェードカウンタ
 	m_bCameraMode = false;								// カメラモードかどうか
-	this->m_mode = CAMERA_GAME;
 
 #ifdef _DEBUG
-	m_posDebug = ZeroVector3;
 	this->m_mode = CAMERA_DEBUG;
+	m_posDebug = ZeroVector3;
 	m_posDebug = ZeroVector3;
 #endif
 }
@@ -228,7 +228,7 @@ void CCamera::MoveCamera(void)
 	D3DXVECTOR3 difposR, difposV;	// posとposDestの差分格納用
 
 	// ゲームのとき
-	/*if (CRenderer::GetMode() == CRenderer::MODE_GAME)
+	if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{
 		CPlayer *pPlayer0, *pPlayer1;
 		D3DXVECTOR3 pos0, pos1;
@@ -260,7 +260,6 @@ void CCamera::MoveCamera(void)
 			}
 		}
 	}
-	*/
 #ifdef _DEBUG
 	m_posRDest += m_posDebug;
 #endif
@@ -316,9 +315,6 @@ void CCamera::MoveCamera(void)
 //==================================================================================================================
 void CCamera::DebugControl(void)
 {
-	// モード切替
-	SwitchMode();
-
 	// ゲームモードなら処理終了
 	if (this->m_mode != CAMERA_DEBUG)
 		return;
@@ -330,24 +326,6 @@ void CCamera::DebugControl(void)
 	ControlMouse();
 	// キーボードでの操作
 	ControlKeyboard(pInputKeyboard);
-}
-
-//==================================================================================================================
-// モード切替
-//==================================================================================================================
-void CCamera::SwitchMode(void)
-{
-	// キーボード取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInputKeyboard();
-
-	// F1キーでモード切替
-	if (pInputKeyboard->GetKeyboardTrigger(DIK_F1))
-	{
-		if (this->m_mode == CAMERA_DEBUG)
-			this->m_mode = CAMERA_GAME;
-		else if (this->m_mode == CAMERA_GAME)
-			this->m_mode = CAMERA_DEBUG;
-	}
 }
 
 //==================================================================================================================

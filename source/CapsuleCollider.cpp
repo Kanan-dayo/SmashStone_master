@@ -384,8 +384,12 @@ void CCapsuleCollider::Draw(void)
 	// テクスチャの設定
 	pDevice->SetTexture(0, NULL);
 
-	// ポリゴンの描画
-	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_ColliderInfo.nNumindex, 0, m_ColliderInfo.nNumPolygon);
+	// 可視化中のみ
+	if (CRenderer::GetbDisColl())
+	{
+		// ポリゴンの描画
+		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_ColliderInfo.nNumindex, 0, m_ColliderInfo.nNumPolygon);
+	}
 #endif
 	// ライティングモード有効
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);

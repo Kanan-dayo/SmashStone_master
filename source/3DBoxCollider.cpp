@@ -330,14 +330,18 @@ void C3DBoxCollider::Draw(void)
 			// ƒeƒNƒXƒ`ƒƒ‚ÌÝ’è
 			pDevice->SetTexture(0, m_pTexture);
 
-			// ƒ|ƒŠƒSƒ“‚Ì•`‰æ
-			pDevice->DrawIndexedPrimitive(
-				D3DPT_LINELIST,
-				nCntVertexIndex,
-				0,
-				_3DBOXCOLLIDER_NUM_INDEX,
-				0,
-				_3DBOXCOLLIDER_NUM_PRIMITIVE);
+			// ‰ÂŽ‹‰»’†‚Ì‚Ý
+			if (CRenderer::GetbDisColl())
+			{
+				// ƒ|ƒŠƒSƒ“‚Ì•`‰æ
+				pDevice->DrawIndexedPrimitive(
+					D3DPT_LINELIST,
+					nCntVertexIndex,
+					0,
+					_3DBOXCOLLIDER_NUM_INDEX,
+					0,
+					_3DBOXCOLLIDER_NUM_PRIMITIVE);
+			}
 #endif
 		}
 		nCntVertexIndex += _3DBOXCOLLIDER_USE_VERTEX;

@@ -51,19 +51,24 @@ public:
 		MODE_MAX				// 最大数
 	} MODE;						// モード
 
-	CRenderer();										// コンストラクタ
-	~CRenderer();										// デストラクタ
-	HRESULT Init(HWND hWnd, BOOL bWindow);				// 初期化処理
-	void Uninit(void);									// 終了処理
-	void Update(void);									// 更新処理
-	void Draw(void);									// 描画処理
+	CRenderer();											// コンストラクタ
+	~CRenderer();											// デストラクタ
+	HRESULT Init(HWND hWnd, BOOL bWindow);					// 初期化処理
+	void Uninit(void);										// 終了処理
+	void Update(void);										// 更新処理
+	void Draw(void);										// 描画処理
 
-	static void SetMode(MODE mode);						// モードの設定
-	static MODE GetMode(void);							// モードの取得
-	static CGame *GetGame(void);						// ゲームの取得
-	static CSound *GetSound(void);						// 音の取得
-	static CFade *GetFade(void) { return m_pFade; }		// フェードの取得
-	LPDIRECT3DDEVICE9 GetDevice(void);					// デバイス取得関数
+	static void SetMode(MODE mode);							// モードの設定
+	static MODE GetMode(void);								// モードの取得
+	static CGame *GetGame(void);							// ゲームの取得
+	static CSound *GetSound(void);							// 音の取得
+	static CFade *GetFade(void) { return m_pFade; }			// フェードの取得
+	static bool GetbDisColl(void) { return m_bDisColl; }	// 当たり判定の可視化フラグを取得
+	static bool GetbDisplay(void) { return m_bDisplay; }	// デバッグテキスト表示フラグの取得
+	LPDIRECT3DDEVICE9 GetDevice(void);						// デバイス取得関数
+
+	static void SetbDisColl(bool bDisplay) { m_bDisColl = bDisplay; }	// 当たり判定可視化の設定
+	static void SetbDisplay(bool bDisplay) { m_bDisplay = bDisplay; }	// デバッグテキスト表示の設定
 
 #ifdef _DEBUG
 	void CleanupDeviceD3D();							// デバイスのクリーンアップ
@@ -72,6 +77,8 @@ public:
 protected:
 
 private:
+	void DebugCommand(void);							// デバッグコマンド
+
 	static CFade *m_pFade;								// フェードの情報ポインタ
 	static CDebugProc *m_pDebugProc;					// デバッグログの情報ポインタ
 	static CCamera *m_pCamera;							// カメラの情報ポインタ
@@ -102,7 +109,8 @@ private:
 	D3DPRESENT_PARAMETERS	m_d3dpp;					// ImGuiに必要
 	int						m_nCntWire;					// ワイヤーフレームを連続入力しないためのカウンタ
 	bool					m_bWire;					// ワイヤーフレーム
-	bool					m_bDisplay;					// デバッグ表示させるかどうか
+	static bool				m_bDisplay;					// デバッグ表示させるかどうか
+	static bool				m_bDisColl;					// 当たり判定を可視化するか
 #endif
 
 };

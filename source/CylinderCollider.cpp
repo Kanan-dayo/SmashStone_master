@@ -381,8 +381,12 @@ void CCylinderCoillider::Draw(void)
 #ifdef _DEBUG
 	// テクスチャの設定
 	pDevice->SetTexture(0, NULL);
-	// ポリゴンの描画
-	pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_nNumVertex, 0, m_nNumPolygon);
+	// 可視化中のみ
+	if (CRenderer::GetbDisColl())
+	{
+		// ポリゴンの描画
+		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_nNumVertex, 0, m_nNumPolygon);
+	}
 #endif
 	// ライティングモード有効
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);

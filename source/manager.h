@@ -55,7 +55,7 @@ private:
 
 #ifdef _DEBUG
 	HRESULT LoadImGuiInfo(void);			// ImGui情報の読み込み
-	HRESULT SaveImGuiInfo(void);			// ImGui情報の保存
+	HRESULT SaveDebugInfo(void);			// デバッグ情報の保存
 	static char	m_cFileImGui[64];		// ImGui設定のファイル名
 	static bool	m_bShowWindow;			// 表示の有無
 #endif
