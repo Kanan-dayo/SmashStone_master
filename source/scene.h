@@ -28,9 +28,9 @@ public:
 	{
 		PRIORITY_MESH_SPHERE = 0,		// メッシュ球
 		PRIORITY_FIELD,					// フィールド
-		PRIORITY_SHADOW,				// 影
 		PRIORITY_PLAYER,				// プレイヤー
 		PRIORITY_OBJECT,				// オブジェクト
+		PRIORITY_SHADOW,				// 影
 		PRIORITY_STONE,					// ストーン
 		PRIORITY_EFFECT,				// エフェクト
 		PRIORITY_COLLISION,				// 衝突判定

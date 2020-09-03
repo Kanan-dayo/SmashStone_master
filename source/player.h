@@ -20,7 +20,7 @@ class CInputGamepad;
 class CFade;
 class CHitPoint;
 class CStone;
-
+class CShadow;
 
 class CPlayer : public CCharacter
 {
@@ -58,10 +58,12 @@ private:
 	void NormalAttack(void);						
 	void Jump(void);								
 	void Lift(void);								
+	void Shadow(void);								// 影関係の更新処理
 
 	void CollisionAttack(void);						
 
 	static CHitPoint *m_pHitPoint;					
+	CShadow *m_pShadow;						// 影の情報ポインタ
 
 	void ControlGamepad(CInputGamepad *pGamepad);	
 	void ControlKeyboard(CInputKeyboard *pKeyboard);

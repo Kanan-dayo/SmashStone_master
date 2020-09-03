@@ -34,6 +34,7 @@
 #include "CapsuleCollider.h"
 #include "sound.h"
 #include "polyCollMana.h"
+#include "shadow.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -48,9 +49,9 @@
 //==================================================================================================================
 CHitPoint *CPlayer::m_pHitPoint = NULL;				// HP情報
 
-													//==================================================================================================================
-													// コンストラクタ
-													//==================================================================================================================
+//==================================================================================================================
+// コンストラクタ
+//==================================================================================================================
 CPlayer::CPlayer(PRIORITY type = CScene::PRIORITY_PLAYER) : CCharacter(type)
 {
 
@@ -83,8 +84,12 @@ void CPlayer::Init(void)
 	// 当たり判定の設定
 	this->m_nBoxColliderID = C3DBoxCollider::SetColliderInfo(&this->GetPos(), this, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::ID_CHARACTER);
 
+	// HPUI生成
 	m_pHitPoint = CHitPoint::Create(m_nPlayer, m_param.fMaxLife);
 	m_pHitPoint->SetnPlayerNum(m_nPlayer);
+
+	// 影生成
+	m_pShadow = CShadow::Create();
 }
 
 //==================================================================================================================
@@ -93,6 +98,9 @@ void CPlayer::Init(void)
 void CPlayer::Uninit(void)
 {
 	CCharacter::Uninit();
+
+	// 影削除
+	m_pShadow->ReleaseShadow();
 
 	m_pHitPoint = nullptr;	// 変数NULL
 }
@@ -243,6 +251,9 @@ void CPlayer::Collision(void)
 				m_bJump = false;
 				// ジャンプカウンタを初期化
 				m_nCntJump = 0;
+
+				// 影
+				Shadow();
 			}
 			else
 			{
@@ -260,6 +271,9 @@ void CPlayer::Collision(void)
 		m_bJump = false;
 		// ジャンプカウンタを初期化
 		m_nCntJump = 0;
+
+		// 影
+		Shadow();
 	}
 
 	// 高さ制限
@@ -352,6 +366,15 @@ void CPlayer::Lift(void)
 	{
 		return;
 	}
+}
+
+//==================================================================================================================
+// 影関係の更新処理
+//==================================================================================================================
+void CPlayer::Shadow(void)
+{
+	// 影位置設定
+	m_pShadow->SetPos(this->m_pos);
 }
 
 //==================================================================================================================
@@ -561,6 +584,11 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 		// 歩いている
 		m_bWalk = true;
 	}
+	else
+	{
+		// ジャンプ時の影処理
+		m_pShadow->JumpShadow(m_pos, m_move);
+	}
 
 	// 回転の補正
 	CKananLibrary::InterpolationRot(&rotDest);
@@ -741,6 +769,11 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_pModelCharacter->ResetMotion();
 		// 歩いている
 		m_bWalk = true;
+	}
+	else
+	{
+		// ジャンプ時の影処理
+		m_pShadow->JumpShadow(m_pos, m_move);
 	}
 
 	// 回転の補正
