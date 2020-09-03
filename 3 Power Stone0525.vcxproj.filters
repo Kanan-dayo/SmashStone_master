@@ -193,6 +193,9 @@
     <ClCompile Include="source\polyCollMana.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\shadow.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ImGui\imconfig.h">
@@ -391,6 +394,9 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\polyCollMana.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\shadow.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
