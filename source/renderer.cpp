@@ -21,6 +21,7 @@
 #include "inputKeyboard.h"
 #include "mapSelect.h"
 #include "inputKeyboard.h"
+#include "objManager.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -175,6 +176,7 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	CCharaParam::Load();
 	CModelCharacter::Load();
 	CMotion::Load();
+	CObjectManager::Load();
 
 	// モードの開始
 	StartMode();
@@ -232,6 +234,7 @@ void CRenderer::Uninit(void)
 
 	CModelCharacter::Unload();
 	CMotion::UnLoad();
+	CObjectManager::Unload();
 
 	switch (m_mode)
 	{

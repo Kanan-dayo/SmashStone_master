@@ -123,7 +123,6 @@ void CGame::Init(void)
 	CBar::Load();							// Barテクスチャロード
 	C3DBoxCollider::Load();					// 3Dボックスコライダーの読み込み
 	CWall::Load();							// 壁のロード
-	CObjectManager::Load();					// オブジェクトマネージャーのロード
 	CCapsuleCollider::Load();				// カプセルコライダーのロード
 	CUIKO::Load();							// KOのロード
 	CUI_GameStart::Load();					// 開始UIのロード
@@ -200,7 +199,6 @@ void CGame::Uninit(void)
 	CNumber::Unload();					// 数字テクスチャアンロード
 	CMeshField::Unload();				// 床テクスチャアンロード
 	CBar::Unload();						// Barテクスチャアンロード
-	CObjectManager::Unload();			// オブジェクトマネージャーのアンロード
 	CUIKO::Unload();					// KOのアンロード
 	CUI_GameStart::Unload();			// 開始時のUIのアンロード
 	CUI_GameResult::Unload();
@@ -375,7 +373,7 @@ void CGame::AppearStone(void)
 	// ランダムでポイントを決める
 	int RandType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetType);
 	// 決められた位置からランダムで生成
-	CStone::Create(RandPos, (CStone::STONE_ID)RandType, CObjectManager::GetDefaultStonePos(RandPos));
+	CStone::Create(RandPos, (CStone::STONE_ID)RandType, CObjectManager::GetDefaultStonePos(m_nStageType, RandPos));
 	// 生成された
 	m_bSetPos[RandPos] = true;
 	// 生成された
