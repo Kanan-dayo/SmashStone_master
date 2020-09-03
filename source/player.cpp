@@ -34,6 +34,7 @@
 #include "CapsuleCollider.h"
 #include "sound.h"
 #include "polyCollMana.h"
+#include "shadow.h"
 
 //==================================================================================================================
 // É}ÉNÉçíËã`
