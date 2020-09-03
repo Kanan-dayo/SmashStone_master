@@ -42,6 +42,7 @@
 #include "3DParticle.h"
 #include "transformBar.h"
 #include "polyCollMana.h"
+#include "shadow.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -129,6 +130,7 @@ void CGame::Init(void)
 	CUI_GameResult::Load();
 	CUI_game::Load();						// UIロード
 	CPolygonCollider::Load();
+	CShadow::Load();						// 影テクスチャロード
 
 	// 3Dエフェクトの作成
 	C3DEffect *p3DEffect;
@@ -204,6 +206,7 @@ void CGame::Uninit(void)
 	CUI_GameResult::Unload();
 	CUI_game::Unload();					// UIアンロード
 	CPolygonCollider::Unload();
+	CShadow::Unload();					// 影テクスチャアンロード
 
 	// 万が一残っていた場合
 	if (m_pUIGameStart)

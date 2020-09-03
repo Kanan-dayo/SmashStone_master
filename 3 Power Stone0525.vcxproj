@@ -207,6 +207,7 @@
     <ClCompile Include="source\scene2D.cpp" />
     <ClCompile Include="source\scene3D.cpp" />
     <ClCompile Include="source\sceneX.cpp" />
+    <ClCompile Include="source\shadow.cpp" />
     <ClCompile Include="source\sound.cpp" />
     <ClCompile Include="source\stone.cpp" />
     <ClCompile Include="source\time.cpp" />
@@ -275,6 +276,7 @@
     <ClInclude Include="source\scene2D.h" />
     <ClInclude Include="source\scene3D.h" />
     <ClInclude Include="source\sceneX.h" />
+    <ClInclude Include="source\shadow.h" />
     <ClInclude Include="source\sound.h" />
     <ClInclude Include="source\stone.h" />
     <ClInclude Include="source\time.h" />
