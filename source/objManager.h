@@ -37,7 +37,9 @@ public:
 	typedef struct
 	{
 		int nNumObject;						// 配置するオブジェクト数
+		int nNumLift;						// 配置するオブジェクト数
 		OBJECT_OFFSET *objOffset;			// オブジェクトオフセット格納用
+		OBJECT_OFFSET *LiftOffset;			// オブジェクトオフセット格納用
 		std::vector<CObject*> pObject;		// オブジェクト情報
 		std::vector<CObjectLift*> pObjLift;	// 持てるオブジェクト情報
 		D3DXVECTOR3 stonePos[5];			// ストーンを配置する位置
@@ -57,6 +59,8 @@ public:
 
 	static MODEL_VTX GetModelVtx(const int & nType)			{ return m_objInfo[nType].modelVtx; }						// タイプごとのモデル頂点情報の取得
 	static STAGEINFO GetStageInfo(int nStageType)			{ return m_stageInfo[nStageType]; }							// ステージの情報取得
+	static int GetObjTypeAll(void)							{ return (int)m_objInfo.size(); }							// オブジェクトタイプの総数
+	static int GetObjLiftTypeAll(void)						{ return (int)m_liftObjInfo.size(); }						// オブジェクトタイプの総数
 
 	std::vector<CObject*> GetObjAll(int nStageType)			{ return m_stageInfo[nStageType].pObject; }					// オブジェクトの取得
 	CObject* GetObj(int nStageType, int nIndex)				{ return m_stageInfo[nStageType].pObject[nIndex]; }			// オブジェクトの取得
@@ -70,6 +74,8 @@ public:
 
 #ifdef _DEBUG
 	void ShowObjectManagerInfo(void);			// ImGuiの更新
+	void ShowNormalObject(void);
+	void ShowLiftObject(void);
 	static bool GetShowObjWindow(void) { return m_bShowAnother; }			// オブジェウィンドウ表示の有無を取得
 	static void SetShowObjWindow(bool bShow) { m_bShowAnother = bShow; }	// 表示の設定
 #endif
@@ -81,7 +87,6 @@ private:
 	static HRESULT LoadModel(void);				// モデル読み込み
 	static HRESULT LoadLiftModel(void);			// 持ち上げ用モデルの読み込み
 	static HRESULT LoadOffset(void);			// オフセット読み込み
-	//static HRESULT LoadOffset(void);			// オフセット読み込み
 	static HRESULT SetOffset(int nStageType);	// オフセット設定
 
 	static char					m_cModelFile[MAX_TEXT];				// モデル情報のファイル名
@@ -93,6 +98,7 @@ private:
 	static int					m_nNumTexture;						// テクスチャ総数
 	static int					m_nNumLiftTexture;					// テクスチャ総数
 	static int					*m_pModelIndex;						// テクスチャを割り当てるモデル番号
+	static int					*m_pLiftModelIndex;					// テクスチャを割り当てるモデル番号
 
 #ifdef _DEBUG
 	// デバッグモードの構造体
@@ -103,13 +109,20 @@ private:
 	} DEBUG_MODE;
 
 	HRESULT SaveOffset(void);						// オフセット情報のセーブ
+	void CreateFakeNormal(void);
+	void CreateFakeLift(void);
 
 	static int	m_stateMode;						// モードの状態
 	static bool m_bShowAnother;						// 別のウィンドウ
 	CObject		*m_pFakeObject;						// 偽のオブジェクト
+	CObjectLift	*m_pFakeLift;						// 偽のオブジェクト
 	static bool m_bObjUse;							// 偽オブジェを使用しているか
+	static bool m_bLiftUse;							// 偽オブジェを使用しているか
 	static int	m_nFakeType;						// 偽オブジェのタイプ
+	static int	m_nFakeLiftType;					// 偽オブジェのタイプ
+	static int	m_nSelectTab;						// 選択中のタブ
 	static std::string	*m_pObjName;				// ImGui用のオブジェクト名
+	static std::string	*m_pLiftName;				// ImGui用のオブジェクト名
 #endif
 };
 #endif

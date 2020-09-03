@@ -53,6 +53,7 @@ public:
 
 	D3DXVECTOR3 &GetPos(void)		{ return m_pos; }			// 位置の取得
 	D3DXVECTOR3 &GetPosOld(void)	{ return m_posOld; }		// 前回の入りの取得
+	D3DXVECTOR3 &GetposBegin(void)	{ return m_posBegin; }		// 前回の入りの取得
 	D3DXVECTOR3 &GetRot(void)		{ return m_rot; }			// 向きの取得
 	D3DXVECTOR3 &GetMove(void)		{ return m_move; }			// 前回の向きの取得
 	D3DXMATRIX	&GetMtx(void)		{ return m_mtxWorld; }		// ワールドマトリックスの取得

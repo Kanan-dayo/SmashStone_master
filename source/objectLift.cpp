@@ -206,7 +206,7 @@ void CObjectLift::SetObjInfo(const D3DXVECTOR3 & pos, const D3DXVECTOR3 & rot, M
 	m_nType			= type;
 
 	// コライダーの設定
-	//SetCollider();
+	SetCollider();
 }
 
 //=============================================================================
@@ -220,7 +220,7 @@ void CObjectLift::SetCollider(void)
 		return;
 	}
 	// コライダーIDの設定
-	//m_nColliderID = C3DBoxCollider::SetColliderInfo(&m_pos, NULL, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::TOP_OBJECT + m_nType);
+	m_nColliderID = C3DBoxCollider::SetColliderInfo(&m_pos, NULL, C3DBoxCollider::COLLIDER_SUB_NORMAL, C3DBoxCollider::TOP_OBJECT + CObjectManager::GetObjTypeAll() + m_nType);
 }
 
 #ifdef _DEBUG
@@ -236,7 +236,10 @@ void CObjectLift::ShowObjectInfo(char cPrintText[16])
 		if (cPrintText != "FakeObject")
 			ImGui::Text("type : %d", m_nType);
 
-		ImGui::DragFloat3("pos", m_pos, 0.5f);
+		if (ImGui::DragFloat3("pos", m_pos, 0.5f))
+		{
+			m_posBegin = m_pos;
+		}
 		ImGui::DragFloat3("rot", m_rot, 0.05f, -D3DX_PI, D3DX_PI);
 
 		// 偽オブジェクト以外
