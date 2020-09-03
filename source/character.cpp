@@ -64,6 +64,9 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_bBlowAway			= false;
 	m_bSmashBlowAway	= false;
 	m_bDaunted			= false;
+	m_bLift				= false;
+	m_stateStand		= STANDSTATE_NEUTRAL;
+	m_stateJump			= JUMPSTATE_NONE;
 	m_StateLift			= STATE_NONE;
 	
 	// 総数を加算
@@ -309,7 +312,7 @@ void CCharacter::Motion(void)
 	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
 	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_RUN);	// 移動モーション
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_WALK);	// 移動モーション
 
 	switch (m_StateLift)
 	{

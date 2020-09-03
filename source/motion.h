@@ -50,7 +50,7 @@ public:
 	{
 		MOTION_NONE,
 		PLAYER_NEUTRAL = 0,		// プレイヤー ニュートラル
-		PLAYER_RUN,				// プレイヤー 走る
+		PLAYER_WALK,			// プレイヤー 走る
 		PLAYER_JUMP,			// プレイヤー ジャンプ
 		PLAYER_FALL,			// プレイヤー 落下
 		PLAYER_LIFT,			// プレイヤー もの持ち上げる
@@ -66,6 +66,8 @@ public:
 		PLAYER_DAUNTED,			// プレイヤー 怯みダメージ
 		PLAYER_BLOWAWAY,		// プレイヤー 吹っ飛びダメージ
 		PLAYER_DOWN,			// プレイヤー ダウン
+		PLAYER_GETUP,			// プレイヤー 起き上がり
+		PLAYER_GETUP_ACTIVE,	// プレイヤー アクティブな起き上がり
 		//PLAYER_WALLDOWN,		// プレイヤー 壁は貼り付き
 		MOTION_MAX				// 最大値
 	} MOTION_TYPE;

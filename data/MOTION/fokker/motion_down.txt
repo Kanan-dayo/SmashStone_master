@@ -7,7 +7,7 @@
 SCRIPT
 
 MOTIONSET
-	LOOP = 0		# (0 : ループしない / 1 : ループする)
+	LOOP = 1		# (0 : ループしない / 1 : ループする)
 	NUM_KEY = 1		# キー数
 
 	KEYSET			# ----- << KEY :  0 / 1 >> -----

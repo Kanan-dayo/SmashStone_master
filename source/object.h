@@ -42,12 +42,6 @@ public:
 		MODELINFO *pModelInfo,
 		const int & type);					// オブジェクトの情報設定
 
-	bool CollObject(D3DXVECTOR3 *pos,
-		const D3DXVECTOR3 & posOld,
-		D3DXVECTOR3 *move,
-		const MODEL_VTX & modelVtx);				// オブジェクトの衝突処理
-
-
 	void SetCollider(void);							// コライダーの設定
 
 	D3DXVECTOR3 &GetPos(void)		{ return m_pos; }			// 位置の取得
@@ -56,7 +50,7 @@ public:
 	D3DXVECTOR3 &GetMove(void)		{ return m_move; }			// 前回の向きの取得
 	D3DXVECTOR3 &GetScale(void)		{ return m_scale; }		// 拡大率の取得
 	D3DXMATRIX	&GetMtx(void)		{ return m_mtxWorld; }		// ワールドマトリックスの取得
-	bool &GetbColl(void)				{ return m_bCollision; }	// 当たり判定を行うか
+	bool &GetbColl(void)			{ return m_bCollision; }	// 当たり判定を行うか
 	int	 &GetType(void)				{ return m_nType; }			// タイプ取得
 
 #ifdef _DEBUG

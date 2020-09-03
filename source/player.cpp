@@ -43,14 +43,17 @@
 #define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
 #define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
 
+#define TIME_LIFT_BEGIN			(60)		// 持ち上げ開始のモーション時間
+#define TIME_MAX_DOWN			(60)		// 最大までダウンできる時間
+
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
 CHitPoint *CPlayer::m_pHitPoint = NULL;				// HP情報
 
-													//==================================================================================================================
-													// コンストラクタ
-													//==================================================================================================================
+//==================================================================================================================
+// コンストラクタ
+//==================================================================================================================
 CPlayer::CPlayer(PRIORITY type = CScene::PRIORITY_PLAYER) : CCharacter(type)
 {
 
@@ -71,6 +74,8 @@ void CPlayer::Init(void)
 {
 	// 要素の初期化
 	m_bTrans = false;
+	m_nCntState = 0;
+
 	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
 	{
 		m_bGetStoneType[nCnt] = false;
@@ -352,6 +357,249 @@ void CPlayer::Lift(void)
 	{
 		return;
 	}
+
+	if (m_StateLift == STATE_LIFT )
+	{
+		if (m_nCntState < TIME_LIFT_BEGIN)
+		{
+			m_nCntState++;
+		}
+		else
+		{
+			m_nCntState = 0;
+			m_StateLift = STATE_LIFT_NEUTRAL;
+		}
+	}
+}
+
+//==================================================================================================================
+// モーション管理関数
+//==================================================================================================================
+void CPlayer::Motion(void)
+{
+	switch (m_stateStand)
+	{
+		// ニュートラル
+	case STANDSTATE_NEUTRAL:
+		MotionNeutral();
+		break;
+		// 怯み
+	case STANDSTATE_DAUNTED:
+		MotionDaunted();
+		break;
+		// 吹っ飛び
+	case STANDSTATE_BLOWAWAY:
+		MotionBlowAway();
+		break;
+		// ダウン
+	case STANDSTATE_DOWN:
+		MotionDown();
+		break;
+		// 起き上がり
+	case STANDSTATE_GETUP:
+		MotionGetUp();
+		break;
+		// 歩行
+	case STANDSTATE_WALK:
+		MotionWalk();
+		break;
+		// ジャンプ
+	case STANDSTATE_JUMP:
+		MotionJump();
+		break;
+		// 攻撃
+	case STANDSTATE_ATTACK:
+		MotionAttack();
+		break;
+		// 持ち上げ
+	case STANDSTATE_LIFT:
+		MotionLift();
+		break;
+	}
+}
+
+//==================================================================================================================
+// ニュートラルモーション
+//==================================================================================================================
+void CPlayer::MotionNeutral(void)
+{
+	// モーション切替
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_NEUTRAL)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
+		m_nCntState = 0;
+	}
+}
+
+//==================================================================================================================
+// 歩きモーション
+//==================================================================================================================
+void CPlayer::MotionWalk(void)
+{
+	// モーション切替
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_WALK)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_WALK);
+		m_nCntState = 0;
+	}
+}
+
+//==================================================================================================================
+// 持ち上げモーション
+//==================================================================================================================
+void CPlayer::MotionLift(void)
+{
+	switch (m_StateLift)
+	{
+		// 持ち上げ
+	case STATE_LIFT:
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
+		break;
+	case STATE_LIFT_NEUTRAL:
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT_NEUTRAL);
+		break;
+	case STATE_WALK:
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
+		break;
+	case STATE_THROW:
+		break;
+	}
+}
+
+//==================================================================================================================
+// ジャンプモーション
+//==================================================================================================================
+void CPlayer::MotionJump(void)
+{
+	// 攻撃の状態を初期化
+	m_nAttackFlow = 0;
+	// ジャンプカウンタを加算
+	m_nCntJump++;
+	// 最初はジャンプモーション
+	if (m_nCntJump <= 15)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
+	// 以降は落下モーション
+	else
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
+}
+
+//==================================================================================================================
+// ダウンモーション
+//==================================================================================================================
+void CPlayer::MotionDown(void)
+{
+	// モーション切替
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_DOWN)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_DOWN);
+		m_nCntState = 0;
+	}
+
+	// カウント加算
+	m_nCntState++;
+
+	// 一定時間内に、操作でアクティブな起き上がり
+	if (m_nCntState < TIME_MAX_DOWN &&
+		(CKananLibrary::GetMoveByGamepad(CManager::GetInputGamepad(m_nPlayer)) ||
+			CKananLibrary::GetMoveByKeyboard(CManager::GetInputKeyboard(), m_nPlayer)))
+		m_stateStand = STANDSTATE_GETUP_ACTIVE;
+	// 一定時間後に、起き上がり
+	else if (m_nCntState >= TIME_MAX_DOWN)
+		m_stateStand = STANDSTATE_GETUP;
+	// 処理の終了
+	else
+		return;
+
+	// カウント初期化
+	m_nCntState = 0;
+}
+
+//==================================================================================================================
+// 怯みモーション
+//==================================================================================================================
+void CPlayer::MotionDaunted(void)
+{
+	// モーション切替
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_DAUNTED)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
+		m_nCntState = 0;
+	}
+
+
+
+	// 後隙フレーム減算
+	m_nCntGap--;
+	// 攻撃の状態を初期化
+	m_nAttackFlow = 0;
+	// 怯み終了
+	if (m_nCntGap <= 0)
+	{
+		// 怯み解除
+		m_bDaunted = false;
+		// 後隙フレームを初期化
+		m_nCntGap = 0;
+	}
+}
+
+//==================================================================================================================
+// 吹っ飛びモーション
+//==================================================================================================================
+void CPlayer::MotionBlowAway(void)
+{
+	// 吹っ飛び中
+	if (m_bBlowAway)
+	{
+		// 地面に着く
+		if (m_move.y <= -3.0f)
+		{
+			// 吹き飛び終了
+			m_bBlowAway = false;
+			// ダウン開始
+			m_bDown = true;
+		}
+	}
+
+	// スマッシュ吹き飛び中
+	if (m_bSmashBlowAway)
+	{
+		// 吹き飛びの威力が落ちる
+		if (abs(m_move.x) <= 5.0f &&
+			abs(m_move.z) <= 5.0f &&
+			abs(m_move.y) <= 5.0f)
+		{
+			// 吹き飛び終了
+			m_bSmashBlowAway = false;
+			// ダウン開始
+			m_bDown = true;
+		}
+	}
+}
+
+//==================================================================================================================
+// 攻撃モーション
+//==================================================================================================================
+void CPlayer::MotionAttack(void)
+{
+	// 攻撃フレームを減算
+	m_nAttackFrame--;
+	// 攻撃終了後
+	if (m_nAttackFrame <= 0)
+	{
+		// 攻撃解除
+		m_bAttack = false;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+		// 攻撃フレームを初期化
+		m_nAttackFrame = 0;
+	}
+}
+
+//==================================================================================================================
+// 起き上がりモーション
+//==================================================================================================================
+void CPlayer::MotionGetUp(void)
+{
 }
 
 //==================================================================================================================
@@ -614,12 +862,13 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		}
 	}
 
-	/*if (m_StateLift == STATE_NONE &&
-	((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_LIFT)) ||
-	(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_LIFT))))
+	if (m_StateLift == STATE_NONE &&
+		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_LIFT)) ||
+		(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_LIFT))))
 	{
-	m_StateLift = STATE_LIFT;
-	}*/
+		m_bLift = true;
+		m_StateLift = STATE_LIFT;
+	}
 
 	// 物持ち上げの処理
 	Lift();

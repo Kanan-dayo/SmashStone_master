@@ -59,6 +59,17 @@ private:
 	void Jump(void);								
 	void Lift(void);								
 
+	void Motion(void);
+	void MotionNeutral(void);
+	void MotionWalk(void);
+	void MotionLift(void);
+	void MotionJump(void);
+	void MotionDown(void);
+	void MotionDaunted(void);
+	void MotionBlowAway(void);
+	void MotionAttack(void);
+	void MotionGetUp(void);
+
 	void CollisionAttack(void);						
 
 	static CHitPoint *m_pHitPoint;					
@@ -82,6 +93,7 @@ private:
 
 	int m_nPlayer;			
 	int m_nBoxColliderID;	
+	int m_nCntState;
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									

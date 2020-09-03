@@ -47,6 +47,31 @@ public:
 	};
 
 	typedef enum
+	{	// 立ち状態の行動
+		STANDSTATE_NONE = -1,
+		STANDSTATE_NEUTRAL,		// ニュートラル
+		STANDSTATE_DAUNTED,		// 怯み
+		STANDSTATE_BLOWAWAY,	// 吹き飛び
+		STANDSTATE_DOWN,		// ダウン
+		STANDSTATE_GETUP,		// 起き上がり
+		STANDSTATE_GETUP_ACTIVE,// アクティブな起き上がり
+		STANDSTATE_WALK,		// 歩き
+		STANDSTATE_JUMP,		// ジャンプ
+		STANDSTATE_ATTACK,		// 攻撃
+		STANDSTATE_LIFT,		// 持ち上げ
+		STANDSTATE_MAX			// 最大
+	} CHARACTER_STANDSTATE;
+
+	typedef enum
+	{	// ジャンプ状態の行動
+		JUMPSTATE_NONE = -1,
+		JUMPSTATE_JUMP,			// ジャンプ
+		JUMPSTATE_FALL,			// 落ちる
+		JUMPSTATE_ATTACK,		// 攻撃
+		JUMPSTATE_BLOWAWAY,		// 吹き飛び
+	} CHARACTER_JUMPSTATE;
+
+	typedef enum
 	{	// 物持ちの状態
 		STATE_NONE = 0,			// 何もない
 		STATE_LIFT,				// 物持ち上げ
@@ -116,6 +141,8 @@ protected:
 	CCapsuleCollider* m_pCapColi[COLLIPARTS_MAX];	// シリンダーコライダーポインタ
 
 	CCharaParam::PLAYER_PARAM m_param;					// プレイヤーのパラメーター
+	CHARACTER_STANDSTATE	  m_stateStand;				// 立ち状態の行動
+	CHARACTER_JUMPSTATE		  m_stateJump;				// ジャンプ状態の行動
 	int						  m_nCntTrans;				// どれぐらいの時間変身しているか
 	int						  m_nNumStone;				// 取得したストーンの数
 	float					  m_nLife;					// ライフ
@@ -123,6 +150,7 @@ protected:
 	bool					  m_bWalk;					// 歩いてるかどうか
 	bool					  m_bTrans;					// 変身しているか
 	bool					  m_bAttack;				// 攻撃しているか
+	bool					  m_bLift;					// 持ち上げているか
 	bool					  m_bBlowAway;				// 吹き飛んでいるか
 	bool					  m_bSmashBlowAway;			// スマッシュで吹き飛んでいるか
 	bool					  m_bDaunted;				// ひるんでいるか

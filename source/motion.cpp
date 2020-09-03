@@ -44,7 +44,9 @@ char CMotion::m_apFileName[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX][MAX_TEXT] =
 	{ "data/MOTION/fokker/motion_smash.txt" },
 	{ "data/MOTION/fokker/motion_daunted.txt" },
 	{ "data/MOTION/fokker/motion_blowAway.txt" },
-	{ "data/MOTION/fokker/motion_down.txt" }},
+	{ "data/MOTION/fokker/motion_down.txt" },
+	{ "data/MOTION/fokker/motion_get_up.txt" },
+	{ "data/MOTION/fokker/motion_get_up_acrobatic.txt" } },
 
 	{ { "data/MOTION/niyasu/motion_neutral.txt" },
 	{ "data/MOTION/niyasu/motion_run.txt" },
@@ -62,7 +64,9 @@ char CMotion::m_apFileName[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX][MAX_TEXT] =
 	{ "data/MOTION/niyasu/motion_smash.txt" },
 	{ "data/MOTION/niyasu/motion_daunted.txt" },
 	{ "data/MOTION/niyasu/motion_blowAway.txt" },
-	{ "data/MOTION/niyasu/motion_down.txt" } },
+	{ "data/MOTION/niyasu/motion_down.txt" },
+	{ "data/MOTION/niyasu/motion_get_up.txt" },
+	{ "data/MOTION/niyasu/motion_get_up_acrobatic.txt" } },
 
 	{ { "data/MOTION/sanyasu/motion_neutral.txt" },
 	{ "data/MOTION/sanyasu/motion_run.txt" },
@@ -80,7 +84,9 @@ char CMotion::m_apFileName[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX][MAX_TEXT] =
 	{ "data/MOTION/sanyasu/motion_smash.txt" },
 	{ "data/MOTION/sanyasu/motion_daunted.txt" },
 	{ "data/MOTION/sanyasu/motion_blowAway.txt" },
-	{ "data/MOTION/sanyasu/motion_down.txt" } },
+	{ "data/MOTION/sanyasu/motion_down.txt" },
+	{ "data/MOTION/sanyasu/motion_get_up.txt" },
+	{ "data/MOTION/sanyasu/motion_get_up_acrobatic.txt" } },
 
 	{ { "data/MOTION/yonyasu/motion_neutral.txt" },
 	{ "data/MOTION/yonyasu/motion_run.txt" },
@@ -98,7 +104,9 @@ char CMotion::m_apFileName[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX][MAX_TEXT] =
 	{ "data/MOTION/yonyasu/motion_smash.txt" },
 	{ "data/MOTION/yonyasu/motion_daunted.txt" },
 	{ "data/MOTION/yonyasu/motion_blowAway.txt" },
-	{ "data/MOTION/yonyasu/motion_down.txt" } }
+	{ "data/MOTION/yonyasu/motion_down.txt" },
+	{ "data/MOTION/yonyasu/motion_get_up.txt" },
+	{ "data/MOTION/yonyasu/motion_get_up_acrobatic.txt" } }
 };
 
 //=============================================================================
