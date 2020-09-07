@@ -39,8 +39,7 @@ public:
 	static void Unload(void);					// テクスチャ情報アンロード
 
 	inline D3DXVECTOR3 &GetPos(void) { return m_pos; }		// 位置取得
-	void SetPos(D3DXVECTOR3 &pos);							// 位置設定
-	void JumpShadow(D3DXVECTOR3 &pos, D3DXVECTOR3 &move);	// ジャンプ時の影処理
+	void SetPos(D3DXVECTOR3 &pos, D3DXVECTOR3 &move, bool &bJump);// 位置設定
 	void ReleaseShadow(void);								// 影の削除
 
 protected:

@@ -13,6 +13,7 @@
 // マクロ定義
 //==================================================================================================================
 #define SHADOW_SIZE 40.0f		// 影サイズ
+#define SIZE_DOWN 3				// 影サイズの減少割合
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -89,10 +90,10 @@ void CShadow::Init(void)
 	m_pVtx[3].nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 
 	// 頂点カラー
-	m_pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f);
-	m_pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f);
-	m_pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f);
-	m_pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f);
+	m_pVtx[0].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);
+	m_pVtx[1].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);
+	m_pVtx[2].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);
+	m_pVtx[3].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);
 
 	// テクスチャ座標の設定
 	m_pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -125,7 +126,7 @@ void CShadow::Update(void)
 	// ジャンプしている
 	if (m_bJump)
 	{
-		m_size = D3DXVECTOR3(SHADOW_SIZE - m_move.y * 3, 1.0f, SHADOW_SIZE - m_move.y * 3);
+		m_size = D3DXVECTOR3(m_size.x - m_move.y / SIZE_DOWN, 1.0f, m_size.z - m_move.y / SIZE_DOWN);
 	}
 	else
 	{// ジャンプしていない
@@ -134,6 +135,7 @@ void CShadow::Update(void)
 	}
 
 #ifdef _DEBUG
+	CDebugProc::Print("影位置:%.2f, %.2f, %.2f\n", m_pos.x, m_pos.y, m_pos.z);
 	CDebugProc::Print("影大きさ:%.2f, %.2f, %.2f\n", m_size.x, m_size.y, m_size.z);
 #endif // DEBUG
 
@@ -242,28 +244,16 @@ void CShadow::Unload(void)
 //==================================================================================================================
 // 位置設定
 //==================================================================================================================
-void CShadow::SetPos(D3DXVECTOR3 &pos)
+void CShadow::SetPos(D3DXVECTOR3 &pos, D3DXVECTOR3 &move, bool &bJump)
 {
+	// 位置設定
 	m_pos = pos;
-
-	// ジャンプしていない
-	m_bJump = false;
-}
-
-//==================================================================================================================
-// ジャンプ時の影処理
-//==================================================================================================================
-void CShadow::JumpShadow(D3DXVECTOR3 & pos, D3DXVECTOR3 &move)
-{
-	// 高さ以外の位置代入
-	m_pos.x = pos.x;
-	m_pos.z = pos.z;
 
 	// 移動量設定
 	m_move = move;
 
-	// ジャンプしている
-	m_bJump = true;
+	// ジャンプフラグ
+	m_bJump = bJump;
 }
 
 //==================================================================================================================

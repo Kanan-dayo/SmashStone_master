@@ -75,8 +75,12 @@ public:
 	bool Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pMove, D3DXVECTOR3 *pOut_Intersect, D3DXVECTOR3* SurfaceNor, bool bReflection);		// 衝突判定
 
 	bool Test3DInsidePolygon(D3DXVECTOR3 *pPos);				// ポリゴンの中にいるかテスト
+	bool Test3DInPolygon(D3DXVECTOR3 *pPos);					// ポリゴンの範囲内にいるかテスト
 
 	static int GetNumPoly(int nStage) { return m_polyCollInfo[nStage].nNumPolygon; }	// ステージのポリゴン数の取得
+
+	float GetfHeight(void) { return m_fHeight; }					// 影位置高さ
+	bool GetbHeight(void) { return m_bHeight; }						// ポリゴン内フラグ
 
 private:
 	static HRESULT LoadFileName(void);	// ファイル名のロード
@@ -87,6 +91,8 @@ private:
 	VTXPOS					 m_VtxPos;														// 頂点位置
 	D3DXVECTOR3              m_SurfaceNor;													// 面の法線
 	static POLYCOLLINFO		 m_polyCollInfo[MAP_TYPE_MAX];									// ポリゴンコライダー情報
+	float m_fHeight;																		// ポリゴン上の高さ
+	bool m_bHeight;																			// ポリゴン中フラグ
 };
 
 #endif

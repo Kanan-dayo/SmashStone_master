@@ -49,6 +49,8 @@ public:
 
 	void SetHitSound();	
 	void CatchStone(CStone *pStone);	
+	CShadow *GetShadow(void) { return m_pShadow; }	// キャラクターの影取得処理
+
 protected:
 
 private:
@@ -74,7 +76,7 @@ private:
 	void CollisionAttack(void);						
 
 	static CHitPoint *m_pHitPoint;					
-	CShadow *m_pShadow;						// 影の情報ポインタ
+	CShadow *m_pShadow;								// 影の情報ポインタ
 
 	void ControlGamepad(CInputGamepad *pGamepad);	
 	void ControlKeyboard(CInputKeyboard *pKeyboard);
@@ -96,6 +98,8 @@ private:
 	int m_nPlayer;			
 	int m_nBoxColliderID;	
 	int m_nCntState;
+
+	bool m_bIn[3];		// ポリゴンの範囲内フラグ
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									
