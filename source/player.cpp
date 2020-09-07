@@ -77,6 +77,12 @@ void CPlayer::Init(void)
 	m_bTrans = false;
 	m_nCntState = 0;
 
+	// 最大ポリゴン数までカウント
+	for (int nCnt = 0; nCnt < 3; nCnt++)
+	{
+		m_bIn[nCnt] = false;
+	}
+
 	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
 	{
 		m_bGetStoneType[nCnt] = false;
@@ -91,7 +97,7 @@ void CPlayer::Init(void)
 
 	m_pHitPoint = CHitPoint::Create(m_nPlayer, m_param.fMaxLife);
 	m_pHitPoint->SetnPlayerNum(m_nPlayer);
-	
+
 	// 影生成
 	m_pShadow = CShadow::Create();
 }
@@ -103,9 +109,6 @@ void CPlayer::Uninit(void)
 {
 	CCharacter::Uninit();
 
-	// 影削除
-	m_pShadow->ReleaseShadow();
-	
 	m_pHitPoint = nullptr;	// 変数NULL
 }
 
@@ -240,6 +243,18 @@ void CPlayer::Collision(void)
 			continue;
 		}
 
+		// ポリゴンの範囲内にいるとき
+		if (pPolyColli->Test3DInPolygon(&m_pos))
+		{
+			// 範囲内にいる
+			m_bIn[nCntPolyColli] = true;
+		}
+		else
+		{
+			// 範囲内にいない
+			m_bIn[nCntPolyColli] = false;
+		}
+
 		// ポリゴンコライダーの衝突判定
 		if (pPolyColli->Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
 		{
@@ -255,9 +270,6 @@ void CPlayer::Collision(void)
 				m_bJump = false;
 				// ジャンプカウンタを初期化
 				m_nCntJump = 0;
-				
-				// 影
-				Shadow();
 			}
 			else
 			{
@@ -275,8 +287,27 @@ void CPlayer::Collision(void)
 		m_bJump = false;
 		// ジャンプカウンタを初期化
 		m_nCntJump = 0;
-		// 影
-		Shadow();
+	}
+
+	// 最大ポリゴン数までカウント
+	for (int nCntPolyColli = 0; nCntPolyColli < CPolygonCollider::GetNumPoly(CGame::GetStageType()); nCntPolyColli++)
+	{
+		// ポリゴンコライダーの取得
+		CPolygonCollider*pPolyColli = pPolyCollMana->GetPolyColl(nCntPolyColli);
+
+		// 範囲外のとき
+		if (!m_bIn[nCntPolyColli])
+		{
+			// 影処理
+			Shadow();
+		}
+		else
+		{
+			// 影位置設定
+			m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, pPolyColli->GetfHeight(), m_pos.z), m_move, m_bJump);
+			
+			break;
+		}
 	}
 
 	// 高さ制限
@@ -370,7 +401,7 @@ void CPlayer::Lift(void)
 		return;
 	}
 
-	if (m_StateLift == STATE_LIFT )
+	if (m_StateLift == STATE_LIFT)
 	{
 		if (m_nCntState < TIME_LIFT_BEGIN)
 		{
@@ -390,7 +421,7 @@ void CPlayer::Lift(void)
 void CPlayer::Shadow(void)
 {
 	// 影位置設定
-	m_pShadow->SetPos(this->m_pos);
+	m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, C3DBoxCollider::GetHeight(), m_pos.z), m_move, m_bJump);
 }
 
 //==================================================================================================================
@@ -830,11 +861,6 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 		// 歩いている
 		m_bWalk = true;
 	}
-	else
-	{
-		// ジャンプ時の影処理
-		m_pShadow->JumpShadow(m_pos, m_move);
-	}
 
 	// 回転の補正
 	CKananLibrary::InterpolationRot(&rotDest);
@@ -1016,11 +1042,6 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 			m_pModelCharacter->ResetMotion();
 		// 歩いている
 		m_bWalk = true;
-	}
-	else
-	{
-		// ジャンプ時の影処理
-		m_pShadow->JumpShadow(m_pos, m_move);
 	}
 
 	// 回転の補正

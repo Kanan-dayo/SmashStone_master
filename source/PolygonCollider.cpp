@@ -248,6 +248,8 @@ void CPolygonCollider::Init(void)
 	// 変数宣言
 	D3DXVECTOR3 vecA = MYLIB_VEC3_UNSET;				// Aベクトル
 	D3DXVECTOR3 vecB = MYLIB_VEC3_UNSET;				// Bベクトル
+	m_fHeight = 0.0f;									// 影位置高さ
+	m_bHeight = false;									// ポリゴン内フラグ
 
 	// 法線ベクトルを求める
 	vecA = m_VtxPos.vtx_1 - m_VtxPos.vtx_2;					// Aベクトル算出
@@ -358,6 +360,40 @@ bool CPolygonCollider::Test3DInsidePolygon(D3DXVECTOR3 * pPos)
 	}
 	else if(CMylibrary::Test3DInsidePolygon(m_VtxPos.vtx_1, m_VtxPos.vtx_3, m_VtxPos.vtx_2, *pPos, -m_SurfaceNor))
 	{
+		return true;
+	}
+	return false;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// ポリゴンの範囲内にいるかテスト
+//-------------------------------------------------------------------------------------------------------------
+bool CPolygonCollider::Test3DInPolygon(D3DXVECTOR3 * pPos)
+{
+	if (CMylibrary::Test3DInsidePolygon(m_VtxPos.vtx_0, m_VtxPos.vtx_1, m_VtxPos.vtx_2, *pPos))
+	{
+		// 高さ設定
+		m_fHeight = m_VtxPos.vtx_2.y +
+			(-m_SurfaceNor.x  *	(pPos->x - m_VtxPos.vtx_2.x) -
+				m_SurfaceNor.z * (pPos->z - m_VtxPos.vtx_2.z)) / m_SurfaceNor.y;
+
+#ifdef _DEBUG
+		CDebugProc::Print("高さ:%f\n", m_fHeight);
+#endif // _DEBUG
+
+		return true;
+	}
+	else if(CMylibrary::Test3DInsidePolygon(m_VtxPos.vtx_1, m_VtxPos.vtx_3, m_VtxPos.vtx_2, *pPos))
+	{
+		// 高さ設定
+		m_fHeight = m_VtxPos.vtx_2.y +
+			(-m_SurfaceNor.x  *	(pPos->x - m_VtxPos.vtx_2.x) -
+				m_SurfaceNor.z * (pPos->z - m_VtxPos.vtx_2.z)) / m_SurfaceNor.y;
+
+#ifdef _DEBUG
+		CDebugProc::Print("高さ:%f\n", m_fHeight);
+#endif // _DEBUG
+
 		return true;
 	}
 	return false;

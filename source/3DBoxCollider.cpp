@@ -32,6 +32,7 @@ LPDIRECT3DTEXTURE9				   C3DBoxCollider::m_pTexture = NULL;					// ƒeƒNƒXƒ`ƒƒ‚Ì
 LPDIRECT3DINDEXBUFFER9			   C3DBoxCollider::m_pIdxBuff = NULL;					// ƒCƒ“ƒfƒbƒNƒX‚Ìƒoƒbƒtƒ@‚Ìƒ|ƒCƒ“ƒ^
 C3DBoxCollider::READINFOFILEBUFFER C3DBoxCollider::m_ReadInfoFileBuff;					// “Ç‚Ý‚±‚ñ‚¾ƒtƒ@ƒCƒ‹î•ñ
 C3DBoxCollider::_3DBOXCOLLIDER	   C3DBoxCollider::m_ColliderInfo[_3DBOXCOLLIDER_MAX];	// ƒRƒ‰ƒCƒ_[î•ñ
+float C3DBoxCollider::m_fHeight = 0.0f;
 
 //-------------------------------------------------------------------------------------------------------------
 // ƒRƒ“ƒXƒgƒ‰ƒNƒ^
@@ -829,6 +830,9 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 							*pOut_nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 						}
 					}
+					
+					// “–‚½‚è”»’èã‚Ì‚‚³Žæ“¾
+					m_fHeight = pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE;
 				}
 			}
 		}

@@ -165,6 +165,8 @@ public:
 	static int SetColliderInfo(D3DXVECTOR3 *pPos, CScene *pScene, COLLIDER_SUBTYPE ColliderSubType = COLLIDER_SUB_NORMAL, int nID = ID_CHARACTER);
 	// 任意のIDをコライダーIDに変換
 	static void ConvertColliderID(int *pID);
+	// 当たり判定上の高さ取得
+	static float GetHeight(void) { return m_fHeight; }
 private:
 	/* メンバ関数 */
 	// 頂点の作成
@@ -179,5 +181,6 @@ private:
 	static LPDIRECT3DINDEXBUFFER9	m_pIdxBuff;							// インデックスのバッファのポインタ
 	static READINFOFILEBUFFER		m_ReadInfoFileBuff;					// 読みこんだファイル情報
 	static _3DBOXCOLLIDER			m_ColliderInfo[_3DBOXCOLLIDER_MAX];	// コライダー情報
+	static float m_fHeight;												// 当たり判定上の高さ
 };
 #endif
