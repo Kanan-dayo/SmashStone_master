@@ -35,6 +35,7 @@
 #include "sound.h"
 #include "polyCollMana.h"
 #include "shadow.h"
+#include "motion.h"
 
 //==================================================================================================================
 // ƒ}ƒNƒ’è‹`
@@ -1001,7 +1002,14 @@ bool CPlayer::ReadyToHitStone(const int & nCapColliID)
 //==================================================================================================================
 bool CPlayer::HitConditionAttack0(const int &nCapColliID)
 {
-	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_L) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_L);
+	if((nCapColliID != CCapsuleCollider::TYPEID_FOREARM_L) ||
+		(nCapColliID != CCapsuleCollider::TYPEID_UPPERARM_L))
+	{
+		return false;
+	}
+	int nKey = CMotion::GetAttackKey((PARAM_TYPE)(m_type / 2),this->m_pModelCharacter->GetMotion());
+
+	return (nKey == m_pModelCharacter->GetNowKey());
 }
 
 //==================================================================================================================
