@@ -23,12 +23,15 @@ public:
 	{
 		OFFSET_NONE = -1,	// 無し
 		HIT,				// 当たった
+		SMASHATTACKSTART,	// スマッシュ攻撃開始
+		SMASHATTACKHIT,		// スマッシュ攻撃当たったとき
 		OFFSET_MAX			// 最大
 	}OFFSETNAME;
 
 	typedef enum
 	{
 		BITS_NONE = -1,
+		BILLBOARD,		// ビルボードフラグ
 		TARGET,			// 目標点有効フラグ
 		LIFE_AUTO,		// ライフ自動フラグ
 		ALPHA_AUTO,		// アルファ値自動フラグ

@@ -31,8 +31,14 @@ public:
 		COLLIPARTS_BODY,	// 体
 		TYPEID_FOREARM_R,	// 右前腕
 		TYPEID_UPPERARM_R,	// 右上腕
-		TYPEID_FOREARM_L,	// 前腕
-		TYPEID_UPPERARM_L,	// 上腕
+		TYPEID_FOREARM_L,	// 左前腕
+		TYPEID_UPPERARM_L,	// 左上腕
+
+		TYPEID_FEMUR_R,		// 右太腿
+		TYPEID_LOWERLEG_R,	// 右下腿部
+		TYPEID_FEMUR_L,		// 左太腿
+		TYPEID_LOWERLEG_L,	// 左下腿部
+
 		TYPEID_MAX			// 最大数
 	}TYPEID;
 
@@ -96,6 +102,10 @@ public:
 	void Uninit(void);																		// 終了
 	void Update(void);																		// 更新
 	void Draw(void);																		// 描画
+
+	void DrawingCalculation(void);															// 描画の計算処理
+	void DrawingVertex(void);																// 頂点情報の描画
+
 	void SetMtxParent(D3DXMATRIX *pMtxParent);												// 親のマトリックスポインタの設定
 	void SetScene(CScene *pScene);															// シーンの設定
 

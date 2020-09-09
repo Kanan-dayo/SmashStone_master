@@ -33,7 +33,8 @@ void CCharEffectOffset::Load(void)
 		{ "data/TEXT/Effect/CharEffectOffset/Offset_ドンッ.txt" },
 		{ "data/TEXT/Effect/CharEffectOffset/Offset_ゴッ.txt" },
 		{ "data/TEXT/Effect/CharEffectOffset/Offset_キーン.txt" },
-
+		{ "data/TEXT/Effect/CharEffectOffset/Offset_ガッ.txt" },
+		{ "data/TEXT/Effect/CharEffectOffset/Offset_ダンッ.txt" },
 	};
 
 	for (int nCntOffSet = 0; nCntOffSet < OFFSETNAME::OFFSET_MAX; nCntOffSet++)
@@ -239,10 +240,11 @@ void CCharEffectOffset::Update(void)
 		{
 			continue;
 		}
-		pParamCell[nCntParam].pos += m_pos;
+		pParamCell[nCntParam].pos;
+		pParamCell[nCntParam].Origin = m_pos;
 		C3DEffect::Set(pParamCell[nCntParam]);
 
-		pParamCell[nCntParam].pos -= m_pos;
+		pParamCell[nCntParam].pos;
 	}
 
 	// 開放確認

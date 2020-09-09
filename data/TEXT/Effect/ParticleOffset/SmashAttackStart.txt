@@ -1,0 +1,163 @@
+//-------------------------------------------------------------------------------------------------------------
+// パーティクルのスマッシュ攻撃開始のセット
+//-------------------------------------------------------------------------------------------------------------
+
+SCRIPT
+
+// パラメータ数
+NUMPARAM = 2
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 0
+	
+	// フレーム数 継続時間
+	FRAME = 1
+
+	// 個数
+	NUMBER = 10
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 0
+	
+	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
+	POS = 0.0 0.0 0.0
+	
+	// 位置ランダム (最小 最大)  使わない場合NULL
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 10.0
+	
+	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
+	LENGTHRAND = NULL
+	
+	// 色 r g b a
+	COL = 1.0 1.0 1.0 1.0
+	
+	// 半径
+	RADIUS = 0.0
+	
+	// 半径のランダム(最小 最大) 使わない場合NULL
+	RADIUSRAND = 6 6
+	
+	// 半径の変化量
+	RADIUSVALUE = -1.0
+	
+	// 噴射角度
+	ANGLE = 0.15
+	
+	// 噴射角度のランダム(最小 最大) 使わない場合NULL
+	ANGLERAND = 0 0
+	
+	// 速度
+	SPEED = 0.0
+	
+	// 速度のランダム(最小 最大) 使わない場合NULL
+	SPEEDRAND = 10 5
+	
+	// ライフ
+	LIFE = 0
+	
+	// ライフのランダム(最小 最大) 使わない場合NULL
+	LIFERAND = 10 4
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 0.0 -1.0
+	
+	// 親フラグ true = 1 false = 0
+	PARENT = 1
+	
+	// 方向と噴射位置を同じにする true = 1 false = 0
+	DIREQUAPOS = 1
+	
+	// ビルボードフラグ
+	BILLBOARD = 1
+
+END_SETPARAM
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 0
+	
+	// フレーム数 継続時間
+	FRAME = 1
+
+	// 個数
+	NUMBER = 1
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 1
+	
+	// 位置
+	POS = 0.0 0.0 0.0
+	
+	// 位置ランダム (最小 最大)  
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 0.0
+	
+	// 原点からの距離ランダム (最小 最大)
+	LENGTHRAND = NULL
+	
+	// 色 r g b a
+	COL = 1.0 1.0 1.0 1.0
+	
+	// 半径
+	RADIUS = 15.0
+	
+	// 半径のランダム(最小 最大)
+	RADIUSRAND = NULL
+	
+	// 半径の変化量
+	RADIUSVALUE = 13.0
+	
+	// 噴射角度
+	ANGLE = 0.0
+	
+	// 噴射角度のランダム(最小 最大)
+	ANGLERAND = NULL
+	
+	// 速度
+	SPEED = 10
+	
+	// 速度のランダム(最小 最大)
+	SPEEDRAND = NULL
+	
+	// ライフ
+	LIFE = 7
+	
+	// ライフのランダム(最小 最大)
+	LIFERAND = NULL
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 0.0 -1.0
+	
+	// 親フラグ
+	PARENT = 1
+	
+	// 方向と噴射位置を同じにする
+	DIREQUAPOS = 0
+	
+	BILLBOARD = 0
+	
+END_SETPARAM
+
+END_SCRIPT

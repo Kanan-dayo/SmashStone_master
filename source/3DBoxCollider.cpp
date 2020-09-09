@@ -743,7 +743,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					if (pOwnerCollider->pos.x + pOwnerCollider->size.x* _3DBOXCOLLIDER_HALF_SIZE > pOtherCollider->pos.x - pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE&&
 						pOwnerCollider->posOld.x + pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE <= pOtherCollider->pos.x - pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE)
 					{
-						pOwnerCollider->pos.x = pOtherCollider->pos.x - pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE - pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE - 0.01f;
+						pOwnerCollider->pos.x = pOtherCollider->pos.x - pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE - pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE - 0.1f;
 						pos.x = pOwnerCollider->pos.x;
 						move.x = 0.0f;
 						if (bReflection == true)
@@ -756,7 +756,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					else if (pOwnerCollider->pos.x - pOwnerCollider->size.x* _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.x + pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE&&
 						pOwnerCollider->posOld.x - pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE >= pOtherCollider->pos.x + pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE)
 					{
-						pOwnerCollider->pos.x = pOtherCollider->pos.x + pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE + 0.01f;
+						pOwnerCollider->pos.x = pOtherCollider->pos.x + pOtherCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.x * _3DBOXCOLLIDER_HALF_SIZE + 0.1f;
 						pos.x = pOwnerCollider->pos.x;
 						move.x = 0.0f;
 						if (bReflection == true)
@@ -774,7 +774,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					if (pOwnerCollider->pos.z + pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE > pOtherCollider->pos.z - pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE&&
 						pOwnerCollider->posOld.z + pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE <= pOtherCollider->pos.z - pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE)
 					{
-						pOwnerCollider->pos.z = pOtherCollider->pos.z - pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE - pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE - 0.01f;
+						pOwnerCollider->pos.z = pOtherCollider->pos.z - pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE - pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE - 0.1f;
 						pos.z = pOwnerCollider->pos.z;
 						move.z = 0.0f;
 						if (bReflection == true)
@@ -787,7 +787,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					else if (pOwnerCollider->pos.z - pOwnerCollider->size.z* _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.z + pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE&&
 						pOwnerCollider->posOld.z - pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE >= pOtherCollider->pos.z + pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE)
 					{
-						pOwnerCollider->pos.z = pOtherCollider->pos.z + pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE + 0.01f;
+						pOwnerCollider->pos.z = pOtherCollider->pos.z + pOtherCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.z * _3DBOXCOLLIDER_HALF_SIZE + 0.1f;
 						pos.z = pOwnerCollider->pos.z;
 						move.z = 0.0f;
 						if (bReflection == true)
