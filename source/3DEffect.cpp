@@ -270,32 +270,10 @@ void C3DEffect::Update(void)
 		}
 		// 頂点カラーの設定
 		SetVetexColor(pVtx, pEffePram[nCntPrame]);
-
-#ifdef _DEBUG
-		CDebugProc::Print("エフェクト生きている == [%d]\n", nCntPrame);
-		CDebugProc::Print("エフェクトアルファ値 == [%.4f]\n", pEffePram[nCntPrame].col.a);
-		CDebugProc::Print("エフェクト半径 == [%.4f]\n", pEffePram[nCntPrame].fRadius);
-		CDebugProc::Print("エフェクト振動 == [%.4f][%.4f][%.4f]\n", pEffePram[nCntPrame].Vibrat.Pos.x, pEffePram[nCntPrame].Vibrat.Pos.y, pEffePram[nCntPrame].Vibrat.Pos.z);
-#endif
 	}
 
 	// 頂点データをアンロックする
 	m_pVtxBuff->Unlock();
-
-#ifdef _DEBUG
-	pEffePram = &m_EffectPram[0];	// ポインタの初期化
-	int nCntUse = 0;
-	for (int nCntPrame = 0; nCntPrame < _3DEFFE_USEQUANTITY; nCntPrame++)
-	{
-		// 使用されていない時
-		if (pEffePram[nCntPrame].bUse == true)
-		{// 処理をスキップ
-			nCntUse++;
-		}
-	}
-	CDebugProc::Print("生きているエフェクト数 == [%d]\n", nCntUse);
-
-#endif
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -305,7 +283,7 @@ void C3DEffect::Draw(void)
 {
 	// 変数宣言
 	LPDIRECT3DDEVICE9 pDevice;						// デバイスのポインタ
-	D3DXMATRIX mtxTrans, mtxParent;					// 計算用マトリックス
+	D3DXMATRIX mtxTrans, mtxRot, mtxParent;					// 計算用マトリックス
 	PARAMETER* pEffePram;							// パラメータポインタ
 
 	pDevice = CManager::GetRenderer()->GetDevice();	// デバイスの取得
@@ -345,8 +323,7 @@ void C3DEffect::Draw(void)
 		}
 
 		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR &&
-			pEffePram[nCntPrame].bBillBoard == true &&
-			pEffePram[nCntPrame].pParent != nullptr)
+			pEffePram[nCntPrame].bBillBoard == true)
 		{
 			// ワールドマトリックスの初期化
 			D3DXMatrixIdentity(&mtxParent);
@@ -355,9 +332,9 @@ void C3DEffect::Draw(void)
 
 			// 位置を反映
 			D3DXMatrixTranslation(&mtxTrans
-				, pEffePram[nCntPrame].pParent->x
-				, pEffePram[nCntPrame].pParent->y
-				, pEffePram[nCntPrame].pParent->z);
+				, pEffePram[nCntPrame].Origin.x
+				, pEffePram[nCntPrame].Origin.y
+				, pEffePram[nCntPrame].Origin.z);
 
 			D3DXMatrixMultiply(&mtxParent
 				, &mtxParent
@@ -368,6 +345,21 @@ void C3DEffect::Draw(void)
 			{// ビルボードの設定
 				CMylibrary::SetBillboard(pDevice, &pEffePram[nCntPrame].Trans.mtxWorld);
 			}
+
+		if (pEffePram[nCntPrame].bBillBoard == false)
+		{
+			// 位置を反映
+			D3DXMatrixRotationYawPitchRoll(
+				&mtxRot,
+				pEffePram[nCntPrame].Trans.rot.y,
+				pEffePram[nCntPrame].Trans.rot.x,
+				pEffePram[nCntPrame].Trans.rot.z);
+
+			D3DXMatrixMultiply(
+				&pEffePram[nCntPrame].Trans.mtxWorld,
+				&pEffePram[nCntPrame].Trans.mtxWorld,
+				&mtxRot);
+		}
 
 		// 位置を反映
 		D3DXMatrixTranslation(
@@ -381,8 +373,7 @@ void C3DEffect::Draw(void)
 			&pEffePram[nCntPrame].Trans.mtxWorld,
 			&mtxTrans);
 
-		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR &&
-			pEffePram[nCntPrame].pParent != nullptr)
+		if (pEffePram[nCntPrame].type == C3DEffect::TYPE::CHAR)
 		{
 			// マトリックスのずれと掛ける
 			D3DXMatrixMultiply(&pEffePram[nCntPrame].Trans.mtxWorld
@@ -458,6 +449,13 @@ void C3DEffect::Set(SETINGPARAM & Seting)
 		pEffePram[nCntEffect].bDisp = true;
 		// ビルボードの設定
 		pEffePram[nCntEffect].bBillBoard = Seting.bBillBoard;
+		if (pEffePram[nCntEffect].bBillBoard == false)
+		{
+			pEffePram[nCntEffect].Trans.rot.y = atan2f(Seting.move.x, Seting.move.z);
+			pEffePram[nCntEffect].Trans.rot.x = atan2f(Seting.move.y, Seting.move.z);
+			pEffePram[nCntEffect].Trans.rot.z = atan2f(Seting.move.y, Seting.move.x);
+		}
+
 		// 重力の設定
 		pEffePram[nCntEffect].fGravity = Seting.fGravity;
 		// ライフの設定
@@ -474,6 +472,8 @@ void C3DEffect::Set(SETINGPARAM & Seting)
 		pEffePram[nCntEffect].Trans.pos = Seting.pos;
 		// 色の設定
 		pEffePram[nCntEffect].col = Seting.col;
+		// 原点の設定
+		pEffePram[nCntEffect].Origin = Seting.Origin;
 
 		if (pEffePram[nCntEffect].type == TYPE::CHAR)
 		{
@@ -490,7 +490,7 @@ void C3DEffect::Set(SETINGPARAM & Seting)
 			pEffePram[nCntEffect].fAlphaValue = pEffePram[nCntEffect].col.a / pEffePram[nCntEffect].nLife;
 
 			// 半径変化値の設定
-			pEffePram[nCntEffect].fRadiusValue = -(pEffePram[nCntEffect].fRadius / pEffePram[nCntEffect].nLife);
+			//pEffePram[nCntEffect].fRadiusValue = -(pEffePram[nCntEffect].fRadius / pEffePram[nCntEffect].nLife);
 			pEffePram[nCntEffect].fRadiusValue = Seting.fRadiusValue;
 		}
 		SetVartexSize(pVtx, pEffePram[nCntEffect]);

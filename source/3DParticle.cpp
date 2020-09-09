@@ -22,15 +22,11 @@ void C3DParticle::Load(void)
 #ifdef _DEBUG
 	DWORD start = timeGetTime();			// 計測スタート時間
 #endif // _DEBUG
-	UBITS_12 test;
-	test.cValue = 4095;
-	for (int nCnt = 0; nCnt < 12; nCnt++)
-	{
-		test.clear(nCnt);
-	}
 	// ファイル名
 	CONST_STRING pFileName[OFFSETNAME::OFFSET_MAX] = {
 		{ "data/TEXT/Effect/ParticleOffset/HitOffset.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/SmashAttackStart.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/SmashAttackHit.txt" },
 	};
 
 	for (int nCntOffset = 0; nCntOffset < OFFSETNAME::OFFSET_MAX; nCntOffset++)
@@ -368,6 +364,12 @@ void C3DParticle::LoadParamFromFile(FILE * pFile, const int & nCntOffSet, const 
 				m_Offset[nCntOffSet].pParam[nCntParam].Flag.clear(BIT_INDEX::DIREQUAPOS);
 			cout << "DIREQUAPOS 取得\n";
 		}
+		else if (sscanf(pFIleRead, "BILLBOARD = %d", &nIntWork) == 1)
+		{
+			(nIntWork == 1) ?
+				m_Offset[nCntOffSet].pParam[nCntParam].Flag.set(BIT_INDEX::BILLBOARD) :
+				m_Offset[nCntOffSet].pParam[nCntParam].Flag.clear(BIT_INDEX::BILLBOARD);
+		}
 	}
 }
 
@@ -469,6 +471,8 @@ void C3DParticle::SetEffectFromParam(PARAM * pParam)
 		GetLifeFromParam(pParam, Seting.nLife);
 		// 親ポインタの設定
 		Seting.pParent = GetParentFromParam(pParam);
+		// ビルボードフラグの設定
+		Seting.bBillBoard = pParam->Flag.comp(C3DParticle::BILLBOARD);
 		// 方向と噴射位置を合わせるフラグが立っている時
 		if (pParam->bDirEquaPos == true)
 		{// 移動量と方向に倣った位置の取得
@@ -577,10 +581,19 @@ void C3DParticle::GetMoveFromParam(CONST PARAM * pParam, D3DXVECTOR3 & move)
 
 	// 速度の取得
 	GetSpeedFromParam(pParam, fSpeed);
+	float fAddRotY = m_rot.y;
+	float fSin = -sinf(fAddRotY);
+	float fCos = -cosf(fAddRotY);
+	float fSin2 = -sinf(fAddRotY + D3DX_PI *  0.5f);
+	float fCos2 = -cosf(fAddRotY + D3DX_PI *  0.5f);
 
-	move.x = pParam->rot.x + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
+	cout << "向き　== " << fAddRotY << "\n";
+	cout << "fSin　== " << fSin << "\n";
+	cout << "fCos　== " << fCos << "\n\n";
+
+	move.x = pParam->rot.z * fSin + pParam->rot.x * fSin2 + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
+	move.z = pParam->rot.z * fCos + pParam->rot.x * fCos2 +  (rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	move.y = pParam->rot.y + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
-	move.z = pParam->rot.z + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	// 正規化
 	CMylibrary::CreateUnitVector(&move, &move);
 
@@ -613,10 +626,11 @@ void C3DParticle::GetMoveAndPosAccordingDirFromParam(CONST PARAM * pParam, D3DXV
 	// 原点からの距離を取得
 	GetLengthFromParam(pParam, fLength);
 
+	float fAddRotY = m_rot.y;
 	// 方向ベクトルを計算
-	move.x = pParam->rot.x + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
+	move.x = pParam->rot.x + sinf(fAddRotY) + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	move.y = pParam->rot.y + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
-	move.z = pParam->rot.z + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
+	move.z = pParam->rot.z + cosf(fAddRotY) +(rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	// 正規化
 	CMylibrary::CreateUnitVector(&move, &move);
 

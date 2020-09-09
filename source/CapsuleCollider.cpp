@@ -317,17 +317,22 @@ void CCapsuleCollider::Update(void)
 //-------------------------------------------------------------------------------------------------------------
 void CCapsuleCollider::Draw(void)
 {
-	// レンダラー情報取得
-	CRenderer *pRenderer = CManager::GetRenderer();			// レンダラーの情報取得
-	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		// デバイスの取得
-	D3DXMATRIX mtxTrans, mtxRot;							// 計算用マトリックス
+	// 描画の計算処理
+	DrawingCalculation();
 
-	// ライティングモード無効
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-	// Fill Mode の設定
-	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	// カリングしない
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+#ifdef _DEBUG
+	// 頂点の描画
+	DrawingVertex();
+#endif
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 描画の計算処理
+//-------------------------------------------------------------------------------------------------------------
+void CCapsuleCollider::DrawingCalculation(void)
+{
+	// 変数宣言
+	D3DXMATRIX mtxTrans, mtxRot;	// 計算用マトリックス
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_ColliderInfo.trans.mtxWorld);
@@ -351,11 +356,6 @@ void CCapsuleCollider::Draw(void)
 		&m_ColliderInfo.trans.mtxWorld,
 		&mtxTrans);
 
-	D3DXMatrixMultiply(&m_ColliderInfo.trans.mtxWorld,
-		&m_ColliderInfo.trans.mtxWorld,
-		&mtxTrans);
-
-
 	// 親モデルの情報があるとき
 	if (m_ColliderInfo.pMtxParent != NULL)
 	{
@@ -364,13 +364,28 @@ void CCapsuleCollider::Draw(void)
 			, m_ColliderInfo.pMtxParent);
 	}
 
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_ColliderInfo.trans.mtxWorld);
-
 	// カプセル位置の計算
 	CalCapPosition();
+}
 
-#ifdef _DEBUG
+//-------------------------------------------------------------------------------------------------------------
+// 頂点の描画
+//-------------------------------------------------------------------------------------------------------------
+void CCapsuleCollider::DrawingVertex(void)
+{
+	// 変数宣言
+	CRenderer *pRenderer = CManager::GetRenderer();			// レンダラーの情報取得
+	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		// デバイスの取得
+
+	// ライティングモード無効
+	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	// Fill Mode の設定
+	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	// カリングしない
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_ColliderInfo.trans.mtxWorld);
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_ColliderInfo.pVtexBuff, 0, sizeof(VERTEX_3D));
@@ -390,14 +405,12 @@ void CCapsuleCollider::Draw(void)
 		// ポリゴンの描画
 		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_ColliderInfo.nNumindex, 0, m_ColliderInfo.nNumPolygon);
 	}
-#endif
 	// ライティングモード有効
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	// Fill Mode の設定
 	pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	// レンダラーの設定
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// 裏面(左回り)をカリングする
-
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -480,7 +493,8 @@ bool CCapsuleCollider::Collision(void)
 	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// このコライダーを持っているプレイヤー
 	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// その他のプレイヤー
 	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// その他のプレイヤーのコライダー情報
-
+	CDebugProc::Print("GetRotY == [%.4f]\n", pOwn->GetRot().y);
+	// 攻撃当てる準備かできているか
 	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
 	{
 		return false;
@@ -490,17 +504,17 @@ bool CCapsuleCollider::Collision(void)
 #ifdef _DEBUG
 	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
 
+
+
 	// 2線分の最短距を求める
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
-		CDebugProc::Print("当たってる\n");
-		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ドンッ);
-		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
+		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKSTART);
 		pOwn->SetAttakHit(true);
 	}
 	else
 	{
-		CDebugProc::Print("当たってない\n");
 	}
 #else
 
@@ -514,13 +528,12 @@ bool CCapsuleCollider::Collision(void)
 
 #endif // _DEBUG
 
-
-
 	return false;
 }
 
 //-------------------------------------------------------------------------------------------------------------
-// 遏ｳ縺ｨ縺ｮ陦晉ｪ∝・逅・//-------------------------------------------------------------------------------------------------------------
+// ストーンとの衝突判定
+//-------------------------------------------------------------------------------------------------------------
 bool CCapsuleCollider::CollisionStone(void)
 {
 	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;

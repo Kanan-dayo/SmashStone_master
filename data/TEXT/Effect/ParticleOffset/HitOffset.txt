@@ -47,7 +47,7 @@ SETPARAM
 	RADIUSRAND = 4 2
 	
 	// 半径の変化量
-	RADIUSVALUE = 1.0
+	RADIUSVALUE = -0.5
 	
 	// 噴射角度
 	ANGLE = 1.0
@@ -78,6 +78,9 @@ SETPARAM
 	
 	// 方向と噴射位置を同じにする true = 1 false = 0
 	DIREQUAPOS = 1
+	
+	// ビルボードフラグ
+	BILLBOARD = 1
 	
 	// 目標地点
 	// 慣性係数
@@ -166,6 +169,8 @@ SETPARAM
 	
 	// 方向と噴射位置を同じにする
 	DIREQUAPOS = 0
+	
+	BILLBOARD = 1
 	
 END_SETPARAM
 

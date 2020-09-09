@@ -164,7 +164,7 @@ float CMylibrary::calcSegmentSegmentDist(const SEGMENT & Seg1, const SEGMENT & S
 	}
 
 	// 垂線の足が外にある事が判明
-	// S1側のfVecCoeffi1を0～1の間にクランプして垂線を降ろす
+	// S1側のfVecCoeffi1を0～1の間に制限して垂線を降ろす
 	Limit0to1(fVecCoeffi1);
 	PerpendFoot1 = Seg1.GetPoint(fVecCoeffi1);
 	float fLength = calcPointSegmentDist(PerpendFoot1, Seg2, PerpendFoot2, fVecCoeffi2);

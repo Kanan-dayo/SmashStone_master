@@ -48,7 +48,7 @@ public:
 		CHAR_グ,				// 文字グ
 		CHAR_ゲ,				// 文字ゲ
 		CHAR_ゴ,				// 文字ゴ
-		CHAR_ザ,				// 文字ザ
+		CHAR_ガ,				// 文字ガ
 		CHAR_ズ,				// 文字ズ
 		CHAR_タ,				// 文字タ
 		CHAR_ダ,				// 文字ダ
@@ -91,6 +91,7 @@ public:
 		SETINGPARAM() :
 			bBillBoard(false),
 			type(MYLIB_INT_UNSET),
+			Origin(MYLIB_3DVECTOR_ZERO),
 			nTexType(MYLIB_INT_UNSET),
 			pos(MYLIB_3DVECTOR_ZERO),
 			pParent(nullptr),
@@ -106,6 +107,7 @@ public:
 		int         nTexType;		// テクスチャの種類
 		D3DXVECTOR3 pos;			// 位置
 		D3DXVECTOR3 *pParent;		// 親の位置
+		D3DXVECTOR3 Origin;			// 原点
 		D3DXVECTOR3 move;			// 移動量
 		D3DXCOLOR   col;			// 色
 		float       fRadius;		// 半径
@@ -122,6 +124,7 @@ public:
 		bool        bBillBoard;		// ビルボードフラグ
 		TRANSFORM   Trans;			// トランス情報
 		D3DXVECTOR3 *pParent;		// 親の位置
+		D3DXVECTOR3 Origin;			// 原点
 		D3DXVECTOR3 move;			// 移動量
 		D3DXCOLOR   col;			// 色
 		float       fRadius;		// 半径

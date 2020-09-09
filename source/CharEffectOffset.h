@@ -25,6 +25,8 @@ public:
 		STR_ドンッ,
 		STR_ゴッ,
 		STR_キーン,
+		STR_ガッ,
+		STR_ダンッ,
 		OFFSET_MAX
 	} OFFSETNAME;
 
