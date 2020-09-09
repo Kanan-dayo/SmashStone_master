@@ -526,7 +526,7 @@ bool CCapsuleCollider::CollisionStone(void)
 	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;
 	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();	
 
-	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
+	if (pOwn->ReadyToHitStone(m_ColliderInfo.enmTtpeID) == false)
 	{
 		return false;
 	}
@@ -548,7 +548,7 @@ bool CCapsuleCollider::CollisionStone(void)
 		if (CMylibrary::colCapsuleSphere(m_ColliderInfo.Capsule, pBoxColli[nCntBox].pos, ikuminLib::VEC3(pBoxColli[nCntBox].size).Length(), HitPos) == true)
 		{
 			CStone *pStone = (CStone *)pBoxColli[nCntBox].pScene;
-			pOwn->SetAttakHit(true);
+			pOwn->SetAttakHitStone(true);
 			if (pStone->ApplyDamage() == true)
 			{
 				CCharEffectOffset::Set(pStone->GetPos(), CCharEffectOffset::OFFSETNAME::STR_ÉLÅ[Éì);

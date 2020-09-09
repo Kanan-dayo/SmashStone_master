@@ -43,6 +43,10 @@ public:
 		COLLIPARTS_UPPERARM_R,	// 右上腕
 		COLLIPARTS_FOREARM_L,	// 前腕
 		COLLIPARTS_UPPERARM_L,	// 上腕
+		COLLIPARTS_FEMUR_R,     // 右太腿
+		COLLIPARTS_LOWERLEG_R,  // 右下腿部
+		COLLIPARTS_FEMUR_L,     // 左太腿
+		COLLIPARTS_LOWERLEG_L,  // 左下腿部
 		COLLIPARTS_MAX			// 最大
 	};
 
@@ -52,12 +56,15 @@ public:
 		STANDSTATE_NEUTRAL,		// ニュートラル
 		STANDSTATE_DAUNTED,		// 怯み
 		STANDSTATE_BLOWAWAY,	// 吹き飛び
+		STANDSTATE_SMASHBLOWAWAY,	// スマッシュ吹き飛び
 		STANDSTATE_DOWN,		// ダウン
 		STANDSTATE_GETUP,		// 起き上がり
 		STANDSTATE_GETUP_ACTIVE,// アクティブな起き上がり
 		STANDSTATE_WALK,		// 歩き
 		STANDSTATE_JUMP,		// ジャンプ
 		STANDSTATE_ATTACK,		// 攻撃
+		STANDSTATE_SMASHCHARGE,	// スマッシュチャージ
+		STANDSTATE_SMASH,		// スマッシュ
 		STANDSTATE_LIFT,		// 持ち上げ
 		STANDSTATE_MAX			// 最大
 	} CHARACTER_STANDSTATE;
@@ -93,11 +100,9 @@ public:
 	inline void        SetMove(const D3DXVECTOR3 & move)		{ m_move = move; }					// 移動値の設定
 	inline void        SetRot(const D3DXVECTOR3 & rot)			{ m_rot = rot; }					// 回転の設定
 	inline void        SetRotDest(const D3DXVECTOR3 & rotDest)	{ m_rotDest = rotDest; }			// 目的の回転の設定
-	inline void        SetbWalk(const bool &bWalk)				{ m_bWalk = bWalk; }				// 歩きの設定
-	inline void        SetbJump(const bool &bJump)				{ m_bJump = bJump; }				// ジャンプの設定
 	inline void        SetLife(const float &nLife)				{ m_nLife = nLife; }				// ライフの設定
-	inline void        SetAttakHit(const bool &bAttackHit)		{ m_bAttakHit = m_bAttack; }		// 攻撃を当てたフラグ
-	inline void        SetAttakHitStone(const bool &bAttackHit)	{ m_bAttakHitStone = m_bAttack; }	// ストーンに攻撃を当てたフラグ
+	inline void        SetAttakHit(const bool &bAttackHit)		{ m_bAttakHit = bAttackHit; }		// 攻撃を当てたフラグ
+	inline void        SetAttakHitStone(const bool &bAttackHit)	{ m_bAttakHitStone = bAttackHit; }	// ストーンに攻撃を当てたフラグ
 	void               SetModelType(CHARACTER_TYPE type);											// モデルの設定
 	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
 
@@ -109,15 +114,16 @@ public:
 	inline D3DXVECTOR3       &GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
 	inline float             &GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
 	inline float             &GetLife(void)						{ return m_nLife; }					// ライフ取得
-	inline bool              &GetbJump(void)					{ return m_bJump; }					// ジャンプ状態の取得
 	inline void              Damage(const int nDamage)			{ m_nLife -= nDamage; }				// ダメージ処理
 	inline CCapsuleCollider* GetCapCollider(int nPartsIndex)	{ return m_pCapColi[nPartsIndex]; }	// カプセルコライダーの取得
 
 	inline bool				 GetStoneType(int nID)				{ return m_bGetStoneType[nID]; }	// 取得したストーンタイプ取得
 	inline bool				 GetTrans(void)						{ return m_bTrans; }				// 変身したかどうか
 	inline int				 GetTransCnt(void)					{ return m_nCntTrans; }				// 変身カウント取得
+	inline CHARACTER_STANDSTATE GetStandState(void)				{ return m_stateStand; }			// 立ち状態の行動取得
+	inline CHARACTER_JUMPSTATE GetJumpState(void)				{ return m_stateJump; }				// ジャンプ状態の行動取得
 
-	void			   Daunted(const int nGap);						// 怯み処理
+
 	void			   VictoryAction(void);							// 勝利行動
 
 protected:
@@ -146,22 +152,10 @@ protected:
 	int						  m_nCntTrans;				// どれぐらいの時間変身しているか
 	int						  m_nNumStone;				// 取得したストーンの数
 	float					  m_nLife;					// ライフ
-	bool					  m_bJump;					// ジャンプしたかどうか
-	bool					  m_bWalk;					// 歩いてるかどうか
 	bool					  m_bTrans;					// 変身しているか
-	bool					  m_bAttack;				// 攻撃しているか
-	bool					  m_bLift;					// 持ち上げているか
-	bool					  m_bBlowAway;				// 吹き飛んでいるか
-	bool					  m_bSmashBlowAway;			// スマッシュで吹き飛んでいるか
-	bool					  m_bDaunted;				// ひるんでいるか
-	bool					  m_bDown;					// ダウンしているかどうか
 	bool					  m_bInvincible;			// 無敵かどうか
 	static int				  m_nNumCharacter;			// キャラクターの総数
-	int						  m_nCntJump;				// ジャンプモーション切り替えのカウンタ
-	int						  m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
 	int						  m_nAttackFlow;			// 攻撃の流れ
-	int						  m_nCntGap;				// 隙のカウンタ
-	int						  m_nCntDown;				// ダウンしている時間
 
 	bool		m_bAttakHit;							// 攻撃を当てたフラグ
 	bool		m_bAttakHitStone;						// ストーンに攻撃を当てたフラグ
@@ -170,7 +164,6 @@ protected:
 private:
 	void Move(void);									// 移動関数
 	void Rot(void);										// 回転関数
-	void Motion(void);									// モーション関数
 	void Trans(void);									// 変身関数
 };
 

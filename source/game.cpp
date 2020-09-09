@@ -476,7 +476,8 @@ void CGame::GameKOAfter(void)
 	m_nCntAny++;
 	// ˆê’èŽžŠÔ‚ÅŽŸ‚Ö
 	if (m_nCntAny >= TIME_KO_AFTER &&
-		!m_pPlayer[PLAYER_ONE]->GetbJump() && !m_pPlayer[PLAYER_TWO]->GetbJump())
+		m_pPlayer[PLAYER_ONE]->GetStandState() != CCharacter::STANDSTATE_JUMP && 
+		m_pPlayer[PLAYER_TWO]->GetStandState() != CCharacter::STANDSTATE_JUMP)
 	{
 		m_nCntAny = 0;
 		m_gameState = GAMESTATE_NEXTROUND;

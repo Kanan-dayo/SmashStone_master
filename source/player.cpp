@@ -47,6 +47,10 @@
 #define TIME_LIFT_BEGIN			(60)		// 持ち上げ開始のモーション時間
 #define TIME_MAX_DOWN			(60)		// 最大までダウンできる時間
 
+#define TIME_MAX_CHARGE			(100)		// 最大までチャージできる時間
+
+#define TIME_JUMP_TO_FALL		(15)		// ジャンプから落下までの時間
+
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
@@ -76,6 +80,8 @@ void CPlayer::Init(void)
 	// 要素の初期化
 	m_bTrans = false;
 	m_nCntState = 0;
+	m_nCntGap = 0;
+	m_nAttackFrame = 0;
 
 	// 最大ポリゴン数までカウント
 	for (int nCnt = 0; nCnt < 3; nCnt++)
@@ -118,7 +124,7 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	CGame::GAMESTATE gameState = CManager::GetRenderer()->GetGame()->GetGameState();
-	if (m_bBlowAway == false && m_bDaunted == false &&
+	if (m_stateStand != STANDSTATE_BLOWAWAY && m_stateStand != STANDSTATE_DAUNTED &&
 		(gameState == CGame::GAMESTATE_NORMAL ||
 			gameState == CGame::GAMESTATE_BEFORE))
 		// 操作
@@ -129,6 +135,9 @@ void CPlayer::Update(void)
 
 	// 当たり判定
 	Collision();
+
+	// モーション処理
+	Motion();
 
 	// プレイヤーの番号設定
 	SetnPlayer(m_nPlayer);
@@ -143,9 +152,6 @@ void CPlayer::Update(void)
 	CDebugProc::Print("プレイヤーの位置 [%.4f][%.4f][%.4f]\n", m_pos.x, m_pos.y, m_pos.z);
 
 	ShowDebugInfo();
-
-	/*if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_2))
-	m_bTrans = true;*/
 #endif
 }
 
@@ -202,6 +208,9 @@ void CPlayer::Collision(void)
 	// 攻撃判定
 	CollisionAttack();
 
+	bool bSmashBlowAway = false;
+	if (m_stateStand == STANDSTATE_SMASHBLOWAWAY)
+		bSmashBlowAway = true;
 	// 壁の取得
 	CWall *pWall = CGame::GetWall();
 	// 出力される交点
@@ -209,12 +218,12 @@ void CPlayer::Collision(void)
 	// 出力される法線
 	D3DXVECTOR3 out_nor = ZeroVector3;
 	// 壁との当たり判定
-	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
+	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect, &out_nor, bSmashBlowAway) == true)
 	{
 		// 反射フラグが立っているときかつ
 		// 出力された法線がゼロじゃない時かつ
 		// 出力された交点がゼロじゃない時
-		if (m_bSmashBlowAway == true &&
+		if (bSmashBlowAway == true &&
 			out_nor != ZeroVector3 &&
 			out_intersect != ZeroVector3)
 		{
@@ -256,9 +265,9 @@ void CPlayer::Collision(void)
 		}
 
 		// ポリゴンコライダーの衝突判定
-		if (pPolyColli->Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, m_bSmashBlowAway) == true)
+		if (pPolyColli->Collision(&m_pos, &m_posOld, &m_move, &out_intersect, &out_nor, bSmashBlowAway) == true)
 		{
-			if (m_bSmashBlowAway == false)
+			if (bSmashBlowAway == false)
 			{
 #ifdef _DEBUG
 				CDebugProc::Print("乗っている\n");
@@ -266,10 +275,8 @@ void CPlayer::Collision(void)
 				// 地面に乗っていたら、移動量をなくす
 				if (m_move.y <= -5.0f)
 					m_move.y = -5.0f;
-				// ジャンプ解除
-				m_bJump = false;
-				// ジャンプカウンタを初期化
-				m_nCntJump = 0;
+
+				SetLanding();
 			}
 			else
 			{
@@ -283,10 +290,7 @@ void CPlayer::Collision(void)
 	// 当たり判定
 	if (C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move))
 	{
-		// ジャンプ解除
-		m_bJump = false;
-		// ジャンプカウンタを初期化
-		m_nCntJump = 0;
+		SetLanding();
 	}
 
 	// 最大ポリゴン数までカウント
@@ -303,8 +307,11 @@ void CPlayer::Collision(void)
 		}
 		else
 		{
+			bool bJump = false;
+			if (m_stateStand == STANDSTATE_JUMP)
+				bJump = true;
 			// 影位置設定
-			m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, pPolyColli->GetfHeight(), m_pos.z), m_move, m_bJump);
+			m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, pPolyColli->GetfHeight(), m_pos.z), m_move, bJump);
 			
 			break;
 		}
@@ -321,98 +328,251 @@ void CPlayer::Collision(void)
 //==================================================================================================================
 // スマッシュ
 //==================================================================================================================
-void CPlayer::Smash(void)
+void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
-	// 条件を設定
-	m_bWalk = false;
-	m_bAttack = true;
+	// 変身していなければ、処理しない
+	if (!m_bTrans)
+		return;
 
-	// スマッシュ
-	if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
-	// スマッシュチャージ
-	else if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
-		m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
+	// チャージ中にボタンを離すと、スマッシュ
+	if (m_stateStand == STANDSTATE_SMASHCHARGE &&
+		((pGamepad && pGamepad->GetbConnect() && !pGamepad->GetPress(CInputGamepad::JOYPADKEY_B)) ||
+		(pKey && ((m_nPlayer == PLAYER_ONE && !pKey->GetKeyboardPress(ONE_SMASH)) || (m_nPlayer == PLAYER_TWO && !pKey->GetKeyboardPress(TWO_SMASH))))))
 	{
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
-		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHCHARGE);
+		m_stateStand = STANDSTATE_SMASH;
+		return;
+	}
+	else if (m_nCntState >= TIME_MAX_CHARGE)
+	{
+		m_stateStand = STANDSTATE_SMASH;
+		return;
 	}
 
-	// 攻撃が当たったフラグをオフにする
-	m_bAttakHit = false;
-	// 攻撃フレームを設定
-	m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+	// 変身中にボタンを長押しで、スマッシュチャージ
+	if ((pGamepad && pGamepad->GetbConnect() && pGamepad->GetPress(CInputGamepad::JOYPADKEY_B)) ||
+		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_SMASH)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_SMASH)))) &&
+		m_stateStand != STANDSTATE_SMASH)
+	{
+		m_stateStand = STANDSTATE_SMASHCHARGE;
+		m_nCntState++;
+	}
 }
 
 //==================================================================================================================
 // 通常攻撃
 //==================================================================================================================
-void CPlayer::NormalAttack(void)
+void CPlayer::NormalAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
-	int AllFrame = m_pModelCharacter->GetAllFrame();
-
-	if (!m_bAttack && !m_bJump)
+	// キー入力
+	if (m_stateStand != STANDSTATE_JUMP && m_stateStand != STANDSTATE_ATTACK &&
+		((pGamepad && pGamepad->GetbConnect() && pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)) ||
+		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_ATTACK)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_ATTACK))))))
 	{
-		// 条件を設定
-		m_bWalk = false;
-		m_bAttack = true;
+		m_stateStand = STANDSTATE_ATTACK;
+		m_nCntState = 0;
 	}
-	else if (m_bAttack)
+	else if (m_stateStand != STANDSTATE_JUMP && m_stateStand == STANDSTATE_ATTACK && m_bCancelAttack &&
+		((pGamepad && pGamepad->GetbConnect() && pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)) ||
+		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_ATTACK)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_ATTACK))))))
 	{
-		if (AllFrame - m_nAttackFrame > AllFrame ||
-			AllFrame - m_nAttackFrame < m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow - 1].CancelFrame.start)
-			return;
+		m_nCntState = 0;
 	}
-
-	// モーションの切り替え
-	m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
-	// 攻撃が当たったフラグをオフにする
-	m_bAttakHit = false;
-	// 攻撃フレームを設定
-	m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-	// 攻撃の順番を設定
-	m_nAttackFlow++;
-	if (m_nAttackFlow >= 4)
-		m_nAttackFlow = 0;
-
 }
 
 //==================================================================================================================
 // ジャンプ
 //==================================================================================================================
-void CPlayer::Jump(void)
+bool CPlayer::Jump(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
-	// 条件を設定
-	m_bJump = true;
-	m_bWalk = false;
-
-	// 移動値を設定
-	m_move.y = m_param.moveParam.fJumpPower;
+	// キー入力
+	if (m_stateStand != STANDSTATE_JUMP && m_stateStand != STANDSTATE_ATTACK &&
+		((pGamepad && pGamepad->GetbConnect() && pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A)) ||
+		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_JUMP)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_JUMP))))))
+	{
+		m_stateStand = STANDSTATE_JUMP;
+		// 移動値を設定
+		m_move.y = m_param.moveParam.fJumpPower;
+		// ジャンプ実行
+		return true;
+	}
+	// ジャンプしてない
+	return false;
 }
 
 //==================================================================================================================
-// 物持ち処理
+// 移動入力処理
 //==================================================================================================================
-void CPlayer::Lift(void)
+bool CPlayer::InputKeyMove(CInputKeyboard * pKey)
 {
-	// 持ち上げていなければ、処理しない
-	if (m_StateLift == STATE_NONE)
-	{
-		return;
-	}
+	bool bMove = false;
+	// 変数宣言
+	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
+	D3DXVECTOR3 rotDest = GetRotDest();										// 目的の向きを格納する変数
+	float		CameraRotY = pCamera->GetRotY();								// カメラのY軸回転の取得
 
-	if (m_StateLift == STATE_LIFT)
+	// Aキー長押し
+	if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_LEFT)) ||
+		m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_LEFT))
 	{
-		if (m_nCntState < TIME_LIFT_BEGIN)
+		// Wキー長押し
+		if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_UP)) ||
+			m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_UP))
 		{
-			m_nCntState++;
+			// 左上移動
+			m_move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			// 目的の向きを決定
+			rotDest.y = D3DX_PI * 0.75f + CameraRotY;
 		}
+		// Sキー長押し
+		else if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_DOWN)) ||
+			m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_DOWN))
+		{
+			// 左下移動
+			m_move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			// 目的の向きを決定
+			rotDest.y = D3DX_PI * 0.25f + CameraRotY;
+		}
+		// Aキーのみ
 		else
 		{
-			m_nCntState = 0;
-			m_StateLift = STATE_LIFT_NEUTRAL;
+			// 左移動
+			m_move.x += sinf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			// 目的の向きを決定
+			rotDest.x = 0.0f;
+			rotDest.y = D3DX_PI * 0.5f + CameraRotY;
 		}
+
+		// ジャンプ中でなければ、歩く
+		if (m_stateStand != STANDSTATE_JUMP)
+			m_stateStand = STANDSTATE_WALK;
 	}
+	// Dキー長押し
+	else if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_RIGHT)) ||
+		m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_RIGHT))
+	{
+		// Wキー長押し
+		if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_UP)) ||
+			m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_UP))
+		{
+			// 右上移動
+			m_move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			// 目的の向きを決定
+			rotDest.y = -D3DX_PI * 0.75f + CameraRotY;
+		}
+		// Sキー長押し
+		else if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_DOWN)) ||
+			m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_DOWN))
+		{
+			// 右下移動
+			m_move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			// 目的の向きを決定
+			rotDest.y = -D3DX_PI * 0.25f + CameraRotY;
+		}
+		// Dキーのみ
+		else
+		{
+			// 右移動
+			m_move.x += sinf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			m_move.z -= cosf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
+			// 目的の向きを決定
+			rotDest.y = -D3DX_PI * 0.5f + CameraRotY;
+		}
+		
+		// ジャンプ中でなければ、歩く
+		if (m_stateStand != STANDSTATE_JUMP)
+			m_stateStand = STANDSTATE_WALK;
+	}
+	// Wキー長押し
+	else if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_UP)) ||
+		m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_UP))
+	{
+		// 上移動
+		m_move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
+		m_move.z -= cosf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
+		// 目的の向きを決定
+		rotDest.y = -D3DX_PI * 1.0f + CameraRotY;
+	
+		// ジャンプ中でなければ、歩く
+		if (m_stateStand != STANDSTATE_JUMP)
+			m_stateStand = STANDSTATE_WALK;
+	}
+	// Sキー長押し
+	else if ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_DOWN)) ||
+		m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_DOWN))
+	{
+		// 下移動
+		m_move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
+		m_move.z -= cosf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
+		// 目的の向きを決定
+		rotDest.y = CameraRotY;
+	
+		// ジャンプ中でなければ、歩く
+		if (m_stateStand != STANDSTATE_JUMP)
+			m_stateStand = STANDSTATE_WALK;
+	}
+
+	// 回転の補正
+	CKananLibrary::InterpolationRot(&rotDest);
+
+	// 目的の回転の設定
+	SetRotDest(rotDest);
+
+	// 移動していない
+	return bMove;
+}
+
+//==================================================================================================================
+// ゲームパッドによる移動入力
+//==================================================================================================================
+bool CPlayer::InputPadMove(CInputGamepad * pGamepad)
+{
+	// 移動判定
+	bool bMove = false;
+
+	// 左スティック取得
+	float fValueX, fValueY;
+	pGamepad->GetStickLeft(&fValueX, &fValueY);
+
+	D3DXVECTOR3 rotDest = GetRotDest();	// 目的の向きを格納する変数
+	float		CameraRotY = CManager::GetRenderer()->GetGame()->GetCamera()->GetRotY();	// カメラのY軸回転の取得
+	float		fSpeed = 0.0f;			// プレイヤーの速度
+	float		fAngle = 0.0f;			// スティック角度の計算用変数
+
+	// 角度の計算して補正
+	fAngle = atan2f(fValueX, fValueY);
+	CKananLibrary::InterpolationFloat(fAngle);
+
+	// スティックの倒れ具合でスピードを決定
+	if (abs(fValueX) > abs(fValueY))
+		fSpeed = (abs(fValueX));	// 横の倒れ具合
+	else
+		fSpeed = (abs(fValueY));	// 縦の倒れ具合
+
+	// スティックの角度によってプレイヤー移動
+	m_move.x += sinf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
+	m_move.z += cosf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
+
+	// 目的の向きを決定
+	if (fValueX != 0 || fValueY != 0)
+	{
+		rotDest.y = D3DX_PI + fAngle + CameraRotY;
+		// ジャンプ中でなければ、歩く
+		if (m_stateStand != STANDSTATE_JUMP)
+			m_stateStand = STANDSTATE_WALK;
+	}
+
+	// 回転の補正
+	CKananLibrary::InterpolationRot(&rotDest);
+
+	// 目的の回転の設定
+	SetRotDest(rotDest);
+
+	return bMove;
 }
 
 //==================================================================================================================
@@ -420,8 +580,12 @@ void CPlayer::Lift(void)
 //==================================================================================================================
 void CPlayer::Shadow(void)
 {
+	bool bJump = false;
+	if (m_stateStand == STANDSTATE_JUMP)
+		bJump = true;
+
 	// 影位置設定
-	m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, C3DBoxCollider::GetHeight(), m_pos.z), m_move, m_bJump);
+	m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, C3DBoxCollider::GetHeight(), m_pos.z), m_move, bJump);
 }
 
 //==================================================================================================================
@@ -443,6 +607,9 @@ void CPlayer::Motion(void)
 	case STANDSTATE_BLOWAWAY:
 		MotionBlowAway();
 		break;
+	case STANDSTATE_SMASHBLOWAWAY:
+		MotionSmashBlowAway();
+		break;
 		// ダウン
 	case STANDSTATE_DOWN:
 		MotionDown();
@@ -463,9 +630,11 @@ void CPlayer::Motion(void)
 	case STANDSTATE_ATTACK:
 		MotionAttack();
 		break;
-		// 持ち上げ
-	case STANDSTATE_LIFT:
-		MotionLift();
+	case STANDSTATE_SMASHCHARGE:
+		MotionSmashCharge();
+		break;
+	case STANDSTATE_SMASH:
+		MotionSmash();
 		break;
 	}
 }
@@ -497,41 +666,20 @@ void CPlayer::MotionWalk(void)
 }
 
 //==================================================================================================================
-// 持ち上げモーション
-//==================================================================================================================
-void CPlayer::MotionLift(void)
-{
-	switch (m_StateLift)
-	{
-		// 持ち上げ
-	case STATE_LIFT:
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
-		break;
-	case STATE_LIFT_NEUTRAL:
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT_NEUTRAL);
-		break;
-	case STATE_WALK:
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
-		break;
-	case STATE_THROW:
-		break;
-	}
-}
-
-//==================================================================================================================
 // ジャンプモーション
 //==================================================================================================================
 void CPlayer::MotionJump(void)
 {
 	// 攻撃の状態を初期化
 	m_nAttackFlow = 0;
-	// ジャンプカウンタを加算
-	m_nCntJump++;
+	// カウンタを加算
+	m_nCntState++;
+	
 	// 最初はジャンプモーション
-	if (m_nCntJump <= 15)
+	if (m_nCntState <= TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
 	// 以降は落下モーション
-	else
+	else if (m_nCntState > TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
 }
 
@@ -576,22 +724,21 @@ void CPlayer::MotionDaunted(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 
+	// 怯み時間を加算
+	m_nCntState++;
 
+	// 怯み中
+	if (m_nCntState < m_nCntGap)
+		return;
 
-	// 後隙フレーム減算
-	m_nCntGap--;
-	// 攻撃の状態を初期化
-	m_nAttackFlow = 0;
-	// 怯み終了
-	if (m_nCntGap <= 0)
-	{
-		// 怯み解除
-		m_bDaunted = false;
-		// 後隙フレームを初期化
-		m_nCntGap = 0;
-	}
+	// 怯み解除
+	m_stateStand = STANDSTATE_NEUTRAL;
+	// 後隙フレームを初期化
+	m_nCntGap = 0;
 }
 
 //==================================================================================================================
@@ -599,32 +746,44 @@ void CPlayer::MotionDaunted(void)
 //==================================================================================================================
 void CPlayer::MotionBlowAway(void)
 {
-	// 吹っ飛び中
-	if (m_bBlowAway)
+	// モーション切替
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_BLOWAWAY)
 	{
-		// 地面に着く
-		if (m_move.y <= -3.0f)
-		{
-			// 吹き飛び終了
-			m_bBlowAway = false;
-			// ダウン開始
-			m_bDown = true;
-		}
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_BLOWAWAY);
+		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 
-	// スマッシュ吹き飛び中
-	if (m_bSmashBlowAway)
+
+	// 地面に着く
+	if (m_move.y <= -3.0f)
 	{
-		// 吹き飛びの威力が落ちる
-		if (abs(m_move.x) <= 5.0f &&
-			abs(m_move.z) <= 5.0f &&
-			abs(m_move.y) <= 5.0f)
-		{
-			// 吹き飛び終了
-			m_bSmashBlowAway = false;
-			// ダウン開始
-			m_bDown = true;
-		}
+		// ダウン開始
+		m_stateStand = STANDSTATE_DOWN;
+	}
+}
+
+//==================================================================================================================
+// スマッシュ吹っ飛びモーション
+//==================================================================================================================
+void CPlayer::MotionSmashBlowAway(void)
+{
+	// モーション切替
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_BLOWAWAY)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_BLOWAWAY);
+		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+	}
+
+	if (abs(m_move.x) <= 5.0f &&
+		abs(m_move.z) <= 5.0f &&
+		abs(m_move.y) <= 5.0f)
+	{
+		// ダウン開始
+		m_stateStand = STANDSTATE_DOWN;
 	}
 }
 
@@ -633,17 +792,79 @@ void CPlayer::MotionBlowAway(void)
 //==================================================================================================================
 void CPlayer::MotionAttack(void)
 {
-	// 攻撃フレームを減算
-	m_nAttackFrame--;
+	// 最初だけ
+	if (m_nCntState == 0)
+	{
+		// モーションの切り替え
+		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
+		// 攻撃が当たったフラグをオフにする
+		m_bAttakHit = false;
+		m_bAttakHitStone = false;
+		// 攻撃フレームを設定
+		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+
+		m_nAttackFlow++;
+	}
+
+	// 攻撃フレーム加算
+	m_nCntState++;
+
+	// キャンセル可能
+	if (m_nCntState <= m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow - 1].CancelFrame.end &&
+		m_nCntState >= m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow - 1].CancelFrame.start && m_nAttackFlow < 4)
+		m_bCancelAttack = true;
+	else
+	{
+		m_bCancelAttack = false;
+	}
+
 	// 攻撃終了後
-	if (m_nAttackFrame <= 0)
+	if (m_nCntState > m_nAttackFrame)
 	{
 		// 攻撃解除
-		m_bAttack = false;
+		m_nCntState = 0;
+		// モーション切り替え
+		m_stateStand = STANDSTATE_NEUTRAL;
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
 		// 攻撃フレームを初期化
 		m_nAttackFrame = 0;
+		return;
+	}
+}
+
+//==================================================================================================================
+// スマッシュチャージモーション
+//==================================================================================================================
+void CPlayer::MotionSmashCharge(void)
+{
+	// スマッシュチャージ
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHCHARGE);
+		// 攻撃が当たったフラグをオフにする
+		m_bAttakHit = false;
+	}
+}
+
+//==================================================================================================================
+// スマッシュモーション
+//==================================================================================================================
+void CPlayer::MotionSmash(void)
+{
+	// スマッシュ
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
+		// 攻撃フレームを設定
+		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+	}
+	m_nCntState++;
+	if (m_nCntState >= m_nAttackFrame)
+	{
+		m_stateStand = STANDSTATE_NEUTRAL;
+		m_nCntState = 0;
 	}
 }
 
@@ -652,6 +873,47 @@ void CPlayer::MotionAttack(void)
 //==================================================================================================================
 void CPlayer::MotionGetUp(void)
 {
+}
+
+//==================================================================================================================
+// スマッシュの判定
+//==================================================================================================================
+bool CPlayer::SmashJudge(void)
+{
+	if (m_bTrans &&
+		m_stateStand == STANDSTATE_SMASH || 
+		m_stateStand == STANDSTATE_SMASHCHARGE)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//==================================================================================================================
+// 着地処理
+//==================================================================================================================
+void CPlayer::SetLanding(void)
+{
+	if (m_stateStand == STANDSTATE_JUMP)
+	{
+		// ジャンプを初期化
+		m_stateJump = JUMPSTATE_NONE;
+		// ジャンプ解除
+		m_stateStand = STANDSTATE_NEUTRAL;
+	}
+}
+
+//==================================================================================================================
+// 怯み処理
+//==================================================================================================================
+void CPlayer::Daunted(const int nGap)
+{
+	// カウントを設定し、怯み状態に移行
+	m_pModelCharacter->ResetMotion();
+	m_nCntGap = nGap;
+	m_stateStand = STANDSTATE_DAUNTED;
+	m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
 }
 
 //==================================================================================================================
@@ -699,6 +961,27 @@ bool CPlayer::ReadyToHit(const int &nCapColliID)
 {
 	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
 	if (this->m_bAttakHit == false)
+	{
+		// 別のプレイヤーのモーションを比較
+		switch (this->m_pModelCharacter->GetMotion())
+		{
+		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
+		case CMotion::PLAYER_ATTACK_1: return HitConditionAttack1(nCapColliID);
+		case CMotion::PLAYER_ATTACK_2: return HitConditionAttack2(nCapColliID);
+		case CMotion::PLAYER_ATTACK_3: return HitConditionAttack3(nCapColliID);
+		case CMotion::PLAYER_SMASH:    return HitConditionSmash(nCapColliID);
+		}
+	}
+	return false;
+}
+
+//==================================================================================================================
+// 攻撃当てる準備かできているか
+//==================================================================================================================
+bool CPlayer::ReadyToHitStone(const int & nCapColliID)
+{
+	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
+	if (this->m_bAttakHitStone == false)
 	{
 		// 別のプレイヤーのモーションを比較
 		switch (this->m_pModelCharacter->GetMotion())
@@ -766,107 +1049,48 @@ CPlayer * CPlayer::GetAnotherPlayer(void)
 //==================================================================================================================
 void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 {
-	float fValueX, fValueY;	// ゲームパッドのスティック情報の取得用
+	// ゲームパッドのスティック情報の取得用
+	float fValueX, fValueY;
 
-							// 左スティック取得
+	// 左スティック取得
 	pGamepad->GetStickLeft(&fValueX, &fValueY);
 
 	// 何も入力されていなければ、処理しない
 	if (FAILED(CKananLibrary::GetMoveByGamepad(pGamepad)) &&
-		fValueX == 0 && fValueY == 0)
+		fValueX == 0 && fValueY == 0 && 
+		!SmashJudge())
 	{
-		m_bWalk = false;
+		// ジャンプ中でなければ、ニュートラル
+		if (m_stateStand != STANDSTATE_JUMP&&
+			m_stateStand != STANDSTATE_ATTACK)
+			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
 
 	if (CGame::GetGameState() == CGame::GAMESTATE_NORMAL)
 	{
-		// 変身中、スマッシュ入力
-		if (m_bTrans &&
-			(pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B)))
-			// スマッシュ
-			Smash();
+		// スマッシュ
+		Smash(pGamepad, nullptr);
 
 		// スマッシュ系モーション中は以降の処理をしない
-		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
-			m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
+		if (m_stateStand == STANDSTATE_SMASHCHARGE ||
+			m_stateStand == STANDSTATE_SMASH)
 			// 処理を終える
 			return;
 
 		// 攻撃入力
-		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X) &&
-			(m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
-				m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
-		{
-			// 通常攻撃
-			NormalAttack();
-			// 処理を終える
+		NormalAttack(pGamepad, nullptr);
+		
+		// 攻撃中であれば、処理を終える
+		if (m_stateStand == STANDSTATE_ATTACK)
 			return;
-		}
 	}
 
-	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
+	// ジャンプ
+	Jump(pGamepad, nullptr);
 
-	D3DXVECTOR3 rotDest = GetRotDest();				// 目的の向きを格納する変数
-	D3DXVECTOR3 vecCamera = pCamera->GetVec();		// カメラの向いている方向の取得
-	float		CameraRotY = pCamera->GetRotY();	// カメラのY軸回転の取得
-	float		fSpeed = 0.0f;						// プレイヤーの速度
-	float		fAngle;								// スティック角度の計算用変数
-
-	if (!m_bJump && !m_bAttack &&
-		pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
-	{
-		// ジャンプ
-		Jump();
-	}
-
-	if (m_bAttack)
-	{
-		m_bWalk = false;
-		return;
-	}
-
-	if (m_bDown)
-	{
-		m_bWalk = false;
-		return;
-	}
-
-	// 角度の計算して補正
-	fAngle = atan2f(fValueX, fValueY);
-	CKananLibrary::InterpolationFloat(fAngle);
-
-	// スティックの倒れ具合でスピードを決定
-	if (abs(fValueX) > abs(fValueY))
-		fSpeed = (abs(fValueX));		// 横の倒れ具合
-	else
-		fSpeed = (abs(fValueY));		// 縦の倒れ具合
-
-										// スティックの角度によってプレイヤー移動
-	m_move.x += sinf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
-	m_move.z += cosf(fAngle + CameraRotY) * fSpeed * m_param.moveParam.fRunSpeed;
-
-	// 目的の向きを決定
-	if (fValueX != 0 || fValueY != 0)
-	{
-		rotDest.y = D3DX_PI + fAngle + CameraRotY;
-		m_bWalk = true;
-	}
-
-	if (!m_bJump)
-	{
-		if (!m_bWalk)
-			// 歩き始めはモーションリセット
-			m_pModelCharacter->ResetMotion();
-		// 歩いている
-		m_bWalk = true;
-	}
-
-	// 回転の補正
-	CKananLibrary::InterpolationRot(&rotDest);
-
-	// 目的の回転の設定
-	SetRotDest(rotDest);
+	// 移動
+	InputPadMove(pGamepad);
 }
 
 //==================================================================================================================
@@ -875,180 +1099,40 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 {
 	// 入力されていなければ処理を終える
-	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard, m_nPlayer)))
+	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard, m_nPlayer)) &&
+		!SmashJudge())
 	{
-		m_bWalk = false;
+		// ジャンプ中でなければ、ニュートラル
+		if (m_stateStand != STANDSTATE_JUMP &&
+			m_stateStand != STANDSTATE_ATTACK)
+			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
 
-	// 変数宣言
-	CCamera *pCamera = CManager::GetRenderer()->GetGame()->GetCamera();	// カメラ取得
-	D3DXVECTOR3 rotDest = GetRotDest();										// 目的の向きを格納する変数
-	float		CameraRotY = pCamera->GetRotY();								// カメラのY軸回転の取得
-
+	// 攻撃はゲーム中のみ
 	if (CGame::GetGameState() == CGame::GAMESTATE_NORMAL)
 	{
-		// 変身中、スマッシュ入力
-		if (m_bTrans &&
-			((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_SMASH)) ||
-			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_SMASH))))
-			// スマッシュ
-			Smash();
+		// スマッシュ
+		Smash(nullptr, pKeyboard);
 
 		// スマッシュ系モーション中は以降の処理をしない
-		if (m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH_CHARGE ||
-			m_pModelCharacter->GetMotion() == CMotion::PLAYER_SMASH)
-			// 処理を終える
+		if (m_stateStand == STANDSTATE_SMASHCHARGE ||
+			m_stateStand == STANDSTATE_SMASH)
 			return;
 
-		// 攻撃入力
-		if ((((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_ATTACK)) ||
-			(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_ATTACK))) &&
-			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE &&
-			m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH))
-		{
-			// 通常攻撃
-			NormalAttack();
-			// 処理を終える
+		// 通常攻撃
+		NormalAttack(nullptr, pKeyboard);
+
+		// 攻撃中であれば、処理を終える
+		if (m_stateStand == STANDSTATE_ATTACK)
 			return;
-		}
 	}
 
-	if (m_StateLift == STATE_NONE &&
-		((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardTrigger(ONE_LIFT)) ||
-		(m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardTrigger(TWO_LIFT))))
-	{
-		m_bLift = true;
-		m_StateLift = STATE_LIFT;
-	}
+	// ジャンプ
+	Jump(nullptr, pKeyboard);
 
-	// 物持ち上げの処理
-	Lift();
-
-	if (!m_bJump && !m_bAttack &&
-		(m_nPlayer == PLAYER_ONE && (pKeyboard->GetKeyboardTrigger(ONE_JUMP)) ||
-			m_nPlayer == PLAYER_TWO && (pKeyboard->GetKeyboardTrigger(TWO_JUMP))))
-	{
-		// ジャンプ
-		Jump();
-	}
-
-	if (m_bAttack)
-	{
-		m_bWalk = false;
-		return;
-	}
-
-	if (m_bDown)
-	{
-		m_bWalk = false;
-		return;
-	}
-
-	// Aキー長押し
-	if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_LEFT)) ||
-		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_LEFT))
-	{
-		// Wキー長押し
-		if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_UP)) ||
-			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
-		{
-			// 左上移動
-			m_move.x += sinf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			m_move.z -= cosf(-D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// 目的の向きを決定
-			rotDest.y = D3DX_PI * 0.75f + CameraRotY;
-		}
-		// Sキー長押し
-		else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
-			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
-		{
-			// 左下移動
-			m_move.x += sinf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			m_move.z -= cosf(-D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// 目的の向きを決定
-			rotDest.y = D3DX_PI * 0.25f + CameraRotY;
-		}
-		// Aキーのみ
-		else
-		{
-			// 左移動
-			m_move.x += sinf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			m_move.z -= cosf(-D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// 目的の向きを決定
-			rotDest.x = 0.0f;
-			rotDest.y = D3DX_PI * 0.5f + CameraRotY;
-		}
-	}
-	// Dキー長押し
-	else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_RIGHT)) ||
-		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_RIGHT))
-	{
-		// Wキー長押し
-		if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_UP)) ||
-			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
-		{
-			// 右上移動
-			m_move.x += sinf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			m_move.z -= cosf(D3DX_PI * 0.75f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// 目的の向きを決定
-			rotDest.y = -D3DX_PI * 0.75f + CameraRotY;
-		}
-		// Sキー長押し
-		else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
-			m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
-		{
-			// 右下移動
-			m_move.x += sinf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			m_move.z -= cosf(D3DX_PI * 0.25f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// 目的の向きを決定
-			rotDest.y = -D3DX_PI * 0.25f + CameraRotY;
-		}
-		// Dキーのみ
-		else
-		{
-			// 右移動
-			m_move.x += sinf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			m_move.z -= cosf(D3DX_PI * 0.5f - CameraRotY) * m_param.moveParam.fRunSpeed;
-			// 目的の向きを決定
-			rotDest.y = -D3DX_PI * 0.5f + CameraRotY;
-		}
-	}
-	// Wキー長押し
-	else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_UP)) ||
-		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_UP))
-	{
-		// 上移動
-		m_move.x += sinf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
-		m_move.z -= cosf(D3DX_PI * 1.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
-		// 目的の向きを決定
-		rotDest.y = -D3DX_PI * 1.0f + CameraRotY;
-	}
-	// Sキー長押し
-	else if ((m_nPlayer == PLAYER_ONE && pKeyboard->GetKeyboardPress(ONE_DOWN)) ||
-		m_nPlayer == PLAYER_TWO && pKeyboard->GetKeyboardPress(TWO_DOWN))
-	{
-		// 下移動
-		m_move.x += sinf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
-		m_move.z -= cosf(D3DX_PI * 0.0f - CameraRotY) * m_param.moveParam.fRunSpeed;
-		// 目的の向きを決定
-		rotDest.y = CameraRotY;
-	}
-
-	if (!m_bJump)
-	{
-		if (!m_bWalk)
-			// 歩き始めはモーションリセット
-			m_pModelCharacter->ResetMotion();
-		// 歩いている
-		m_bWalk = true;
-	}
-
-	// 回転の補正
-	CKananLibrary::InterpolationRot(&rotDest);
-
-	// 目的の回転の設定
-	SetRotDest(rotDest);
+	// 移動入力
+	InputKeyMove(pKeyboard);
 }
 
 //==================================================================================================================
@@ -1089,14 +1173,14 @@ void CPlayer::CatchStone(CStone *pStone)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
-	// if (pAnother->m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
-	// 	pAnother->m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
-	// {
-	// 	// ダメージを受ける
-	// 	TakeDamage();
-	// 	// 当てたフラグを立てる
-	// 	pAnother->m_bAttakHit = true;
-	// }
+	 //if (pAnother->m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
+	 //	pAnother->m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
+	 //{
+	 //	// ダメージを受ける
+	 //	TakeDamage();
+	 //	// 当てたフラグを立てる
+	 //	pAnother->m_bAttakHit = true;
+	 //}
 }
 
 //==================================================================================================================
@@ -1107,7 +1191,7 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
 	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
 	//{
-	// ダメージを受ける
+	//	// ダメージを受ける
 	//	TakeDamage();
 	//	// 当てたフラグを立てる
 	//	pAnother->m_bAttakHit = true;
@@ -1122,7 +1206,7 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
 	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
 	//{
-	// ダメージを受ける
+	//	// ダメージを受ける
 	//	TakeDamage();
 	//	// 当てたフラグを立てる
 	//	pAnother->m_bAttakHit = true;
@@ -1145,10 +1229,10 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 	//		// 吹き飛び
 	//		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
 	//		// 吹き飛びを有効
-	//		m_bBlowAway = true;
+	//		m_stateStand = STANDSTATE_BLOWAWAY;
 	//		if (m_nNumStone > 0)
 	//		{
-	//			// 所持ストーンを一つ減らすn
+	//			// 所持ストーンを一つ減らす
 	//			m_nNumStone--;
 	//			// 減らしたストーンを即生成
 	//			CGame::AppearStone();
@@ -1173,7 +1257,7 @@ void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 	//	// 変身中以外は吹き飛ぶ
 	//	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
 	//	// スマッシュによる吹き飛びを実行
-	//	m_bSmashBlowAway = true;
+	//	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
 	//	// 当てたフラグを立てる
 	//	pAnother->m_bAttakHit = true;
 	//}
@@ -1207,7 +1291,7 @@ void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
 		// 吹き飛び
 		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
 		// 吹き飛びを有効
-		m_bBlowAway = true;
+		m_stateStand = STANDSTATE_BLOWAWAY;
 		if (m_nNumStone > 0)
 		{
 			// 所持ストーンを一つ減らす
@@ -1232,7 +1316,7 @@ void CPlayer::TakeSmashDamage(CPlayer * pAnother)
 	// 変身中以外は吹き飛ぶ
 	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
-	m_bSmashBlowAway = true;
+	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
 	// 当てたフラグを立てる
 	pAnother->m_bAttakHit = true;
 }
@@ -1322,15 +1406,11 @@ void CPlayer::ShowDebugInfo()
 		// 情報の表示
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
 		ImGui::Text("nLife       : %f", m_nLife);
-		ImGui::Text("bJump       : %d", m_bJump);
-		ImGui::Text("bWalk       : %d", m_bWalk);
-		ImGui::Text("bDown       : %d", m_bDown);
-		ImGui::Text("bAttack     : %d", m_bAttack);
-		if (m_bAttack)
-		{
-			ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
-			ImGui::Text("AttackFrame : %d / %d", nAllFrame - m_nAttackFrame, nAllFrame);
-		}
+		ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
+		ImGui::Text("AttackFrame : %d / %d", m_nCntState, m_nAttackFrame);
+		if (m_stateStand == STANDSTATE_ATTACK)
+		ImGui::Text("CancelFrame : %d ~ %d", m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow - 1].CancelFrame.start,
+			m_param.motionParam[(CCharaParam::PLAYER_ATTACK_TYPE)m_nAttackFlow - 1].CancelFrame.end);
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);

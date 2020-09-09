@@ -52,22 +52,13 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_move				= ZeroVector3;
 	m_nCntTrans			= 0;
 	m_nAttackFlow		= 0;
-	m_nAttackFrame		= 0;
-	m_nCntGap			= 0;
-	m_nCntJump			= 0;
 	m_nNumStone 		= 0;
 	m_nLife				= 0;
-	m_bDown				= false;
-	m_bAttack			= false;
-	m_bJump				= false;
-	m_bWalk				= false;
-	m_bBlowAway			= false;
-	m_bSmashBlowAway	= false;
-	m_bDaunted			= false;
-	m_bLift				= false;
 	m_stateStand		= STANDSTATE_NEUTRAL;
 	m_stateJump			= JUMPSTATE_NONE;
 	m_StateLift			= STATE_NONE;
+	m_bAttakHit			= false;
+	m_bAttakHitStone	= false;
 	
 	// 総数を加算
 	m_nNumCharacter++;
@@ -115,9 +106,6 @@ void CCharacter::Update()
 
 	// 回転処理
 	Rot();
-
-	// モーション処理
-	Motion();
 
 	// 変身処理
 	Trans();
@@ -220,18 +208,6 @@ void CCharacter::SetCylinderCoillider(void)
 }
 
 //=============================================================================
-// ひるみ処理
-//=============================================================================
-void CCharacter::Daunted(const int nGap)
-{
-	// カウントを設定し、怯み状態に移行
-	m_pModelCharacter->ResetMotion();
-	m_nCntGap = nGap;
-	m_bDaunted = true;
-	m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
-}
-
-//=============================================================================
 // 勝利行動
 //=============================================================================
 void CCharacter::VictoryAction(void)
@@ -245,17 +221,15 @@ void CCharacter::Move(void)
 {
 	// 前回の位置を保存
 	m_posOld = m_pos;
-
-	D3DXVECTOR3 difMove;	// 現在の移動値と目的の移動値の差
 	
 	// 慣性
-	if (m_bSmashBlowAway == true)
+	if (m_stateStand == STANDSTATE_SMASHBLOWAWAY)
 	{
 		CMylibrary::SlowingMove(&m_move.x, INERTIA_SMASH);
 		CMylibrary::SlowingMove(&m_move.y, INERTIA_SMASH);
 		CMylibrary::SlowingMove(&m_move.z, INERTIA_SMASH);
 	}
-	else if (m_bBlowAway == true)
+	else if (m_stateStand == STANDSTATE_BLOWAWAY)
 	{
 		CMylibrary::SlowingMove(&m_move.x, INERTIA_BLOWAWAY);
 		CMylibrary::SlowingMove(&m_move.y, INERTIA_BLOWAWAY);
@@ -269,21 +243,6 @@ void CCharacter::Move(void)
 
 	//移動量加算
 	m_pos += m_move;
-
-	// 地面との高さを比較し、修正
-	if (CKananLibrary::FloatLowerLimit(&m_pos.y, CManager::GetRenderer()->GetGame()->GetMeshField()->GetHeight(m_pos)))
-	{
-		// スマッシュ被弾時は反射
-		if (m_bSmashBlowAway)
-			m_move.y *= -1;
-		// 地面に乗っていたら、移動量をなくす
-		if (m_move.y <= -10.0f)
-			m_move.y = -10.0f;
-		// ジャンプ解除
-		m_bJump = false;
-		// ジャンプカウンタを初期化
-		m_nCntJump = 0;
-	}
 }
 
 //=============================================================================
@@ -302,125 +261,6 @@ void CCharacter::Rot(void)
 
 	// 回転の補間
 	CKananLibrary::InterpolationRot(&m_rot);
-}
-
-//=============================================================================
-// モーションの処理
-//=============================================================================
-void CCharacter::Motion(void)
-{
-	if (!m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);	// ニュートラルモーション
-	if (m_bWalk && !m_bAttack && !m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown && m_StateLift == STATE_NONE)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_WALK);	// 移動モーション
-
-	switch (m_StateLift)
-	{
-		// 持ち上げ
-	case STATE_LIFT:
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
-		break;
-	case STATE_LIFT_NEUTRAL:
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT_NEUTRAL);
-		break;
-	case STATE_WALK:
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_LIFT);
-		break;
-	case STATE_THROW:
-		break;
-	}
-
-	// ジャンプニュートラル
-	if (m_bJump && !m_bDaunted && !m_bBlowAway && !m_bDown)
-	{
-		// 攻撃の状態を初期化
-		m_nAttackFlow = 0;
-		// ジャンプカウンタを加算
-		m_nCntJump++;
-		// 最初はジャンプモーション
-		if (m_nCntJump <= 15)
-			m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
-		// 以降は落下モーション
-		else
-			m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
-	}
-	// ダウン中
-	if (m_bDown)
-	{
-		// ダウンカウント加算
-		m_nCntDown++;
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_DOWN);
-		// ダウン終了
-		if (m_nCntDown >= TIME_MAX_DOWN)
-		{
-			// ダウン状態解除
-			m_bDown = false;
-			// カウント初期化
-			m_nCntDown = 0;
-		}
-	}
-
-	// 攻撃中
-	if (m_bAttack)
-	{
-		// 攻撃フレームを減算
-		m_nAttackFrame--;
-		// 攻撃終了後
-		if (m_nAttackFrame <= 0)
-		{
-			// 攻撃解除
-			m_bAttack = false;
-			// 攻撃の状態を初期化
-			m_nAttackFlow = 0;
-			// 攻撃フレームを初期化
-			m_nAttackFrame = 0;
-		}
-	}
-
-	// 怯み中
-	if (m_bDaunted)
-	{
-		// 後隙フレーム減算
-		m_nCntGap--;
-		// 攻撃の状態を初期化
-		m_nAttackFlow = 0;
-		// 怯み終了
-		if (m_nCntGap <= 0)
-		{
-			// 怯み解除
-			m_bDaunted = false;
-			// 後隙フレームを初期化
-			m_nCntGap = 0;
-		}
-	}
-
-	// 吹っ飛び中
-	if (m_bBlowAway)
-	{
-		// 地面に着く
-		if (m_move.y <= -3.0f)
-		{
-			// 吹き飛び終了
-			m_bBlowAway = false;
-			// ダウン開始
-			m_bDown = true;
-		}
-	}
-
-	// スマッシュ吹き飛び中
-	if (m_bSmashBlowAway)
-	{
-		// 吹き飛びの威力が落ちる
-		if (abs(m_move.x) <= 5.0f &&
-			abs(m_move.z) <= 5.0f &&
-			abs(m_move.y) <= 5.0f)
-		{
-			// 吹き飛び終了
-			m_bSmashBlowAway = false;
-			// ダウン開始
-			m_bDown = true;
-		}
-	}
 }
 
 //=============================================================================

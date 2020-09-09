@@ -735,7 +735,7 @@ HRESULT CKananLibrary::GetMoveByKeyboard(CInputKeyboard * pKey, int nPlayer)
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_LEFT) &&
 		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_JUMP) && 
 		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_ATTACK) &&
-		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_ONE::ONE_SMASH))) ||
+		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_ONE::ONE_SMASH))) ||
 			(nPlayer == PLAYER_TWO &&
 		(!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_UP) &&
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_DOWN) &&
@@ -743,7 +743,7 @@ HRESULT CKananLibrary::GetMoveByKeyboard(CInputKeyboard * pKey, int nPlayer)
 		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_LEFT) &&
 		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_JUMP) && 
 		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_ATTACK) &&
-		!pKey->GetKeyboardTrigger(PLAYER_MOVE_KEY_TWO::TWO_SMASH))))
+		!pKey->GetKeyboardPress(PLAYER_MOVE_KEY_TWO::TWO_SMASH))))
 	{
 		// ˆÚ“®‚µ‚Ä‚¢‚È‚¢
 		return E_FAIL;
@@ -761,8 +761,7 @@ HRESULT CKananLibrary::GetMoveByGamepad(CInputGamepad * pGamepad)
 	// “ü—Í‚³‚ê‚Ä‚¢‚È‚¢
 	if ((!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A) &&
 		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B) &&
-		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X) &&
-		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_Y)))
+		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)))
 	{
 		// ‘€ì‚µ‚Ä‚¢‚È‚¢
 		return E_FAIL;

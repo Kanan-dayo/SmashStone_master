@@ -39,8 +39,10 @@ public:
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
 	CPlayer*GetAnotherPlayer(void);				
 
+	void Daunted(const int nGap);	// 怯み
 
 	bool ReadyToHit(const int &nCapColliID);			
+	bool ReadyToHitStone(const int &nCapColliID);
 	bool HitConditionAttack0(const int &nCapColliID);	
 	bool HitConditionAttack1(const int &nCapColliID);	
 	bool HitConditionAttack2(const int &nCapColliID);	
@@ -51,27 +53,34 @@ public:
 	void CatchStone(CStone *pStone);	
 	CShadow *GetShadow(void) { return m_pShadow; }	// キャラクターの影取得処理
 
+
 protected:
 
 private:
 	void Control(void);								
 	void Collision(void);							
-	void Smash(void);								
-	void NormalAttack(void);						
-	void Jump(void);								
-	void Lift(void);								
+	void Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey);
+	void NormalAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey);
+	bool Jump(CInputGamepad *pGamepad, CInputKeyboard *pKey);
+	bool InputKeyMove(CInputKeyboard *pKey);
+	bool InputPadMove(CInputGamepad *pGamepad);
 	void Shadow(void);								// 影関係の更新処理
 
 	void Motion(void);
 	void MotionNeutral(void);
 	void MotionWalk(void);
-	void MotionLift(void);
 	void MotionJump(void);
 	void MotionDown(void);
 	void MotionDaunted(void);
 	void MotionBlowAway(void);
+	void MotionSmashBlowAway(void);
 	void MotionAttack(void);
+	void MotionSmashCharge(void);
+	void MotionSmash(void);
 	void MotionGetUp(void);
+	bool SmashJudge(void);
+
+	void SetLanding(void);
 
 	void CollisionAttack(void);						
 
@@ -97,9 +106,14 @@ private:
 
 	int m_nPlayer;			
 	int m_nBoxColliderID;	
-	int m_nCntState;
+	int m_nCntState;		// 状態管理用のカウンタ
+	int m_nCntGap;			// 被ダメージ時の後隙カウンタ
+
+	int	m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
+
 
 	bool m_bIn[3];		// ポリゴンの範囲内フラグ
+	bool m_bCancelAttack;	// 攻撃のキャンセルフラグ
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									
