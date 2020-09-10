@@ -105,6 +105,7 @@ public:
 	inline void        SetAttakHitStone(const bool &bAttackHit)	{ m_bAttakHitStone = bAttackHit; }	// ストーンに攻撃を当てたフラグ
 	void               SetModelType(CHARACTER_TYPE type);											// モデルの設定
 	void               SetCylinderCoillider(void);													// シリンダーコライダーの設定
+	void               ConfromFromModelIndexToYypeID(int *pOut, const int *pIn);					// モデルインデックスからタイプIDに変換
 
 	inline CHARACTER_TYPE    GetCharaType(void)					{ return m_type; }					// キャラタイプの取得
 	inline STATE_LIFT_OBJET  GetStateLift(void)					{ return m_StateLift; }				// 物持ち上げの状態取得
@@ -116,6 +117,7 @@ public:
 	inline float             &GetLife(void)						{ return m_nLife; }					// ライフ取得
 	inline void              Damage(const int nDamage)			{ m_nLife -= nDamage; }				// ダメージ処理
 	inline CCapsuleCollider* GetCapCollider(int nPartsIndex)	{ return m_pCapColi[nPartsIndex]; }	// カプセルコライダーの取得
+	inline CModelCharacter*  GetModelCharacter(void)			{ return m_pModelCharacter; }		// モデルキャラクタ－の取得
 
 	inline bool				 GetStoneType(int nID)				{ return m_bGetStoneType[nID]; }	// 取得したストーンタイプ取得
 	inline bool				 GetTrans(void)						{ return m_bTrans; }				// 変身したかどうか

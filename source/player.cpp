@@ -958,7 +958,7 @@ void CPlayer::CollisionAttack(void)
 //==================================================================================================================
 // 攻撃当てる準備かできているか
 //==================================================================================================================
-bool CPlayer::ReadyToHit(const int &nCapColliID)
+bool CPlayer::ReadyToHit(void)
 {
 	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
 	if (this->m_bAttakHit == false)
@@ -966,11 +966,11 @@ bool CPlayer::ReadyToHit(const int &nCapColliID)
 		// 別のプレイヤーのモーションを比較
 		switch (this->m_pModelCharacter->GetMotion())
 		{
-		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
-		case CMotion::PLAYER_ATTACK_1: return HitConditionAttack1(nCapColliID);
-		case CMotion::PLAYER_ATTACK_2: return HitConditionAttack2(nCapColliID);
-		case CMotion::PLAYER_ATTACK_3: return HitConditionAttack3(nCapColliID);
-		case CMotion::PLAYER_SMASH:    return HitConditionSmash(nCapColliID);
+		case CMotion::PLAYER_ATTACK_0: return true;
+		case CMotion::PLAYER_ATTACK_1: return true;
+		case CMotion::PLAYER_ATTACK_2: return true;
+		case CMotion::PLAYER_ATTACK_3: return true;
+		case CMotion::PLAYER_SMASH:    return true;
 		}
 	}
 	return false;
@@ -979,7 +979,7 @@ bool CPlayer::ReadyToHit(const int &nCapColliID)
 //==================================================================================================================
 // 攻撃当てる準備かできているか
 //==================================================================================================================
-bool CPlayer::ReadyToHitStone(const int & nCapColliID)
+bool CPlayer::ReadyToHitStone(void)
 {
 	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
 	if (this->m_bAttakHitStone == false)
@@ -987,11 +987,11 @@ bool CPlayer::ReadyToHitStone(const int & nCapColliID)
 		// 別のプレイヤーのモーションを比較
 		switch (this->m_pModelCharacter->GetMotion())
 		{
-		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
-		case CMotion::PLAYER_ATTACK_1: return HitConditionAttack1(nCapColliID);
-		case CMotion::PLAYER_ATTACK_2: return HitConditionAttack2(nCapColliID);
-		case CMotion::PLAYER_ATTACK_3: return HitConditionAttack3(nCapColliID);
-		case CMotion::PLAYER_SMASH:    return HitConditionSmash(nCapColliID);
+		case CMotion::PLAYER_ATTACK_0: return true;
+		case CMotion::PLAYER_ATTACK_1: return true;
+		case CMotion::PLAYER_ATTACK_2: return true;
+		case CMotion::PLAYER_ATTACK_3: return true;
+		case CMotion::PLAYER_SMASH:    return true;
 		}
 	}
 	return false;

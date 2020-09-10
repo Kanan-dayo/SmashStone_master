@@ -41,8 +41,8 @@ public:
 
 	void Daunted(const int nGap);	// ‹¯‚Ý
 
-	bool ReadyToHit(const int &nCapColliID);			
-	bool ReadyToHitStone(const int &nCapColliID);
+	bool ReadyToHit(void);			
+	bool ReadyToHitStone(void);
 	bool HitConditionAttack0(const int &nCapColliID);	
 	bool HitConditionAttack1(const int &nCapColliID);	
 	bool HitConditionAttack2(const int &nCapColliID);	

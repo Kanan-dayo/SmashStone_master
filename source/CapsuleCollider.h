@@ -28,15 +28,15 @@ public:
 	typedef enum
 	{
 		TYPEID_NOEN = -1,	// 無し
-		COLLIPARTS_BODY,	// 体
+		TYPEID_BODY,		// 体
 		TYPEID_FOREARM_R,	// 右前腕
 		TYPEID_UPPERARM_R,	// 右上腕
 		TYPEID_FOREARM_L,	// 左前腕
 		TYPEID_UPPERARM_L,	// 左上腕
 
-		TYPEID_FEMUR_R,		// 右太腿
+		TYPEID_THIGH_R,		// 右太腿
 		TYPEID_LOWERLEG_R,	// 右下腿部
-		TYPEID_FEMUR_L,		// 左太腿
+		TYPEID_THIGH_L,		// 左太腿
 		TYPEID_LOWERLEG_L,	// 左下腿部
 
 		TYPEID_MAX			// 最大数

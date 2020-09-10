@@ -5,6 +5,7 @@
 //
 //=============================================================================
 
+
 //=============================================================================
 // インクルード
 //=============================================================================
@@ -190,21 +191,42 @@ void CCharacter::SetCylinderCoillider(void)
 
 	// 右前腕の設定
 	m_pCapColi[CCharacter::COLLIPARTS_FOREARM_R] =
-		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LOWARM_R].GetMtx(), CCharacter::COLLIPARTS_FOREARM_R);
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LOWARM_R].GetMtx(), CCapsuleCollider::TYPEID_FOREARM_R);
 	// 右上腕の設定
 	m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_R] =
-		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_R].GetMtx(), CCharacter::COLLIPARTS_UPPERARM_R);
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_R].GetMtx(), CCapsuleCollider::TYPEID_UPPERARM_R);
 	// 左前腕の設定
 	m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L] =
-		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LOWARM_L].GetMtx(), CCharacter::COLLIPARTS_FOREARM_L);
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LOWARM_L].GetMtx(), CCapsuleCollider::TYPEID_FOREARM_L);
 	// 左上腕の設定
 	m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L] =
-		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx(), CCharacter::COLLIPARTS_UPPERARM_L);
-
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx(), CCapsuleCollider::TYPEID_UPPERARM_L);
 	// 体の設定
 	m_pCapColi[CCharacter::COLLIPARTS_BODY] =
-		CCapsuleCollider::Create(this, &m_mtxWorld, CCharacter::COLLIPARTS_BODY);
+		CCapsuleCollider::Create(this, &m_mtxWorld, CCapsuleCollider::TYPEID_BODY);
 
+
+}
+
+#define CASE(Key)	break;case (Key):
+#define DEFAULT		break;default:
+//=============================================================================
+// モデルインデックスからタイプIDに変換
+//=============================================================================
+void CCharacter::ConfromFromModelIndexToYypeID(int * pOut, const int * pIn)
+{
+	switch ((CModelCharacter::PARTSNAME)*pIn)
+	{
+		CASE(CModelCharacter::UPARM_R)   *pOut = (int)CCapsuleCollider::TYPEID_UPPERARM_R;
+		CASE(CModelCharacter::FOREARM_R) *pOut = (int)CCapsuleCollider::TYPEID_FOREARM_R;
+		CASE(CModelCharacter::UPARM_L)   *pOut = (int)CCapsuleCollider::TYPEID_UPPERARM_L;
+		CASE(CModelCharacter::FOREARM_L) *pOut = (int)CCapsuleCollider::TYPEID_FOREARM_L;
+		CASE(CModelCharacter::THIGH_R)   *pOut = (int)CCapsuleCollider::TYPEID_THIGH_R;
+		CASE(CModelCharacter::LOWERLEG_R)*pOut = (int)CCapsuleCollider::TYPEID_LOWERLEG_R;
+		CASE(CModelCharacter::THIGH_L)   *pOut = (int)CCapsuleCollider::TYPEID_THIGH_L;
+		CASE(CModelCharacter::LOWERLEG_L)*pOut = (int)CCapsuleCollider::TYPEID_LOWERLEG_L;
+			DEFAULT *pOut = -1; return;
+	}
 }
 
 //=============================================================================
