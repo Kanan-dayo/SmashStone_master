@@ -750,6 +750,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						{
 							*pOut_intersect = pos;
 							*pOut_nor = D3DXVECTOR3(-1.0f, 0.0f, 0.0f);
+							bCollision = true;
 						}
 					}
 					// ‰E‚Ì“–‚½‚è”»’è
@@ -763,6 +764,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						{
 							*pOut_intersect = pos;
 							*pOut_nor = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
+							bCollision = true;
 						}
 					}
 				}
@@ -781,6 +783,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						{
 							*pOut_intersect = pos;
 							*pOut_nor = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+							bCollision = true;
 						}
 					}
 					// ‰E‚Ì“–‚½‚è”»’è
@@ -794,6 +797,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						{
 							*pOut_intersect = pos;
 							*pOut_nor = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+							bCollision = true;
 						}
 					}
 				}
@@ -810,11 +814,15 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						pOwnerCollider->pos.y = pOtherCollider->pos.y - (pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + 0.0001f);
 						pos.y = pOwnerCollider->pos.y - pOwnerCollider->difference.y;
 
-						move.y = 0.0f;
 						if (bReflection == true)
 						{
 							*pOut_intersect = pos;
 							*pOut_nor = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+							bCollision = true;
+						}
+						else
+						{
+							move.y = 0.0f;
 						}
 					}
 					else if (pOwnerCollider->pos.y - pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE < pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE&&
@@ -822,12 +830,16 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					{
 						pOwnerCollider->pos.y = pOtherCollider->pos.y + pOtherCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + pOwnerCollider->size.y * _3DBOXCOLLIDER_HALF_SIZE + 0.0001f;
 						pos.y = pOwnerCollider->pos.y - pOwnerCollider->difference.y;
-						move.y = 0.0f;
 						bCollision = true;
 						if (bReflection == true)
 						{
 							*pOut_intersect = pos;
 							*pOut_nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+							bCollision = true;
+						}
+						else
+						{
+							move.y = 0.0f;
 						}
 					}
 					
@@ -906,6 +918,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 					{
 						*pOut_intersect = pos;
 						*pOut_nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+						bCollision = true;
 					}
 				}
 			}
@@ -935,6 +948,7 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 						CMylibrary::CreateUnitVector(&norm, &norm);
 						*pOut_intersect = pos;
 						*pOut_nor = norm;
+						bCollision = true;
 					}
 
 				}

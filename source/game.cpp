@@ -141,15 +141,16 @@ void CGame::Init(void)
 
 	/* 生成 */
 	C3DBoxCollider::Create();										// ボックスコライダーの生成
+	m_pPlayer[PLAYER_ONE] = CPlayer::Create(PLAYER_ONE, (CHARACTER_TYPE)m_nPlayerType[PLAYER_ONE]);	// プレイヤー生成
+	m_pPlayer[PLAYER_TWO] = CPlayer::Create(PLAYER_TWO, (CHARACTER_TYPE)m_nPlayerType[PLAYER_TWO]);	// プレイヤー生成
+	m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
+	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
+
 	m_pObjMana    = CObjectManager::Create((STAGETYPE)m_nStageType);// オブジェクトマネージャーの生成
 	m_pWall       = CWall::Create(CWall::WALLTEX_FIELD);			// 壁の生成
 	m_pCamera     = CCamera::Create();								// カメラの生成処理
 	m_pLight      = CLight::Create();								// ライトの生成処理
 	m_pMeshSphere = CMeshSphere::Create();							// メッシュ球の生成処理
-	m_pPlayer[PLAYER_ONE] = CPlayer::Create(PLAYER_ONE, (CHARACTER_TYPE)m_nPlayerType[PLAYER_ONE]);	// プレイヤー生成
-	m_pPlayer[PLAYER_TWO] = CPlayer::Create(PLAYER_TWO, (CHARACTER_TYPE)m_nPlayerType[PLAYER_TWO]);	// プレイヤー生成
-	m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
-	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
 
 	m_pMeshField  = CMeshField::Create(INTEGER2(4, 4), D3DXVECTOR3(600.0f, 0.0f, 600.0f), D3DXVECTOR3(0.0f, -40.0f, 50.0f));// メッシュフィールド生成
 	m_pUI         = CUI_game::Create();								// UIの生成処理

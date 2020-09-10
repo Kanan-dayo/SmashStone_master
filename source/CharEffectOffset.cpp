@@ -240,11 +240,8 @@ void CCharEffectOffset::Update(void)
 		{
 			continue;
 		}
-		pParamCell[nCntParam].pos;
 		pParamCell[nCntParam].Origin = m_pos;
 		C3DEffect::Set(pParamCell[nCntParam]);
-
-		pParamCell[nCntParam].pos;
 	}
 
 	// ŠJ•úŠm”F
