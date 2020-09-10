@@ -24,6 +24,18 @@ void C3DParticle::Load(void)
 #endif // _DEBUG
 	// ファイル名
 	CONST_STRING pFileName[OFFSETNAME::OFFSET_MAX] = {
+		{ "data/TEXT/Effect/ParticleOffset/StoneAppearRed.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneNormalRed.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneDisAppearRed.txt" },
+
+		{ "data/TEXT/Effect/ParticleOffset/StoneAppearGreen.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneNormalGreen.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneDisAppearGreen.txt" },
+
+		{ "data/TEXT/Effect/ParticleOffset/StoneAppearBlue.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneNormalBlue.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneDisAppearBlue.txt" },
+
 		{ "data/TEXT/Effect/ParticleOffset/HitOffset.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/SmashAttackStart.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/SmashAttackHit.txt" },
@@ -227,126 +239,103 @@ void C3DParticle::LoadParamFromFile(FILE * pFile, const int & nCntOffSet, const 
 		if (sscanf(pFIleRead, "TIMER = %d", &nIntWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].nTimer = nIntWork;
-			cout << "TIMER 取得\n";
 		}
 		else if (sscanf(pFIleRead, "FRAME = %d", &nIntWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].nFrame = nIntWork;
-			cout << "FRAME 取得\n";
 		}
 		else if (sscanf(pFIleRead, "NUMBER = %d", &nIntWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].nNumber = nIntWork;
-			cout << "NUMBER 取得\n";
 		}
 		else if (sscanf(pFIleRead, "TYPE = %d", &nIntWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].nType = nIntWork;
-			cout << "TYPE 取得\n";
 		}
 		else if (sscanf(pFIleRead, "TEXTYPE = %d", &nIntWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].nTexType = nIntWork;
-			cout << "TEXTYPE 取得\n";
 		}
 		else if (sscanf(pFIleRead, "POS = %f %f %f", &Float3Work.x, &Float3Work.y, &Float3Work.z) == 3)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pPos = new D3DXVECTOR3;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pPos = Float3Work;
-			cout << "POS 取得\n";
 		}
 		else if (sscanf(pFIleRead, "POSXRAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pPosXRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pPosXRand = RangeWork;
-			cout << "POSXRAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "POSYRAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pPosYRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pPosYRand = RangeWork;
-			cout << "POSYRAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "POSZRAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pPosZRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pPosZRand = RangeWork;
-			cout << "POSZRAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "LENGTH = %f", &FlaotWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].fLength = FlaotWork;
-			cout << "LENGTH 取得\n";
 		}
 		else if (sscanf(pFIleRead, "LENGTHRAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pLengthRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pLengthRand = RangeWork;
-			cout << "LENGTHRAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "COL = %f %f %f %f", &col.r, &col.g, &col.b, &col.a) == 4)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].col = col;
-			cout << "COL 取得\n";
 		}
 		else if (sscanf(pFIleRead, "RADIUS = %f", &FlaotWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].fRadius = FlaotWork;
-			cout << "RADIUS 取得\n";
 		}
 		else if (sscanf(pFIleRead, "RADIUSRAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pRadiusRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pRadiusRand = RangeWork;
-			cout << "RADIUSRAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "RADIUSVALUE = %f", &FlaotWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].fRadiusValue = FlaotWork;
-			cout << "RADIUSVALUE 取得\n";
 		}
 		else if (sscanf(pFIleRead, "ANGLE = %f", &FlaotWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].fAngle = FlaotWork;
-			cout << "ANGLE 取得\n";
 		}
 		else if (sscanf(pFIleRead, "ANGLERAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pAngleRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pAngleRand = RangeWork;
-			cout << "ANGLERAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "SPEED = %f", &FlaotWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].fSpeed = FlaotWork;
-			cout << "SPEED 取得\n";
 		}
 		else if (sscanf(pFIleRead, "SPEEDRAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pSpeedRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pSpeedRand = RangeWork;
-			cout << "SPEEDRAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "LIFE = %d", &nIntWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].nLife = nIntWork;
-			cout << "LIFE 取得\n";
 		}
 		else if (sscanf(pFIleRead, "LIFERAND = %d %d", &RangeWork.nMin, &RangeWork.nMax) == 2)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].pLifeRand = new RANGE;
 			*m_Offset[nCntOffSet].pParam[nCntParam].pLifeRand = RangeWork;
-			cout << "LIFERAND 取得\n";
 		}
 		else if (sscanf(pFIleRead, "GRAVITY = %f", &FlaotWork) == 1)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].fGravity = FlaotWork;
-			cout << "GRAVITY 取得\n";
 		}
 		else if (sscanf(pFIleRead, "ROT = %f %f %f", &Float3Work.x, &Float3Work.y, &Float3Work.z) == 3)
 		{
 			m_Offset[nCntOffSet].pParam[nCntParam].rot = Float3Work;
-			cout << "ROT 取得\n";
 		}
 		else if (sscanf(pFIleRead, "PARENT = %d", &nIntWork) == 1)
 		{
@@ -354,7 +343,6 @@ void C3DParticle::LoadParamFromFile(FILE * pFile, const int & nCntOffSet, const 
 			(nIntWork == 1) ?
 				m_Offset[nCntOffSet].pParam[nCntParam].Flag.set(BIT_INDEX::PARENT) :
 				m_Offset[nCntOffSet].pParam[nCntParam].Flag.clear(BIT_INDEX::PARENT);
-			cout << "PARENT 取得\n";
 		}
 		else if (sscanf(pFIleRead, "DIREQUAPOS = %d", &nIntWork) == 1)
 		{
@@ -362,7 +350,6 @@ void C3DParticle::LoadParamFromFile(FILE * pFile, const int & nCntOffSet, const 
 			(nIntWork == 1) ?
 				m_Offset[nCntOffSet].pParam[nCntParam].Flag.set(BIT_INDEX::DIREQUAPOS) :
 				m_Offset[nCntOffSet].pParam[nCntParam].Flag.clear(BIT_INDEX::DIREQUAPOS);
-			cout << "DIREQUAPOS 取得\n";
 		}
 		else if (sscanf(pFIleRead, "BILLBOARD = %d", &nIntWork) == 1)
 		{
@@ -544,31 +531,58 @@ D3DXVECTOR3 * C3DParticle::GetParentFromParam(CONST PARAM * pParam)
 //-------------------------------------------------------------------------------------------------------------
 void C3DParticle::GetPosFromParam(CONST PARAM * pParam, D3DXVECTOR3 & pos)
 {
-	if (pParam->pPos != nullptr)
-	{
-		pos = (pParam->bParent == true) ?
-			*pParam->pPos + m_pos :
-			*pParam->pPos;
-
-	}
-	else if (pParam->pPosXRand != nullptr &&
-		pParam->pPosYRand != nullptr &&
-		pParam->pPosZRand != nullptr)
+	if (pParam->pPosXRand != nullptr)
 	{
 		if (pParam->bParent == true)
 		{
 			pos.x = (float)(rand() % pParam->pPosXRand->nMax + pParam->pPosXRand->nMin) + m_pos.x;
-			pos.y = (float)(rand() % pParam->pPosYRand->nMax + pParam->pPosYRand->nMin) + m_pos.y;
-			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin) + m_pos.z;
 		}
 		else
 		{
 			pos.x = (float)(rand() % pParam->pPosXRand->nMax + pParam->pPosXRand->nMin);
-			pos.y = (float)(rand() % pParam->pPosYRand->nMax + pParam->pPosYRand->nMin);
-			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin);
-
 		}
 	}
+	else if (pParam->pPos != nullptr)
+	{
+		pos.x = (pParam->bParent == true) ?
+			pParam->pPos->x + m_pos.x :
+			pParam->pPos->x;
+	}
+	if (pParam->pPosYRand != nullptr)
+	{
+		if (pParam->bParent == true)
+		{
+			pos.y = (float)(rand() % pParam->pPosYRand->nMax + pParam->pPosYRand->nMin) + m_pos.y;
+		}
+		else
+		{
+			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin);
+		}
+	}
+	else if (pParam->pPos != nullptr)
+	{
+		pos.y = (pParam->bParent == true) ?
+			pParam->pPos->y + m_pos.y :
+			pParam->pPos->y;
+	}
+	if (pParam->pPosZRand != nullptr)
+	{
+		if (pParam->bParent == true)
+		{
+			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin) + m_pos.z;
+		}
+		else
+		{
+			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin);
+		}
+	}
+	else if (pParam->pPos != nullptr)
+	{
+		pos.z = (pParam->bParent == true) ?
+			pParam->pPos->z + m_pos.z :
+			pParam->pPos->z;
+	}
+
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -586,10 +600,6 @@ void C3DParticle::GetMoveFromParam(CONST PARAM * pParam, D3DXVECTOR3 & move)
 	float fCos = -cosf(fAddRotY);
 	float fSin2 = -sinf(fAddRotY + D3DX_PI *  0.5f);
 	float fCos2 = -cosf(fAddRotY + D3DX_PI *  0.5f);
-
-	cout << "向き　== " << fAddRotY << "\n";
-	cout << "fSin　== " << fSin << "\n";
-	cout << "fCos　== " << fCos << "\n\n";
 
 	move.x = pParam->rot.z * fSin + pParam->rot.x * fSin2 + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	move.z = pParam->rot.z * fCos + pParam->rot.x * fCos2 +  (rand() % 628 - 314) * 0.01f *pParam->fAngle;
@@ -627,10 +637,14 @@ void C3DParticle::GetMoveAndPosAccordingDirFromParam(CONST PARAM * pParam, D3DXV
 	GetLengthFromParam(pParam, fLength);
 
 	float fAddRotY = m_rot.y;
-	// 方向ベクトルを計算
-	move.x = pParam->rot.x + sinf(fAddRotY) + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
+	float fSin = -sinf(fAddRotY);
+	float fCos = -cosf(fAddRotY);
+	float fSin2 = -sinf(fAddRotY + D3DX_PI *  0.5f);
+	float fCos2 = -cosf(fAddRotY + D3DX_PI *  0.5f);
+
+	move.x = pParam->rot.z * fSin + pParam->rot.x * fSin2 + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
+	move.z = pParam->rot.z * fCos + pParam->rot.x * fCos2 + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	move.y = pParam->rot.y + (rand() % 628 - 314) * 0.01f *pParam->fAngle;
-	move.z = pParam->rot.z + cosf(fAddRotY) +(rand() % 628 - 314) * 0.01f *pParam->fAngle;
 	// 正規化
 	CMylibrary::CreateUnitVector(&move, &move);
 

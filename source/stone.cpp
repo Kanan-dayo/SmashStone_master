@@ -12,6 +12,8 @@
 #include "renderer.h"
 #include "debugProc.h"
 #include "3DBoxCollider.h"
+#include "3DParticle.h"
+
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
@@ -304,7 +306,7 @@ CStone * CStone::Create(CONST int nIndexPos, CONST STONE_ID eumID, CONST D3DXVEC
 
 	/* --- 初期化処理 --- */
 	// CSceneXの初期化
-	pStone->CSceneX::Init();
+	pStone->Init();
 	// 揺れるカウントの初期化
 	pStone->m_fCntShake = MYLIB_INT_UNSET;
 	// ストーンのIDの設定
@@ -342,6 +344,8 @@ CStone * CStone::Create(CONST int nIndexPos, CONST STONE_ID eumID, CONST D3DXVEC
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Init(void)
 {
+	m_nCntState = MYLIB_INT_UNSET;
+	m_state = STATE::STATE_APPEA;
 	this->CSceneX::Init();
 }
 
@@ -358,28 +362,20 @@ void CStone::Uninit(void)
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Update(void)
 {
-#ifdef CSTONE_UPDATE
 
-	// ダメージフラグの復活
-	
+	switch (m_state)
+	{
+		MLB_CASE(STATE_APPEA)AppearanceProc();
+		MLB_CASE(STATE_NORMAL)NormalProc();
+		MLB_CASE(STATE_DISAPPEA)DisappearanceProc();
+	MLB_DEFAULT:break;
+	}
 
-	// 回転処理
-	CMylibrary::SetFixTheRotation(&(this->m_rot.y += CSTONE_ROTSPEED));
-	// ゆらゆら
-	this->m_pos.y += sinf((m_fCntShake++) * CSTONE_SHAKECOEFF) * CSTONE_SHAKE_SIZE;
 
-	C3DBoxCollider::ChangePosition(this->m_nBoxClliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
-	//if (C3DBoxCollider::Collisionoverlap(this->m_nBoxClliderID))
-	//{
-	//	CDebugProc::Print("[%d]個目のStoneに当たった\n", this->m_nNumID);
-	//	C3DBoxCollider::unset(this->m_nBoxClliderID);
-	//	CScene::Release();
-	//}
 #ifdef CSTONE_DEBUG_DRAW
 	CDebugProc::Print("[%d]個目Stoneの位置Y = [%.4f]\n", this->m_nNumID,this->m_pos.y);
 	CDebugProc::Print("[%d]個目Stoneの回転量 = [%.4f]\n", this->m_nNumID,this->m_rot.y);
 #endif // CSTONE_DEBUG_DRAW
-#endif // CSTONE_UPDATE
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -397,8 +393,7 @@ void CStone::Draw(void)
 //-------------------------------------------------------------------------------------------------------------
 void CStone::Catch(void)
 {
-	C3DBoxCollider::unset(this->m_nBoxClliderID);
-	CScene::Release();
+	SetState(STATE_DISAPPEA);
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -415,6 +410,76 @@ bool CStone::ApplyDamage(void)
 		return true;
 	}
 	return false;
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 出現処理
+//-------------------------------------------------------------------------------------------------------------
+void CStone::AppearanceProc(void)
+{
+	switch (m_enmStoneID)
+	{
+		MLB_CASE(STONE_ID_RED)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEAPPEAR_R);
+		MLB_CASE(STONE_ID_GREEN)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEAPPEAR_G);
+		MLB_CASE(STONE_ID_BLUE)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEAPPEAR_B);
+	MLB_DEFAULT:break;
+	}
+
+	SetState(STATE_NORMAL);
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 通常処理
+//-------------------------------------------------------------------------------------------------------------
+void CStone::NormalProc(void)
+{
+#ifdef CSTONE_UPDATE
+
+	m_nCntState++;
+	if (m_nCntState % 60 == 0)
+	{
+		switch (m_enmStoneID)
+		{
+			MLB_CASE(STONE_ID_RED)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONENORMAL_R);
+			MLB_CASE(STONE_ID_GREEN)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONENORMAL_G);
+			MLB_CASE(STONE_ID_BLUE)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONENORMAL_B);
+		MLB_DEFAULT:break;
+		}
+	}
+
+	// 回転処理
+	CMylibrary::SetFixTheRotation(&(this->m_rot.y += CSTONE_ROTSPEED));
+	// ゆらゆら
+	this->m_pos.y += sinf((m_fCntShake++) * CSTONE_SHAKECOEFF) * CSTONE_SHAKE_SIZE;
+	// ボックスコライダーの位置の変更
+	C3DBoxCollider::ChangePosition(this->m_nBoxClliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
+
+#endif // CSTONE_UPDATE
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 消滅処理
+//-------------------------------------------------------------------------------------------------------------
+void CStone::DisappearanceProc(void)
+{
+	switch (m_enmStoneID)
+	{
+		MLB_CASE(STONE_ID_RED)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEDISAPPEA_R);
+		MLB_CASE(STONE_ID_GREEN)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEDISAPPEA_G);
+		MLB_CASE(STONE_ID_BLUE)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEDISAPPEA_B);
+	MLB_DEFAULT:break;
+	}
+	C3DBoxCollider::unset(this->m_nBoxClliderID);
+	CScene::Release();
+}
+
+//-------------------------------------------------------------------------------------------------------------
+// 状態の設定
+//-------------------------------------------------------------------------------------------------------------
+void CStone::SetState(STATE state)
+{
+	m_state = state;
+	m_nCntState = 0;
 }
 
 //-------------------------------------------------------------------------------------------------------------

@@ -295,7 +295,6 @@ void CGame::Update(void)
 
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_LSHIFT))
 	{
-		C3DParticle::Set(&m_pPlayer[PLAYER_ONE]->GetPos(), &m_pPlayer[PLAYER_ONE]->GetRot(), C3DParticle::HIT);
 	}
 #endif // _DEBUG
 }
