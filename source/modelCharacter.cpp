@@ -641,6 +641,16 @@ void CModelCharacter::ModelRebind(CHARACTER_TYPE type)
 	}
 }
 
+#define ConvertNorModel(type) ((PARAM_TYPE)(type / 2))
+
+//=============================================================================
+// 現在のキーが攻撃状態かどうか
+//=============================================================================
+bool CModelCharacter::AttackKeyCondition(void)
+{
+	return (m_nKey == CMotion::GetAttackKey(ConvertNorModel(m_type), m_motion));
+}
+
 #ifdef _DEBUG
 //=============================================================================
 // ImGuiの更新

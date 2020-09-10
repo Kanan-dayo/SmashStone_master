@@ -47,6 +47,7 @@ public:
 	CModelParts *GetModelParts(void)			{ return m_pModelParts; }						// モデルパーツの取得
 	int GetAllFrame(void)						{ return m_nAllFrame; }							// 現在のモーションの総フレーム数を取得
 	int GetNowKey(void)							{ return m_nKey; }								// 現在のキー数を取得
+	bool AttackKeyCondition(void);																	// 現在のキーが攻撃状態かどうか
 
 private:
 	static MODELCHARACTER m_pModelCharacter[CHARACTER_MAX];			// 全てのモデルキャラクタの情報格納

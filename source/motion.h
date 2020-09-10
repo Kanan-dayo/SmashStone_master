@@ -12,6 +12,7 @@
 //=============================================================================
 #include "main.h"
 #include "kananlibrary.h"
+#include <vector>
 
 //=============================================================================
 // クラス定義
@@ -33,7 +34,7 @@ public:
 	{
 		KEY *pKey;					// キーのポインタ
 		int nFrame;					// フレーム数
-		int nAttackIndex;			// 攻撃パーツの取得
+		std::vector<int> nAttackIndex;	// 攻撃パーツの取得
 	} KEY_INFO;
 
 	// モーションの情報
@@ -90,8 +91,8 @@ public:
 		{ return m_pMotionInfo[charaType][motiontype].bLoop; }									// モーションがループするかどうか取得
 	static int GetAttackKey(PARAM_TYPE charaType, MOTION_TYPE motiontype) 
 		{ return m_pMotionInfo[charaType][motiontype].nAttackKey; }								// 攻撃キーの取得
-	static int GetnAttackIndex(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
-		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].nAttackIndex; }			// モーションの攻撃パーツの取得
+	static int *GetnAttackIndex(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].nAttackIndex.data(); }		// モーションの攻撃パーツの取得
 
 private:
 	static MOTION_INFO m_pMotionInfo[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX];		// モーション情報
