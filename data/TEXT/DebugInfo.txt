@@ -7,7 +7,7 @@
 SCRIPT	# 消さないで
 
 # ImGuiウィンドウ表示の有無
-SHOW_DEBUG_WINDOW = 0
+SHOW_DEBUG_WINDOW = 1
 
 # オブジェクト情報表示の有無
 SHOW_OBJECT_WINDOW = 0

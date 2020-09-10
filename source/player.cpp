@@ -41,6 +41,7 @@
 // マクロ定義
 //==================================================================================================================
 #define HEIGHT_CEILING	(400.0f)			// 天井の高さ
+#define HEIGHT_FLOOR	(0.0f)				// 床の高さ
 
 #define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
 #define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
@@ -359,6 +360,12 @@ void CPlayer::Collision(void)
 	if (m_pos.y > HEIGHT_CEILING)
 	{
 		m_pos.y = HEIGHT_CEILING;
+		m_move.y *= -1;
+	}
+
+	if (m_pos.y < HEIGHT_FLOOR)
+	{
+		m_pos.y = HEIGHT_FLOOR;
 		m_move.y *= -1;
 	}
 }
@@ -736,10 +743,13 @@ void CPlayer::MotionDown(void)
 	// カウント加算
 	m_nCntState++;
 
+	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);
+	CInputKeyboard *pKey = CManager::GetInputKeyboard();
+
 	// 一定時間内に、操作でアクティブな起き上がり
 	if (m_nCntState < TIME_MAX_DOWN &&
-		(CKananLibrary::GetMoveByGamepad(CManager::GetInputGamepad(m_nPlayer)) ||
-			CKananLibrary::GetMoveByKeyboard(CManager::GetInputKeyboard(), m_nPlayer)))
+		((pGamepad && pGamepad->GetbConnect() && SUCCEEDED(CKananLibrary::GetMoveByGamepad(pGamepad))) ||
+		(pKey && SUCCEEDED(CKananLibrary::GetMoveByKeyboard(pKey, m_nPlayer)))))
 		m_stateStand = STANDSTATE_GETUP_ACTIVE;
 	// 一定時間後に、起き上がり
 	else if (m_nCntState >= TIME_MAX_DOWN)
@@ -1102,7 +1112,8 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	{
 		// ジャンプ中でなければ、ニュートラル
 		if (m_stateStand != STANDSTATE_JUMP&&
-			m_stateStand != STANDSTATE_ATTACK)
+			m_stateStand != STANDSTATE_ATTACK && 
+			m_stateStand != STANDSTATE_DOWN)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1144,7 +1155,8 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	{
 		// ジャンプ中でなければ、ニュートラル
 		if (m_stateStand != STANDSTATE_JUMP &&
-			m_stateStand != STANDSTATE_ATTACK)
+			m_stateStand != STANDSTATE_ATTACK&&
+			m_stateStand != STANDSTATE_DOWN)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}

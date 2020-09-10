@@ -111,6 +111,7 @@ public:
 	inline STATE_LIFT_OBJET  GetStateLift(void)					{ return m_StateLift; }				// 物持ち上げの状態取得
 	inline D3DXVECTOR3       &GetPos(void)						{ return m_pos; }					// 位置の取得
 	inline D3DXVECTOR3       &GetMove(void)						{ return m_move; }					// 移動値の取得
+	inline D3DXVECTOR3       &GetMoveOld(void)					{ return m_moveOld; }				// 移動値の取得
 	inline D3DXVECTOR3       &GetRot(void)						{ return m_rot; }					// 回転の取得
 	inline D3DXVECTOR3       &GetRotDest(void)					{ return m_rotDest; }				// 回転先の取得
 	inline float             &GetMaxLife(void)					{ return m_param.fMaxLife; }		// 最大ライフ取得
@@ -141,6 +142,7 @@ protected:
 	D3DXVECTOR3 m_posOld;								// 前回の位置
 	D3DXVECTOR3 m_posBegin;								// 初期位置
 	D3DXVECTOR3 m_move;									// 移動値
+	D3DXVECTOR3 m_moveOld;								// 前回の移動値
 	D3DXVECTOR3 m_rot;									// 回転
 	D3DXVECTOR3 m_rotDest;								// 目的の回転
 	D3DXVECTOR3 m_rotDif;								// 回転の差

@@ -406,7 +406,8 @@ void CRenderer::Draw(void)
 			// デバッグロゴの描画
 			m_pDebugProc->Draw();
 		}
-
+		// デバッグの文字列初期化
+		m_pDebugProc->StrInit();
 		// ImGuiの描画
 		DrawImGui();
 #endif

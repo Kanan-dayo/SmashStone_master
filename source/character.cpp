@@ -51,6 +51,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_rotDest			= ZeroVector3;
 	m_rotDif			= ZeroVector3;
 	m_move				= ZeroVector3;
+	m_moveOld			= ZeroVector3;
 	m_nCntTrans			= 0;
 	m_nAttackFlow		= 0;
 	m_nNumStone 		= 0;
@@ -243,6 +244,7 @@ void CCharacter::Move(void)
 {
 	// ëOâÒÇÃà íuÇï€ë∂
 	m_posOld = m_pos;
+	m_moveOld = m_move;
 	
 	// äµê´
 	if (m_stateStand == STANDSTATE_SMASHBLOWAWAY)

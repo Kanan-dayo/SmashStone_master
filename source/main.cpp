@@ -17,7 +17,8 @@
 // マクロ定義
 //==================================================================================================================
 #define CLASS_NAME	"WindowClass"				// ウィンドウクラスの名前
-#define WINDOW_NAME	"SmashStone"			// ウィンドウの名前
+#define WINDOW_NAME	"SmashStone"				// ウィンドウの名前
+#define ICON_NAME	"data/TEXTURE/Icon.ico"		// アイコンのファイル名
 
 //==================================================================================================================
 // プロトタイプ宣言
@@ -54,12 +55,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		0,									// 通常使用しないので0指定
 		0,									// 通常使用しないので0指定
 		hInstance,							// Windowsの引数のインスタンスハンドル指定
-		LoadIcon(NULL, IDI_INFORMATION),	// タスクバーに使用するアイコン指定
+		LoadIcon(hInstance, ICON_NAME),	// タスクバーに使用するアイコン指定
 		LoadCursor(NULL, IDC_ARROW),		// 使用するマウスカーソル指定
 		(HBRUSH)(COLOR_WINDOW + 1),			// ウィンドウクライアント領域の色収差
 		NULL,								// メニューを指定
 		CLASS_NAME,							// ウィンドウクラスの名前
-		LoadIcon(NULL, IDI_APPLICATION)		// 小さいアイコンの指定
+		LoadIcon(hInstance, ICON_NAME)		// 小さいアイコンの指定
 	};
 
 	HWND hWnd;					// ウィンドウハンドル

@@ -35,6 +35,8 @@ public:
 
 	static void Print(char* fmt, ...);				// デバッグログ表示処理
 	static void Draw(void);							// 描画処理
+
+	static inline void StrInit(void) { m_aStr[0] = '\0'; }
 protected:
 
 private:
