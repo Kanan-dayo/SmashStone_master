@@ -24,6 +24,25 @@ class CModelCharacter
 {
 public:
 
+	// 全てパーツの部位が同じなので付けた
+	typedef enum
+	{
+		NONE = -1,	// 無し
+		BODY,		// 00_body.x
+		HEAD,		// 01_head.x
+		UPARM_R,	// 02_UpArm_R.x
+		FOREARM_R,	// 03_LowArm_R.x
+		UPARM_L,	// 04_UpArm_L.x
+		FOREARM_L,	// 05_LowArm_L.x
+		THIGH_R,	// 06_thigh_R.x
+		LOWERLEG_R,	// 07_leg_R.x
+		THIGH_L,	// 08_thigh_L.x
+		LOWERLEG_L,	// 09_leg_L.x
+		MAX			// 最大数
+	} PARTSNAME;
+
+
+
 	CModelCharacter();
 	~CModelCharacter();
 
@@ -47,8 +66,9 @@ public:
 	CModelParts *GetModelParts(void)			{ return m_pModelParts; }						// モデルパーツの取得
 	int GetAllFrame(void)						{ return m_nAllFrame; }							// 現在のモーションの総フレーム数を取得
 	int GetNowKey(void)							{ return m_nKey; }								// 現在のキー数を取得
-	bool AttackKeyCondition(void);																	// 現在のキーが攻撃状態かどうか
-
+	bool AttackKeyCondition(void);																// 現在のキーが攻撃状態かどうか
+	int *GetAttackPartsIndex(void);																// 攻撃しているパーツインデックスを取得する
+	int GetAttackPartsIndexSize(void);															// 攻撃しているパーツインデックスのサイズの取得
 private:
 	static MODELCHARACTER m_pModelCharacter[CHARACTER_MAX];			// 全てのモデルキャラクタの情報格納
 	CModelParts *m_pModelParts;										// モデルのパーツのポインタ

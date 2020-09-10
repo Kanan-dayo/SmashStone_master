@@ -93,6 +93,8 @@ public:
 		{ return m_pMotionInfo[charaType][motiontype].nAttackKey; }								// 攻撃キーの取得
 	static int *GetnAttackIndex(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
 		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].nAttackIndex.data(); }		// モーションの攻撃パーツの取得
+	static int GetnAttackIndexSize(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].nAttackIndex.size(); }		// モーションの攻撃パーツのサイズの取得
 
 private:
 	static MOTION_INFO m_pMotionInfo[MAX_CHARACTER_TYPE][CMotion::MOTION_MAX];		// モーション情報
