@@ -651,6 +651,22 @@ bool CModelCharacter::AttackKeyCondition(void)
 	return (m_nKey == CMotion::GetAttackKey(ConvertNorModel(m_type), m_motion));
 }
 
+//=============================================================================
+// 攻撃しているパーツインデックスを取得する
+//=============================================================================
+int * CModelCharacter::GetAttackPartsIndex(void)
+{
+	return CMotion::GetnAttackIndex(ConvertNorModel(m_type),m_motion, m_nKey);
+}
+
+//=============================================================================
+// 攻撃しているパーツインデックスのサイズの取得
+//=============================================================================
+int CModelCharacter::GetAttackPartsIndexSize(void)
+{
+	return CMotion::GetnAttackIndexSize(ConvertNorModel(m_type), m_motion, m_nKey);
+}
+
 #ifdef _DEBUG
 //=============================================================================
 // ImGuiの更新

@@ -16,6 +16,9 @@
 #include "CharEffectOffset.h"
 #include "3DBoxCollider.h"
 #include "3DParticle.h"
+#include "modelCharacter.h"
+#include "motion.h"
+
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -485,7 +488,7 @@ void CCapsuleCollider::InitCapsInfo(void)
 bool CCapsuleCollider::Collision(void)
 {
 	// 体の時
-	if (m_ColliderInfo.enmTtpeID == COLLIPARTS_BODY)
+	if (m_ColliderInfo.enmTtpeID == TYPEID_BODY)
 	{// 処理しない
 		return false;
 	}
@@ -493,25 +496,54 @@ bool CCapsuleCollider::Collision(void)
 	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// このコライダーを持っているプレイヤー
 	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// その他のプレイヤー
 	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// その他のプレイヤーのコライダー情報
-	CDebugProc::Print("GetRotY == [%.4f]\n", pOwn->GetRot().y);
-	// 攻撃当てる準備かできているか
-	if (pOwn->ReadyToHit(m_ColliderInfo.enmTtpeID) == false)
-	{
+	CModelCharacter *pOwnModelChar    = pOwn->GetModelCharacter();								// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
+
+	//　現在のキーが攻撃状態かどうか
+	if (pOwnModelChar->AttackKeyCondition() == false ||
+		pOwn->ReadyToHit() == false)
+	{// 処理を中断
 		return false;
 	}
 
-	D3DXVECTOR3 HitPos;
+	int *pAttackPartsIndex = pOwnModelChar->GetAttackPartsIndex();	// 攻撃パーツインデックスの取得
+	int nSize = pOwnModelChar->GetAttackPartsIndexSize();			// 攻撃パーツインデックスの格納数（サイズ）の取得
+	// サイズが0の時またはインデックスポインタがnullの時
+	if (nSize == 0 ||
+		pAttackPartsIndex == nullptr)
+	{// 処理を中断
+		return false;
+	}
+
+	bool bOK = false;		// OKフラグ
+	int nAttackTypeID;		// 攻撃しているコライダータイプID
+	// サイズ分ループ
+	for (int nCntIndex = 0; nCntIndex < nSize; nCntIndex++)
+	{// コライダータイプに変換
+		pOwn->ConfromFromModelIndexToYypeID(&nAttackTypeID, &pAttackPartsIndex[nCntIndex]);
+		// タイプが一致している時
+		if (nAttackTypeID == m_ColliderInfo.enmTtpeID)
+		{// OKフラグを立てる
+			bOK = true;
+			// ループを抜ける
+			break;
+		}
+	}
+	// OKフラグがないとき
+	if (bOK == false)
+	{// 処理を中断
+		return false;
+	}
+
+	D3DXVECTOR3 HitPos;// 当たった位置
 #ifdef _DEBUG
 	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
-
-
-
 	// 2線分の最短距を求める
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
 		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
 		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKSTART);
 		pOwn->SetAttakHit(true);
+		pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
 	}
 	else
 	{
@@ -538,11 +570,44 @@ bool CCapsuleCollider::CollisionStone(void)
 {
 	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;
 	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();	
+	CModelCharacter *pOwnModelChar = pOwn->GetModelCharacter();								// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
 
-	if (pOwn->ReadyToHitStone(m_ColliderInfo.enmTtpeID) == false)
-	{
+	//　現在のキーが攻撃状態かどうか
+	if (pOwnModelChar->AttackKeyCondition() == false ||
+		pOwn->ReadyToHitStone() == false)
+	{// 処理を中断
 		return false;
 	}
+
+	int *pAttackPartsIndex = pOwnModelChar->GetAttackPartsIndex();	// 攻撃パーツインデックスの取得
+	int nSize = pOwnModelChar->GetAttackPartsIndexSize();			// 攻撃パーツインデックスの格納数（サイズ）の取得
+	// サイズが0の時またはインデックスポインタがnullの時
+	if (nSize == 0 ||
+		pAttackPartsIndex == nullptr)
+	{// 処理を中断
+		return false;
+	}
+
+	bool bOK = false;		// OKフラグ
+	int nAttackTypeID;		// 攻撃しているコライダータイプID
+	// サイズ分ループ
+	for (int nCntIndex = 0; nCntIndex < nSize; nCntIndex++)
+	{// コライダータイプに変換
+		pOwn->ConfromFromModelIndexToYypeID(&nAttackTypeID, &pAttackPartsIndex[nCntIndex]);
+		// タイプが一致している時
+		if (nAttackTypeID == m_ColliderInfo.enmTtpeID)
+		{// OKフラグを立てる
+			bOK = true;
+			// ループを抜ける
+			break;
+		}
+	}
+	// OKフラグがないとき
+	if (bOK == false)
+	{// 処理を中断
+		return false;
+	}
+
 
 	for (int nCntBox = 0; nCntBox < _3DBOXCOLLIDER_MAX; nCntBox++)
 	{

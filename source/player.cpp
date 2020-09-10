@@ -125,11 +125,13 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	CGame::GAMESTATE gameState = CManager::GetRenderer()->GetGame()->GetGameState();
-	if (m_stateStand != STANDSTATE_BLOWAWAY && m_stateStand != STANDSTATE_DAUNTED &&
-		(gameState == CGame::GAMESTATE_NORMAL ||
-			gameState == CGame::GAMESTATE_BEFORE))
+	if (m_stateStand != STANDSTATE_SMASHBLOWAWAY&& m_stateStand != STANDSTATE_BLOWAWAY && m_stateStand != STANDSTATE_DAUNTED &&
+		(gameState == CGame::GAMESTATE_NORMAL || gameState == CGame::GAMESTATE_BEFORE))
+	{
 		// 操作
 		Control();
+	}
+
 
 	// 更新
 	CCharacter::Update();
@@ -206,39 +208,14 @@ void CPlayer::Control(void)
 //==================================================================================================================
 void CPlayer::Collision(void)
 {
-	// 攻撃判定
-	CollisionAttack();
+	bool bSmashBlowAway = (m_stateStand == STANDSTATE_SMASHBLOWAWAY);
 
-	bool bSmashBlowAway = false;
-	if (m_stateStand == STANDSTATE_SMASHBLOWAWAY)
-		bSmashBlowAway = true;
 	// 壁の取得
 	CWall *pWall = CGame::GetWall();
 	// 出力される交点
 	D3DXVECTOR3 out_intersect = ZeroVector3;
 	// 出力される法線
 	D3DXVECTOR3 out_nor = ZeroVector3;
-	// 壁との当たり判定
-	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect, &out_nor, bSmashBlowAway) == true)
-	{
-		// 反射フラグが立っているときかつ
-		// 出力された法線がゼロじゃない時かつ
-		// 出力された交点がゼロじゃない時
-		if (bSmashBlowAway == true &&
-			out_nor != ZeroVector3 &&
-			out_intersect != ZeroVector3)
-		{
-			// ダメージ
-			this->Damage(2);
-			// 向きを決定
-			this->m_rotDest.y = atan2f(out_nor.x, out_nor.z);
-			// 回転を補間
-			CKananLibrary::InterpolationFloat(m_rotDest.y);
-			// 一瞬で向きを変える
-			this->m_rot.y = this->m_rotDest.y;
-			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos, &this->m_move, &out_intersect, &this->m_move, &out_nor);
-		}
-	}
 
 	CPolyCollMana *pPolyCollMana = CGame::GetpolyCollMana();
 
@@ -279,20 +256,56 @@ void CPlayer::Collision(void)
 
 				SetLanding();
 			}
-			else
+			// 出力された法線がゼロじゃない時かつ
+			// 出力された交点がゼロじゃない時
+			if (bSmashBlowAway == true &&
+				out_nor != ZeroVector3 &&
+				out_intersect != ZeroVector3)
 			{
+				// ダメージ
+				this->Damage(2);
+				// 向きを決定
+				this->m_rotDest.y = atan2f(out_nor.x, out_nor.z);
+				// 回転を補間
+				CKananLibrary::InterpolationFloat(m_rotDest.y);
+				// 一瞬で向きを変える
+				this->m_rot.y = this->m_rotDest.y;
 				CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos, &this->m_move, &out_intersect, &this->m_move, &out_nor);
 			}
 		}
 	}
 
+	out_intersect = ZeroVector3;
+	out_nor = ZeroVector3;
+
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
 	// 当たり判定
-	if (C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move))
+	if (C3DBoxCollider::CollisionBox(this->m_nBoxColliderID, this->m_pos, m_move, &out_intersect,&out_nor, bSmashBlowAway))
 	{
-		SetLanding();
+		// 出力された法線がゼロじゃない時かつ
+		// 出力された交点がゼロじゃない時
+		if (bSmashBlowAway == true &&
+			out_nor != ZeroVector3 &&
+			out_intersect != ZeroVector3)
+		{
+			// ダメージ
+			this->Damage(2);
+			// 向きを決定
+			this->m_rotDest.y = atan2f(out_nor.x, out_nor.z);
+			// 回転を補間
+			CKananLibrary::InterpolationFloat(m_rotDest.y);
+			// 一瞬で向きを変える
+			this->m_rot.y = this->m_rotDest.y;
+			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos, &this->m_move, &out_intersect, &this->m_move, &out_nor);
+		}
+		else if(bSmashBlowAway == false)
+		{
+			SetLanding();
+		}
 	}
+
+
 
 	// 最大ポリゴン数までカウント
 	for (int nCntPolyColli = 0; nCntPolyColli < CPolygonCollider::GetNumPoly(CGame::GetStageType()); nCntPolyColli++)
@@ -315,6 +328,30 @@ void CPlayer::Collision(void)
 			m_pShadow->SetPos(D3DXVECTOR3(m_pos.x, pPolyColli->GetfHeight(), m_pos.z), m_move, bJump);
 			
 			break;
+		}
+	}
+
+	out_intersect = ZeroVector3;
+	out_nor = ZeroVector3;
+
+	// 壁との当たり判定
+	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect, &out_nor, bSmashBlowAway) == true)
+	{
+		// 出力された法線がゼロじゃない時かつ
+		// 出力された交点がゼロじゃない時
+		if (bSmashBlowAway == true &&
+			out_nor != ZeroVector3 &&
+			out_intersect != ZeroVector3)
+		{
+			// ダメージ
+			this->Damage(2);
+			// 向きを決定
+			this->m_rotDest.y = atan2f(out_nor.x, out_nor.z);
+			// 回転を補間
+			CKananLibrary::InterpolationFloat(m_rotDest.y);
+			// 一瞬で向きを変える
+			this->m_rot.y = this->m_rotDest.y;
+			CReflection::GetPlaneReflectingAfterPosAndVec(&this->m_pos, &this->m_move, &out_intersect, &this->m_move, &out_nor);
 		}
 	}
 
@@ -756,7 +793,6 @@ void CPlayer::MotionBlowAway(void)
 		m_nAttackFlow = 0;
 	}
 
-
 	// 地面に着く
 	if (m_move.y <= -3.0f)
 	{
@@ -958,19 +994,17 @@ void CPlayer::CollisionAttack(void)
 //==================================================================================================================
 // 攻撃当てる準備かできているか
 //==================================================================================================================
-bool CPlayer::ReadyToHit(const int &nCapColliID)
+bool CPlayer::ReadyToHit(void)
 {
-	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
 	if (this->m_bAttakHit == false)
 	{
-		// 別のプレイヤーのモーションを比較
 		switch (this->m_pModelCharacter->GetMotion())
 		{
-		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
-		case CMotion::PLAYER_ATTACK_1: return HitConditionAttack1(nCapColliID);
-		case CMotion::PLAYER_ATTACK_2: return HitConditionAttack2(nCapColliID);
-		case CMotion::PLAYER_ATTACK_3: return HitConditionAttack3(nCapColliID);
-		case CMotion::PLAYER_SMASH:    return HitConditionSmash(nCapColliID);
+		case CMotion::PLAYER_ATTACK_0: return true;
+		case CMotion::PLAYER_ATTACK_1: return true;
+		case CMotion::PLAYER_ATTACK_2: return true;
+		case CMotion::PLAYER_ATTACK_3: return true;
+		case CMotion::PLAYER_SMASH:    return true;
 		}
 	}
 	return false;
@@ -979,19 +1013,17 @@ bool CPlayer::ReadyToHit(const int &nCapColliID)
 //==================================================================================================================
 // 攻撃当てる準備かできているか
 //==================================================================================================================
-bool CPlayer::ReadyToHitStone(const int & nCapColliID)
+bool CPlayer::ReadyToHitStone(void)
 {
-	// 違うプレイヤーが攻撃を当てたフラグが立ってない時
 	if (this->m_bAttakHitStone == false)
 	{
-		// 別のプレイヤーのモーションを比較
 		switch (this->m_pModelCharacter->GetMotion())
 		{
-		case CMotion::PLAYER_ATTACK_0: return HitConditionAttack0(nCapColliID);
-		case CMotion::PLAYER_ATTACK_1: return HitConditionAttack1(nCapColliID);
-		case CMotion::PLAYER_ATTACK_2: return HitConditionAttack2(nCapColliID);
-		case CMotion::PLAYER_ATTACK_3: return HitConditionAttack3(nCapColliID);
-		case CMotion::PLAYER_SMASH:    return HitConditionSmash(nCapColliID);
+		case CMotion::PLAYER_ATTACK_0: return true;
+		case CMotion::PLAYER_ATTACK_1: return true;
+		case CMotion::PLAYER_ATTACK_2: return true;
+		case CMotion::PLAYER_ATTACK_3: return true;
+		case CMotion::PLAYER_SMASH:    return true;
 		}
 	}
 	return false;
@@ -1181,14 +1213,11 @@ void CPlayer::CatchStone(CStone *pStone)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
-	 //if (pAnother->m_pCapColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
-	 //	pAnother->m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
-	 //{
-	 //	// ダメージを受ける
-	 //	TakeDamage();
-	 //	// 当てたフラグを立てる
-	 //	pAnother->m_bAttakHit = true;
-	 //}
+	// ダメージ
+	this->Damage(2);
+	if (!m_bTrans)
+		// 怯み
+		this->Daunted(20);
 }
 
 //==================================================================================================================
@@ -1196,14 +1225,11 @@ void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 {
-	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
-	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-	//{
-	//	// ダメージを受ける
-	//	TakeDamage();
-	//	// 当てたフラグを立てる
-	//	pAnother->m_bAttakHit = true;
-	//}
+	// ダメージ
+	this->Damage(2);
+	if (!m_bTrans)
+		// 怯み
+		this->Daunted(20);
 }
 
 //==================================================================================================================
@@ -1211,14 +1237,11 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 {
-	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_L]->Collision(this->m_nBoxColliderID) == true ||
-	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_L]->Collision(this->m_nBoxColliderID) == true)
-	//{
-	//	// ダメージを受ける
-	//	TakeDamage();
-	//	// 当てたフラグを立てる
-	//	pAnother->m_bAttakHit = true;
-	//}
+	// ダメージ
+	this->Damage(2);
+	if (!m_bTrans)
+		// 怯み
+		this->Daunted(20);
 }
 
 //==================================================================================================================
@@ -1226,29 +1249,25 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 {
-	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
-	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-	//{
-	//	// ダメージ
-	//	this->Damage(2);
-	//	// 変身中以外は吹き飛ぶ
-	//	if (!m_bTrans)
-	//	{
-	//		// 吹き飛び
-	//		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
-	//		// 吹き飛びを有効
-	//		m_stateStand = STANDSTATE_BLOWAWAY;
-	//		if (m_nNumStone > 0)
-	//		{
-	//			// 所持ストーンを一つ減らす
-	//			m_nNumStone--;
-	//			// 減らしたストーンを即生成
-	//			CGame::AppearStone();
-	//		}
-	//	}
-	//	// 当てたフラグを立てる
-	//	pAnother->m_bAttakHit = true;
-	//}
+	// ダメージ
+	this->Damage(2);
+	// 変身中以外は吹き飛ぶ
+	if (!m_bTrans)
+	{
+		// 吹き飛び
+		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
+		// 吹き飛びを有効
+		m_stateStand = STANDSTATE_BLOWAWAY;
+		if (m_nNumStone > 0)
+		{
+			// 所持ストーンを一つ減らす
+			m_nNumStone--;
+			// 再配置できるようストーンを使用されていない状態にする
+			CGame::RemoveTypeStone(CKananLibrary::DecideRandomValue(m_nNumStone + 1, m_bGetStoneType));
+			// 減らしたストーンを即生成
+			CGame::AppearStone();
+		}
+	}
 }
 
 //==================================================================================================================
@@ -1256,31 +1275,28 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 {
-	//// シリンダーコライダーの衝突判定
-	//if (pAnother->m_pCyliColi[CCharacter::COLLIPARTS_FOREARM_R]->Collision(this->m_nBoxColliderID) == true ||
-	//	pAnother->m_pCyliColi[CCharacter::COLLIPARTS_UPPERARM_R]->Collision(this->m_nBoxColliderID) == true)
-	//{
-	//	// ダメージ
-	//	this->Damage(2);
-	//	// 変身中以外は吹き飛ぶ
-	//	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
-	//	// スマッシュによる吹き飛びを実行
-	//	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
-	//	// 当てたフラグを立てる
-	//	pAnother->m_bAttakHit = true;
-	//}
+	// ダメージ
+	this->Damage(2);
+	// 変身中以外は吹き飛ぶ
+	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	// スマッシュによる吹き飛びを実行
+	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
+
 }
 
 //==================================================================================================================
 //ダメージを受ける
 //==================================================================================================================
-void CPlayer::TakeDamage(CPlayer * pAnother)
+void CPlayer::TakeDamage(CPlayer * pAnother, const int nAttackMotion)
 {
-	// ダメージ
-	this->Damage(2);
-	if (!m_bTrans)
-		// 怯み
-		this->Daunted(20);
+	switch (nAttackMotion)
+	{
+	case CMotion::PLAYER_ATTACK_0: AnotherPlayerAttack0(pAnother);return;
+	case CMotion::PLAYER_ATTACK_1: AnotherPlayerAttack1(pAnother);return;
+	case CMotion::PLAYER_ATTACK_2: AnotherPlayerAttack2(pAnother);return;
+	case CMotion::PLAYER_ATTACK_3: AnotherPlayerAttack3(pAnother);return;
+	case CMotion::PLAYER_SMASH:    AnotherPlayerSmash(pAnother);return;
+	}
 
 	// 当てたフラグを立てる
 	pAnother->m_bAttakHit = true;
@@ -1310,8 +1326,6 @@ void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
 			CGame::AppearStone();
 		}
 	}
-	// 当てたフラグを立てる
-	pAnother->m_bAttakHit = true;
 }
 
 //==================================================================================================================
