@@ -53,6 +53,7 @@ public:
 	void CatchStone(CStone *pStone);	
 	CShadow *GetShadow(void) { return m_pShadow; }	// キャラクターの影取得処理
 
+	void TakeDamage(CPlayer * pAnother, const int nAttackMotion);
 
 protected:
 
@@ -97,7 +98,6 @@ private:
 	void AnotherPlayerAttack3(CPlayer *pAnother);	
 	void AnotherPlayerSmash(CPlayer *pAnother);		
 
-	void TakeDamage(CPlayer * pAnother);			
 	void TakeAttack3Damage(CPlayer * pAnother);		
 	void TakeSmashDamage(CPlayer * pAnother);		
 

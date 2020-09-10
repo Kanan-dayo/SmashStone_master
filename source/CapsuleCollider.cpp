@@ -543,6 +543,7 @@ bool CCapsuleCollider::Collision(void)
 		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒKƒb);
 		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKSTART);
 		pOwn->SetAttakHit(true);
+		pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
 	}
 	else
 	{
