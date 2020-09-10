@@ -22,6 +22,15 @@ public:
 	typedef enum
 	{
 		OFFSET_NONE = -1,	// 無し
+		STONEAPPEAR_R,		// ストーン赤出現
+		STONENORMAL_R,		// ストーン赤通常
+		STONEDISAPPEA_R,	// ストーン赤消滅
+		STONEAPPEAR_G,		// ストーン緑出現
+		STONENORMAL_G,		// ストーン緑通常
+		STONEDISAPPEA_G,	// ストーン緑消滅
+		STONEAPPEAR_B,		// ストーン青出現
+		STONENORMAL_B,		// ストーン青通常
+		STONEDISAPPEA_B,	// ストーン青消滅
 		HIT,				// 当たった
 		SMASHATTACKSTART,	// スマッシュ攻撃開始
 		SMASHATTACKHIT,		// スマッシュ攻撃当たったとき

@@ -64,6 +64,15 @@ public:
 		STONE_ID_MAX
 	} STONE_ID;
 
+	typedef enum
+	{
+		STATE_NONE,
+		STATE_APPEA,
+		STATE_NORMAL,
+		STATE_DISAPPEA,
+		STATE_MAX
+	}STATE;
+
 	// モデル情報
 	typedef struct
 	{
@@ -122,6 +131,14 @@ public:
 	// ダメージの発生ライフ0の時 true
 	bool ApplyDamage(void);
 
+	// 出現処理
+	void AppearanceProc(void);
+	// 通常処理
+	void NormalProc(void);
+	// 消滅処理
+	void DisappearanceProc(void);
+	// 状態の設定
+	void SetState(STATE state);
 
 private:
 	/* メンバ関数 */
@@ -142,6 +159,8 @@ private:
 	int				   m_nIndexPos;				// 生成座標の番号
 	int				   m_nLife;					// ライフ
 	bool			   m_bDamage;				// ダメージを受けるフラグ
+	STATE              m_state;					// 状態
+	int                m_nCntState;				// 状態カウント
 #ifdef CSTONE_DEBUG_DRAW
 	static int         m_nNumAll;				// 全ての個数
 	int                m_nNumID;				// 個数ID(何個目)

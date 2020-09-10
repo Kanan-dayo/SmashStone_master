@@ -156,6 +156,9 @@ using namespace std;
 #define Mybfunc_WhenSmallerSet(o ,src)	if(o < src) {o = src;}				// s‚æ‚èo‚ª¬‚³‚¢‚Æ‚«Ý’è‚·‚é
 #define Mybfunc_swap(lhs,rhs,tmp)		do{tmp = rhs; rhs = lhs; lhs = tmp}while(false);	// ŒðŠ·
 
+#define MLB_CASE(t)     break;case (t):
+#define MLB_DEFAULT     break;default
+
 namespace ikuminLib
 {
 //-------------------------------------------------------------------------------------------------------------
