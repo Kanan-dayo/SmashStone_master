@@ -729,17 +729,20 @@ void CPlayer::MotionWalk(void)
 //==================================================================================================================
 void CPlayer::MotionJump(void)
 {
-	// 攻撃の状態を初期化
-	m_nAttackFlow = 0;
+	// 最初はジャンプモーション
+	if (m_nCntState == 0 && m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
+		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+	}
+	// 以降は落下モーション
+	else if (m_nCntState == TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
+
 	// カウンタを加算
 	m_nCntState++;
-	
-	// 最初はジャンプモーション
-	if (m_nCntState <= TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
-	// 以降は落下モーション
-	else if (m_nCntState > TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
 }
 
 //==================================================================================================================
