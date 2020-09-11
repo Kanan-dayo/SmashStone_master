@@ -224,6 +224,19 @@ float CKananLibrary::OutputDistance(D3DXVECTOR3 difpos)
 }
 
 //=============================================================================
+// ベクトル計算
+//=============================================================================
+D3DXVECTOR3 CKananLibrary::OutputVector(const D3DXVECTOR3 & start, const D3DXVECTOR3 & end)
+{
+	// ベクトルを保存する変数
+	D3DXVECTOR3 vector = end - start;
+	// ベクトルを正規化
+	D3DXVec3Normalize(&vector, &vector);
+	// ベクトルを返す
+	return vector;
+}
+
+//=============================================================================
 // 改行しないImGuiダミー
 //=============================================================================
 void CKananLibrary::SameLineDummy(const float & fX, const float & fY)

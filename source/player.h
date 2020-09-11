@@ -37,6 +37,7 @@ public:
 	int GetNumStone(void)	{ return m_nNumStone; }	
 	int GetnPlayer(void) { return m_nPlayer; }		
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
+	inline bool & GetbMotionBegin(void) { return m_bMotionBegin; }
 	CPlayer*GetAnotherPlayer(void);				
 
 	void Daunted(const int nGap);	// 怯み
@@ -81,6 +82,8 @@ private:
 	void MotionGetUp(void);
 	bool SmashJudge(void);
 
+	void RotToEnemy(void);
+
 	void SetLanding(void);
 
 	void CollisionAttack(void);						
@@ -108,12 +111,14 @@ private:
 	int m_nBoxColliderID;	
 	int m_nCntState;		// 状態管理用のカウンタ
 	int m_nCntGap;			// 被ダメージ時の後隙カウンタ
-
+	float m_fMotionMove;	// モーション時の移動量
 	int	m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
 
 
 	bool m_bIn[3];		// ポリゴンの範囲内フラグ
 	bool m_bCancelAttack;	// 攻撃のキャンセルフラグ
+	bool m_bMotionBegin;	// モーションの最初かどうか
+	D3DXVECTOR3 m_vecP_to_E;	// プレイヤーから敵までのベクトル
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									

@@ -43,7 +43,7 @@
 #define HEIGHT_CEILING	(400.0f)			// 天井の高さ
 #define HEIGHT_FLOOR	(0.0f)				// 床の高さ
 
-#define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
+#define BLOWAWAYFORCE_SMASH		(50)	// 吹き飛ばし力(スマッシュ攻撃)
 #define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
 
 #define TIME_LIFT_BEGIN			(60)		// 持ち上げ開始のモーション時間
@@ -84,6 +84,8 @@ void CPlayer::Init(void)
 	m_nCntState = 0;
 	m_nCntGap = 0;
 	m_nAttackFrame = 0;
+	m_fMotionMove = 0.0f;
+	m_vecP_to_E = ZeroVector3;
 
 	// 最大ポリゴン数までカウント
 	for (int nCnt = 0; nCnt < 3; nCnt++)
@@ -375,9 +377,11 @@ void CPlayer::Collision(void)
 //==================================================================================================================
 void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
+#ifdef _RELEASE
 	// 変身していなければ、処理しない
 	if (!m_bTrans)
 		return;
+#endif
 
 	// チャージ中にボタンを離すと、スマッシュ
 	if (m_stateStand == STANDSTATE_SMASHCHARGE &&
@@ -409,7 +413,7 @@ void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 void CPlayer::NormalAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
 	// キー入力
-	if (m_stateStand != STANDSTATE_JUMP && m_stateStand != STANDSTATE_ATTACK &&
+	if ((m_stateStand == STANDSTATE_NEUTRAL || m_stateStand == STANDSTATE_WALK) &&
 		((pGamepad && pGamepad->GetbConnect() && pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)) ||
 		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_ATTACK)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_ATTACK))))))
 	{
@@ -682,6 +686,12 @@ void CPlayer::Motion(void)
 		MotionSmash();
 		break;
 	}
+
+	// モーション開始時か判別
+	if (m_nCntState == 0)
+		m_bMotionBegin = true;
+	else if (m_nCntState == 1)
+		m_bMotionBegin = false;
 }
 
 //==================================================================================================================
@@ -694,6 +704,8 @@ void CPlayer::MotionNeutral(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 }
 
@@ -707,6 +719,8 @@ void CPlayer::MotionWalk(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_WALK);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 }
 
@@ -738,6 +752,8 @@ void CPlayer::MotionDown(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_DOWN);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 
 	// カウント加算
@@ -809,6 +825,12 @@ void CPlayer::MotionBlowAway(void)
 		// ダウン開始
 		m_stateStand = STANDSTATE_DOWN;
 	}
+	else if (m_move.y == 0.0f &&
+		m_moveOld.y == 0.0f)
+	{
+		// ダウン開始
+		m_stateStand = STANDSTATE_DOWN;
+	}
 }
 
 //==================================================================================================================
@@ -832,6 +854,12 @@ void CPlayer::MotionSmashBlowAway(void)
 		// ダウン開始
 		m_stateStand = STANDSTATE_DOWN;
 	}
+	else if (abs(m_move.y) <= 1.0f &&
+		abs(m_moveOld.y) <= 1.0f)
+	{
+		// ダウン開始
+		m_stateStand = STANDSTATE_DOWN;
+	}
 }
 
 //==================================================================================================================
@@ -842,6 +870,8 @@ void CPlayer::MotionAttack(void)
 	// 最初だけ
 	if (m_nCntState == 0)
 	{
+		// 敵のほうを向く
+		RotToEnemy();
 		// モーションの切り替え
 		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
 		// 攻撃が当たったフラグをオフにする
@@ -849,6 +879,10 @@ void CPlayer::MotionAttack(void)
 		m_bAttakHitStone = false;
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+
+		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
+		m_move.x += -m_vecP_to_E.x * m_fMotionMove;
+		m_move.z += -m_vecP_to_E.z * m_fMotionMove;
 
 		m_nAttackFlow++;
 	}
@@ -888,6 +922,8 @@ void CPlayer::MotionSmashCharge(void)
 	// スマッシュチャージ
 	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE)
 	{
+		// 敵のほうを向く
+		RotToEnemy();
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHCHARGE);
 		// 攻撃が当たったフラグをオフにする
@@ -903,11 +939,20 @@ void CPlayer::MotionSmash(void)
 	// スマッシュ
 	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
 	{
+		// 敵のほうを向く
+		RotToEnemy();
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+
+		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());;
 	}
+
 	m_nCntState++;
+
+	m_move.x += -m_vecP_to_E.x * m_fMotionMove;
+	m_move.z += -m_vecP_to_E.z * m_fMotionMove;
+
 	if (m_nCntState >= m_nAttackFrame)
 	{
 		m_stateStand = STANDSTATE_NEUTRAL;
@@ -935,6 +980,22 @@ bool CPlayer::SmashJudge(void)
 	}
 
 	return false;
+}
+
+//==================================================================================================================
+// 敵のほうを向く
+//==================================================================================================================
+void CPlayer::RotToEnemy(void)
+{
+	// 敵のIDを決定
+	int nEnemyID = 0;
+	if (m_nPlayer == 0)
+		nEnemyID = 1;
+
+	// プレイヤーから敵へのベクトルを取得
+	m_vecP_to_E = CKananLibrary::OutputVector(CGame::GetPlayer(nEnemyID)->GetPos(), m_pos);
+
+	m_rotDest.y = atan2f((float)m_vecP_to_E.x, (float)m_vecP_to_E.z);
 }
 
 //==================================================================================================================
@@ -1439,6 +1500,7 @@ void CPlayer::ShowDebugInfo()
 		int nAllFrame = m_pModelCharacter->GetAllFrame();
 		// 情報の表示
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
+		ImGui::Text("movOld (%.4f, %.4f, %.4f)", m_moveOld.x, m_moveOld.y, m_moveOld.z);
 		ImGui::Text("nLife       : %f", m_nLife);
 		ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
 		ImGui::Text("AttackFrame : %d / %d", m_nCntState, m_nAttackFrame);
