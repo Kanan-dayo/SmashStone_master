@@ -535,7 +535,7 @@ void C3DParticle::GetPosFromParam(CONST PARAM * pParam, D3DXVECTOR3 & pos)
 	{
 		if (pParam->bParent == true)
 		{
-			pos.x = (float)(rand() % pParam->pPosXRand->nMax + pParam->pPosXRand->nMin) + m_pos.x;
+			pos.x = (float)(rand() % pParam->pPosXRand->nMax + pParam->pPosXRand->nMin) + m_pPosParent->x;
 		}
 		else
 		{
@@ -545,14 +545,14 @@ void C3DParticle::GetPosFromParam(CONST PARAM * pParam, D3DXVECTOR3 & pos)
 	else if (pParam->pPos != nullptr)
 	{
 		pos.x = (pParam->bParent == true) ?
-			pParam->pPos->x + m_pos.x :
-			pParam->pPos->x;
+			pParam->pPos->x + m_pPosParent->x :
+			pParam->pPos->x + m_pos.x;
 	}
 	if (pParam->pPosYRand != nullptr)
 	{
 		if (pParam->bParent == true)
 		{
-			pos.y = (float)(rand() % pParam->pPosYRand->nMax + pParam->pPosYRand->nMin) + m_pos.y;
+			pos.y = (float)(rand() % pParam->pPosYRand->nMax + pParam->pPosYRand->nMin) + m_pPosParent->y;
 		}
 		else
 		{
@@ -562,14 +562,14 @@ void C3DParticle::GetPosFromParam(CONST PARAM * pParam, D3DXVECTOR3 & pos)
 	else if (pParam->pPos != nullptr)
 	{
 		pos.y = (pParam->bParent == true) ?
-			pParam->pPos->y + m_pos.y :
-			pParam->pPos->y;
+			pParam->pPos->y + m_pPosParent->y :
+			pParam->pPos->y + m_pos.y;
 	}
 	if (pParam->pPosZRand != nullptr)
 	{
 		if (pParam->bParent == true)
 		{
-			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin) + m_pos.z;
+			pos.z = (float)(rand() % pParam->pPosZRand->nMax + pParam->pPosZRand->nMin) + m_pPosParent->z;
 		}
 		else
 		{
@@ -579,8 +579,8 @@ void C3DParticle::GetPosFromParam(CONST PARAM * pParam, D3DXVECTOR3 & pos)
 	else if (pParam->pPos != nullptr)
 	{
 		pos.z = (pParam->bParent == true) ?
-			pParam->pPos->z + m_pos.z :
-			pParam->pPos->z;
+			pParam->pPos->z + m_pPosParent->z:
+			pParam->pPos->z + m_pos.z;
 	}
 
 }
@@ -651,15 +651,15 @@ void C3DParticle::GetMoveAndPosAccordingDirFromParam(CONST PARAM * pParam, D3DXV
 	// ˆÊ’u‚ðŒvŽZ‚·‚é
 	if (pParam->bParent == true)
 	{
-		pos.x = move.x * fLength + m_pos.x;
-		pos.y = move.y * fLength + m_pos.y;
-		pos.z = move.z * fLength + m_pos.z;
+		pos.x = move.x * fLength + m_pPosParent->x;
+		pos.y = move.y * fLength + m_pPosParent->y;
+		pos.z = move.z * fLength + m_pPosParent->z;
 	}
 	else
 	{
-		pos.x = move.x * fLength;
-		pos.y = move.y * fLength;
-		pos.z = move.z * fLength;
+		pos.x = move.x * fLength + m_pos.x;
+		pos.y = move.y * fLength + m_pos.y;
+		pos.z = move.z * fLength + m_pos.z;
 	}
 
 
