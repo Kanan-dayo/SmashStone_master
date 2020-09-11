@@ -14,7 +14,7 @@
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
 //-------------------------------------------------------------------------------------------------------------
-#define REFLECTION_RATE		(1.0f)
+#define REFLECTION_RATE		(0.9f)
 
 //-------------------------------------------------------------------------------------------------------------
 // 平面の反射後の位置とベクトルを算出する
@@ -43,5 +43,5 @@ void CReflection::GetPlaneReflectingAfterPosAndVec(
 	*pOutPos = *pPos + *pOutMoveVec;
 	CCharEffectOffset::Set(pPos, CCharEffectOffset::STR_ダンッ);
 
-
+	C3DParticle::Set(pPos, pNormal, C3DParticle::OFFSETNAME::HITREFLECTION);
 }

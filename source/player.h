@@ -109,6 +109,8 @@ private:
 
 	void UpdateStoneParticle(void);					// ストーンパーティクルの更新
 
+	void SetChargeParticle(void);
+
 	int m_nPlayer;			
 	int m_nBoxColliderID;	
 	int m_nCntState;		// 状態管理用のカウンタ
@@ -116,14 +118,16 @@ private:
 	float m_fMotionMove;	// モーション時の移動量
 	int	m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
 
-
 	bool m_bIn[3];		// ポリゴンの範囲内フラグ
 	bool m_bCancelAttack;	// 攻撃のキャンセルフラグ
 	bool m_bMotionBegin;	// モーションの最初かどうか
 	D3DXVECTOR3 m_vecP_to_E;	// プレイヤーから敵までのベクトル
 
-	int m_nCntParticle;		// パーティクルカウント
-
+	int m_nCntParticle;				// パーティクルカウント
+	int m_nCntChargeParticle;		// チャージパーティクルのカウント
+	int m_nTimingChargeParticle;	// チャージパーティクルのタイミング
+	int m_nCntTimingChargeParticle;	// チャージパーティクルのタイミングのカウント
+	int m_nCntSmashDashParticle;	// スマッシュダッシュカウント
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									
 #endif

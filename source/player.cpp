@@ -37,6 +37,7 @@
 #include "shadow.h"
 #include "motion.h"
 #include "3DParticle.h"
+#include "modelParts.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -44,7 +45,7 @@
 #define HEIGHT_CEILING	(400.0f)			// 天井の高さ
 #define HEIGHT_FLOOR	(0.0f)				// 床の高さ
 
-#define BLOWAWAYFORCE_SMASH		(50)	// 吹き飛ばし力(スマッシュ攻撃)
+#define BLOWAWAYFORCE_SMASH		(100)		// 吹き飛ばし力(スマッシュ攻撃)
 #define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
 
 #define TIME_LIFT_BEGIN			(60)		// 持ち上げ開始のモーション時間
@@ -53,6 +54,8 @@
 #define TIME_MAX_CHARGE			(100)		// 最大までチャージできる時間
 
 #define TIME_JUMP_TO_FALL		(15)		// ジャンプから落下までの時間
+
+#define CHARGEPARTICLE_MAX_CHARGE	(12)		// 最大までチャージできる時間
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -86,6 +89,10 @@ void CPlayer::Init(void)
 	m_nCntGap = 0;
 	m_nAttackFrame = 0;
 	m_nCntParticle = 0;
+	m_nCntChargeParticle = 0;
+	m_nCntTimingChargeParticle = 0;
+	m_nTimingChargeParticle = 0;
+	m_nCntSmashDashParticle = 0;
 	m_fMotionMove = 0.0f;
 	m_vecP_to_E = ZeroVector3;
 
@@ -283,8 +290,8 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	out_intersect = ZeroVector3;
-	out_nor = ZeroVector3;
+	//out_intersect = ZeroVector3;
+	//out_nor = ZeroVector3;
 
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
@@ -339,8 +346,8 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	out_intersect = ZeroVector3;
-	out_nor = ZeroVector3;
+	//out_intersect = ZeroVector3;
+	//out_nor = ZeroVector3;
 
 	// 壁との当たり判定
 	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect, &out_nor, bSmashBlowAway) == true)
@@ -686,6 +693,7 @@ void CPlayer::Motion(void)
 		break;
 	case STANDSTATE_SMASHCHARGE:
 		MotionSmashCharge();
+		SetChargeParticle();
 		break;
 	case STANDSTATE_SMASH:
 		MotionSmash();
@@ -866,7 +874,8 @@ void CPlayer::MotionSmashBlowAway(void)
 		// ダウン開始
 		m_stateStand = STANDSTATE_DOWN;
 	}
-	else if (abs(m_move.y) <= 1.0f &&
+	else if (m_stateStand != STANDSTATE_SMASHBLOWAWAY &&
+		abs(m_move.y) <= 1.0f &&
 		abs(m_moveOld.y) <= 1.0f)
 	{
 		// ダウン開始
@@ -959,6 +968,9 @@ void CPlayer::MotionSmash(void)
 
 		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
 		C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::SMASHATTACKSTART);
+		m_nCntChargeParticle = 0;
+		m_nCntTimingChargeParticle = 0;
+		m_nTimingChargeParticle = 0;
 	}
 
 	m_nCntState++;
@@ -970,6 +982,21 @@ void CPlayer::MotionSmash(void)
 	{
 		m_stateStand = STANDSTATE_NEUTRAL;
 		m_nCntState = 0;
+	}
+	else
+	{
+		if (m_nCntSmashDashParticle == 7)
+		{
+			m_nCntSmashDashParticle = 0;
+			// パーツのポインタ
+			CModelParts *pParts = &m_pModelCharacter->GetModelParts()[CModelParts::PARTSNAME_UPARM_R];
+			D3DXVECTOR3 ParticlePos = D3DXVECTOR3(pParts->GetMtx()->_41, pParts->GetMtx()->_42, pParts->GetMtx()->_43);
+			C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME::SMASHDASH));
+		}
+		else
+		{
+			m_nCntSmashDashParticle++;
+		}
 	}
 }
 
@@ -1364,7 +1391,7 @@ void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 	// ダメージ
 	this->Damage(2);
 	// 変身中以外は吹き飛ぶ
-	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	BlowAway(pAnother, 0.2f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
 	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
 
@@ -1422,7 +1449,7 @@ void CPlayer::TakeSmashDamage(CPlayer * pAnother)
 	// ダメージ
 	this->Damage(2);
 	// 変身中以外は吹き飛ぶ
-	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	BlowAway(pAnother, 0.0f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
 	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
 	// 当てたフラグを立てる
@@ -1520,6 +1547,43 @@ void CPlayer::UpdateStoneParticle(void)
 		}
 		m_nCntParticle = 0;
 	}
+}
+
+//==================================================================================================================
+// チャージパーティクルの設定
+//==================================================================================================================
+void CPlayer::SetChargeParticle(void)
+{
+	// パーツのポインタ
+	CModelParts *pParts = &m_pModelCharacter->GetModelParts()[CModelParts::PARTSNAME_UPARM_R];
+	D3DXVECTOR3 ParticlePos = D3DXVECTOR3(pParts->GetMtx()->_41, pParts->GetMtx()->_42, pParts->GetMtx()->_43);
+
+	static int aOffsetName[3] =
+	{
+		C3DParticle::CHARGE_R,
+		C3DParticle::CHARGE_G,
+		C3DParticle::CHARGE_B,
+	};
+
+	if (CHARGEPARTICLE_MAX_CHARGE == m_nCntTimingChargeParticle)
+	{
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[0]);
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[1]);
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[2]);
+	}
+	else if ((CHARGEPARTICLE_MAX_CHARGE - m_nCntTimingChargeParticle) == m_nTimingChargeParticle)
+	{
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[m_nCntChargeParticle]);
+		m_nCntChargeParticle++;
+		if (m_nCntChargeParticle == 3)
+		{
+			m_nCntChargeParticle = 0;
+		}
+		m_nCntTimingChargeParticle++;
+		m_nTimingChargeParticle = 0;
+	}
+	m_nTimingChargeParticle++;
+
 }
 
 #ifdef _DEBUG
