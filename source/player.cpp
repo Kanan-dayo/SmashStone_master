@@ -36,6 +36,7 @@
 #include "polyCollMana.h"
 #include "shadow.h"
 #include "motion.h"
+#include "3DParticle.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -84,6 +85,7 @@ void CPlayer::Init(void)
 	m_nCntState = 0;
 	m_nCntGap = 0;
 	m_nAttackFrame = 0;
+	m_nCntParticle = 0;
 	m_fMotionMove = 0.0f;
 	m_vecP_to_E = ZeroVector3;
 
@@ -134,6 +136,9 @@ void CPlayer::Update(void)
 		// 操作
 		Control();
 	}
+
+	// ストーンパーティクルの更新
+	UpdateStoneParticle();
 
 
 	// 更新
@@ -687,11 +692,15 @@ void CPlayer::Motion(void)
 		break;
 	}
 
-	// モーション開始時か判別
-	if (m_nCntState == 0)
-		m_bMotionBegin = true;
-	else if (m_nCntState == 1)
-		m_bMotionBegin = false;
+	//// モーション開始時か判別
+	//if (m_nCntState == 0)
+	//{
+	//	m_bMotionBegin = true;
+	//}
+	//else if (m_nCntState == 1)
+	//{
+	//	m_bMotionBegin = false;
+	//}
 }
 
 //==================================================================================================================
@@ -948,7 +957,8 @@ void CPlayer::MotionSmash(void)
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
 
-		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());;
+		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
+		C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::SMASHATTACKSTART);
 	}
 
 	m_nCntState++;
@@ -1487,6 +1497,29 @@ inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const flo
 	this->m_move.y = MoveVec.y * fBlowAwayForce;
 
 	return true;
+}
+
+//==================================================================================================================
+// ストーンパーティクルの更新
+//==================================================================================================================
+void CPlayer::UpdateStoneParticle(void)
+{
+	if (m_nCntParticle++ == 60)
+	{
+		if (m_bGetStoneType[0] == true)
+		{
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONENORMAL_R);
+		}
+		if (m_bGetStoneType[1] == true)
+		{
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONENORMAL_G);
+		}
+		if (m_bGetStoneType[2] == true)
+		{
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONENORMAL_B);
+		}
+		m_nCntParticle = 0;
+	}
 }
 
 #ifdef _DEBUG

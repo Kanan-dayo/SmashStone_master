@@ -8,6 +8,8 @@
 // インクルードファイル
 //-------------------------------------------------------------------------------------------------------------
 #include "Reflection.h"
+#include "3DParticle.h"
+#include "CharEffectOffset.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -39,4 +41,7 @@ void CReflection::GetPlaneReflectingAfterPosAndVec(
 
 	// 反射後の位置を計算
 	*pOutPos = *pPos + *pOutMoveVec;
+	CCharEffectOffset::Set(pPos, CCharEffectOffset::STR_ダンッ);
+
+
 }
