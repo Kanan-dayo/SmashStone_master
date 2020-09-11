@@ -541,7 +541,8 @@ bool CCapsuleCollider::Collision(void)
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
 		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
-		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKSTART);
+		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 		pOwn->SetAttakHit(true);
 		pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
 	}
@@ -568,9 +569,10 @@ bool CCapsuleCollider::Collision(void)
 //-------------------------------------------------------------------------------------------------------------
 bool CCapsuleCollider::CollisionStone(void)
 {
-	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;
-	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();	
-	CModelCharacter *pOwnModelChar = pOwn->GetModelCharacter();								// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
+	// 変数宣言
+	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;	// このコライダーを持っているプレイヤー
+	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();		// ボックスコライダーのポインタ
+	CModelCharacter *pOwnModelChar = pOwn->GetModelCharacter();					// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
 
 	//　現在のキーが攻撃状態かどうか
 	if (pOwnModelChar->AttackKeyCondition() == false ||
@@ -608,32 +610,40 @@ bool CCapsuleCollider::CollisionStone(void)
 		return false;
 	}
 
-
+	// ボックスコライダー分ループ
 	for (int nCntBox = 0; nCntBox < _3DBOXCOLLIDER_MAX; nCntBox++)
 	{
+		// シーンnullチェック
 		if (pBoxColli[nCntBox].pScene == NULL)
-		{
+		{// 処理をスキップ
 			continue;
 		}
+		// 使用していない時又は、ストーンじゃない時
 		if (pBoxColli[nCntBox].bUse == false ||
 			pBoxColli[nCntBox].pScene->GetPriority() != CScene::PRIORITY_STONE)
-		{
+		{// 処理をスキップ
 			continue;
 		}
-
-		D3DXVECTOR3 HitPos;
-
+		// 変数宣言
+		D3DXVECTOR3 HitPos;	// 当たった位置
+		// カプセルと球の判定
 		if (CMylibrary::colCapsuleSphere(m_ColliderInfo.Capsule, pBoxColli[nCntBox].pos, ikuminLib::VEC3(pBoxColli[nCntBox].size).Length(), HitPos) == true)
 		{
+			// ストーンポインタの取得
 			CStone *pStone = (CStone *)pBoxColli[nCntBox].pScene;
+			// ストーンに攻撃を当てたフラグ
 			pOwn->SetAttakHitStone(true);
+			// パーティクルの設定
+			C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+			// ダメージを与えるライフが0になったときtrue
 			if (pStone->ApplyDamage() == true)
-			{
+			{// 文字のエフェクトを設定
 				CCharEffectOffset::Set(pStone->GetPos(), CCharEffectOffset::OFFSETNAME::STR_キーン);
+				// 石を入手
 				pOwn->CatchStone(pStone);
 			}
 			else
-			{
+			{// 文字のエフェクトを設定
 				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ゴッ);
 			}
 		}
