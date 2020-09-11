@@ -29,7 +29,7 @@
 #define SPEED_ROT			(0.1f)		// 回転のスピード
 #define TIME_MAX_DOWN		(60)		// 最大までダウンできる時間
 
-#define INERTIA_SMASH		(0.0005f)	// スマッシュ吹き飛び時の慣性
+#define INERTIA_SMASH		(0.001f)	// スマッシュ吹き飛び時の慣性
 #define INERTIA_BLOWAWAY	(0.02f)		// 通常吹き飛び時の慣性
 
 //=============================================================================

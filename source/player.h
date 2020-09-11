@@ -105,7 +105,9 @@ private:
 	void TakeSmashDamage(CPlayer * pAnother);		
 
 
-	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);	
+	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);
+
+	void UpdateStoneParticle(void);					// ストーンパーティクルの更新
 
 	int m_nPlayer;			
 	int m_nBoxColliderID;	
@@ -119,6 +121,8 @@ private:
 	bool m_bCancelAttack;	// 攻撃のキャンセルフラグ
 	bool m_bMotionBegin;	// モーションの最初かどうか
 	D3DXVECTOR3 m_vecP_to_E;	// プレイヤーから敵までのベクトル
+
+	int m_nCntParticle;		// パーティクルカウント
 
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									

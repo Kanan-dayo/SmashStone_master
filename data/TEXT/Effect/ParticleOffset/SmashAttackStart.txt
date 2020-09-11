@@ -24,7 +24,7 @@ SETPARAM
 	TEXTYPE = 0
 	
 	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 0.0 0.0
+	POS = 0.0 20.0 0.0
 	
 	// 位置ランダム (最小 最大)  使わない場合NULL
 	POSXRAND = NULL
@@ -74,7 +74,7 @@ SETPARAM
 	ROT = 0.0 0.0 -1.0
 	
 	// 親フラグ true = 1 false = 0
-	PARENT = 1
+	PARENT = 0
 	
 	// 方向と噴射位置を同じにする true = 1 false = 0
 	DIREQUAPOS = 1
@@ -101,7 +101,7 @@ SETPARAM
 	TEXTYPE = 1
 	
 	// 位置
-	POS = 0.0 0.0 0.0
+	POS = 0.0 20.0 0.0
 	
 	// 位置ランダム (最小 最大)  
 	POSXRAND = NULL
@@ -151,7 +151,7 @@ SETPARAM
 	ROT = 0.0 0.0 -1.0
 	
 	// 親フラグ
-	PARENT = 1
+	PARENT = 0
 	
 	// 方向と噴射位置を同じにする
 	DIREQUAPOS = 0
