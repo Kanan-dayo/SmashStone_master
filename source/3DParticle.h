@@ -34,6 +34,11 @@ public:
 		HIT,				// 当たった
 		SMASHATTACKSTART,	// スマッシュ攻撃開始
 		SMASHATTACKHIT,		// スマッシュ攻撃当たったとき
+		SMASHDASH,			// スマッシュダッシュ
+		HITREFLECTION,		// 跳ね返ったとき
+		CHARGE_R,			// チャージ赤
+		CHARGE_G,			// チャージ緑
+		CHARGE_B,			// チャージ青
 		OFFSET_MAX			// 最大
 	}OFFSETNAME;
 

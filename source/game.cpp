@@ -293,8 +293,11 @@ void CGame::Update(void)
 			CFade::SetFade(CRenderer::MODE_TITLE, DEFAULT_FADE_TIME);
 	}
 
-	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_LSHIFT))
+	if (CManager::GetInputKeyboard()->GetKeyboardPress(DIK_LSHIFT))
 	{
+		C3DParticle::Set(&m_pPlayer[0]->GetPos(), &m_pPlayer[0]->GetRot(), C3DParticle::CHARGE_R);
+		C3DParticle::Set(&m_pPlayer[0]->GetPos(), &m_pPlayer[0]->GetRot(), C3DParticle::CHARGE_G);
+		C3DParticle::Set(&m_pPlayer[0]->GetPos(), &m_pPlayer[0]->GetRot(), C3DParticle::CHARGE_B);
 	}
 #endif // _DEBUG
 }
