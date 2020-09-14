@@ -202,11 +202,23 @@ void CCharacter::SetCylinderCoillider(void)
 	// ¶ã˜r‚Ìİ’è
 	m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L] =
 		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx(), CCapsuleCollider::TYPEID_UPPERARM_L);
+
+	// ‰E‘¾‘Ú‚Ìİ’è
+	m_pCapColi[CCharacter::COLLIPARTS_FEMUR_R] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_THIGH_R].GetMtx(), CCapsuleCollider::TYPEID_THIGH_R);
+	// ‰E‰º‘Ú•”‚Ìİ’è
+	m_pCapColi[CCharacter::COLLIPARTS_LOWERLEG_R] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LEG_R].GetMtx(), CCapsuleCollider::TYPEID_LOWERLEG_R);
+	// ¶‘¾‘Ú‚Ìİ’è
+	m_pCapColi[CCharacter::COLLIPARTS_FEMUR_L] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_THIGH_L].GetMtx(), CCapsuleCollider::TYPEID_THIGH_L);
+	// ¶‰º‘Ú•”‚Ìİ’è
+	m_pCapColi[CCharacter::COLLIPARTS_LOWERLEG_L] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LEG_L].GetMtx(), CCapsuleCollider::TYPEID_LOWERLEG_L);
+
 	// ‘Ì‚Ìİ’è
 	m_pCapColi[CCharacter::COLLIPARTS_BODY] =
 		CCapsuleCollider::Create(this, &m_mtxWorld, CCapsuleCollider::TYPEID_BODY);
-
-
 }
 
 #define CASE(Key)	break;case (Key):
