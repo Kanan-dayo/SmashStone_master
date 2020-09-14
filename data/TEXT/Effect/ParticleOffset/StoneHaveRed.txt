@@ -59,13 +59,13 @@ SETPARAM
 	SPEED = 0.0
 	
 	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 5 7
+	SPEEDRAND = 12 7
 	
 	// ライフ
 	LIFE = 0
 	
 	// ライフのランダム(最小 最大) 使わない場合NULL
-	LIFERAND = 50 10
+	LIFERAND = 90 10
 	
 	// 重力
 	GRAVITY = 0.0

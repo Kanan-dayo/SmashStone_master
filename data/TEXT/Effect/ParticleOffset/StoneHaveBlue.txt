@@ -38,7 +38,7 @@ SETPARAM
 	LENGTHRAND = NULL
 	
 	// 色 r g b a
-	COL = 0.0 0.0 1.0 1.0
+	COL = 0.1 0.1 1.0 1.0
 	
 	// 半径
 	RADIUS = 0.0
@@ -59,13 +59,13 @@ SETPARAM
 	SPEED = 0.0
 	
 	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 5 7
+	SPEEDRAND = 12 7
 	
 	// ライフ
 	LIFE = 0
 	
 	// ライフのランダム(最小 最大) 使わない場合NULL
-	LIFERAND = 50 10
+	LIFERAND = 90 10
 	
 	// 重力
 	GRAVITY = 0.0

@@ -202,10 +202,8 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_POSIX].nor;
 			}
 		}
-		else
-		{// 位置を戻す
-			pPos->x = pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x;
-		}
+
+		pPos->x = pSingleInfo[CWall::SETINGPOS_POSIX].trans.pos.x;
 	}
 	// -Xの位置の時
 	else if (pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x >= pPos->x)
@@ -221,10 +219,8 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_NEGX].nor;
 			}
 		}
-		else
-		{// 位置を戻す
-			pPos->x = pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x;
-		}
+
+		pPos->x = pSingleInfo[CWall::SETINGPOS_NEGX].trans.pos.x;
 	}
 	// +Yの位置の時
 	if (pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z <= pPos->z)
@@ -240,10 +236,9 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 				*SurfaceNor = pSingleInfo[CWall::SETINGPOS_POSIZ].nor;
 			}
 		}
-		else
-		{// 位置を戻す
-			pPos->z = pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z;
-		}
+
+		pPos->z = pSingleInfo[CWall::SETINGPOS_POSIZ].trans.pos.z;
+
 	}
 	// -Y位置の時
 	else if (pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z >= pPos->z)
@@ -260,10 +255,8 @@ bool CWall::Collision(D3DXVECTOR3 *pPos, D3DXVECTOR3 *pPosOld, D3DXVECTOR3 *pOut
 			}
 			
 		}
-		else
-		{// 位置を戻す
-			 pPos->z = pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z;
-		}
+
+		pPos->z = pSingleInfo[CWall::SETINGPOS_NEGZ].trans.pos.z;
 	}
 	// 衝突フラグを返す
 	return bColli;
