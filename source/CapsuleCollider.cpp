@@ -541,8 +541,8 @@ bool CCapsuleCollider::Collision(void)
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
 		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒKƒb);
-		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
-		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
+		//C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 		pOwn->SetAttakHit(true);
 		pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
 	}

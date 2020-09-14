@@ -31,7 +31,9 @@ public:
 		STONEAPPEAR_B,		// ストーン青出現
 		STONENORMAL_B,		// ストーン青通常
 		STONEDISAPPEA_B,	// ストーン青消滅
+		STONEFLASH,			// ストーンの発行
 		HIT,				// 当たった
+		STRONGHIT,			// 強く当たった
 		SMASHATTACKSTART,	// スマッシュ攻撃開始
 		SMASHATTACKHIT,		// スマッシュ攻撃当たったとき
 		SMASHDASH,			// スマッシュダッシュ
@@ -39,6 +41,10 @@ public:
 		CHARGE_R,			// チャージ赤
 		CHARGE_G,			// チャージ緑
 		CHARGE_B,			// チャージ青
+		STONEHAVE_R,		// 持っているストーン赤
+		STONEHAVE_G,		// 持っているストーン緑
+		STONEHAVE_B,		// 持っているストーン青
+
 		OFFSET_MAX			// 最大
 	}OFFSETNAME;
 
