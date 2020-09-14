@@ -216,7 +216,7 @@ float CKananLibrary::OutputSqrt(D3DXVECTOR3 difpos)
 }
 
 //=============================================================================
-// ‹——£ŒvŽZ‚ñ
+// ‹——£ŒvŽZ
 //=============================================================================
 float CKananLibrary::OutputDistance(D3DXVECTOR3 difpos)
 {

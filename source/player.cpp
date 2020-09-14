@@ -50,12 +50,12 @@
 
 #define TIME_LIFT_BEGIN			(60)		// 持ち上げ開始のモーション時間
 #define TIME_MAX_DOWN			(60)		// 最大までダウンできる時間
-
 #define TIME_MAX_CHARGE			(100)		// 最大までチャージできる時間
-
 #define TIME_JUMP_TO_FALL		(15)		// ジャンプから落下までの時間
 
 #define CHARGEPARTICLE_MAX_CHARGE	(12)		// 最大までチャージできる時間
+
+#define DISTANCE_CHASE_ENEMY	(100.0f)	// 敵を追尾する距離
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -891,8 +891,6 @@ void CPlayer::MotionAttack(void)
 	// 最初だけ
 	if (m_nCntState == 0)
 	{
-		// 敵のほうを向く
-		RotToEnemy();
 		// モーションの切り替え
 		m_pModelCharacter->SetMotion((CMotion::MOTION_TYPE)(CMotion::PLAYER_ATTACK_0 + m_nAttackFlow));
 		// 攻撃が当たったフラグをオフにする
@@ -900,12 +898,22 @@ void CPlayer::MotionAttack(void)
 		m_bAttakHitStone = false;
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-
-		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
-		m_move.x += -m_vecP_to_E.x * m_fMotionMove;
-		m_move.z += -m_vecP_to_E.z * m_fMotionMove;
-
 		m_nAttackFlow++;
+
+		int nEnemyID = 0;
+		if (m_nPlayer == 0)
+			nEnemyID = 1;
+
+		float fDis = CKananLibrary::OutputSqrt(CGame::GetPlayer(nEnemyID)->GetPos() - m_pos);
+
+		if (fDis <= DISTANCE_CHASE_ENEMY)
+		{
+			// 敵のほうを向く
+			RotToEnemy();
+			m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
+			m_move.x += -m_vecP_to_E.x * m_fMotionMove;
+			m_move.z += -m_vecP_to_E.z * m_fMotionMove;
+		}
 	}
 
 	// 攻撃フレーム加算
@@ -1059,6 +1067,7 @@ void CPlayer::Daunted(const int nGap)
 {
 	// カウントを設定し、怯み状態に移行
 	m_pModelCharacter->ResetMotion();
+	m_nCntState = 0;
 	m_nCntGap = nGap;
 	m_stateStand = STANDSTATE_DAUNTED;
 	m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
@@ -1185,6 +1194,14 @@ bool CPlayer::HitConditionAttack3(const int &nCapColliID)
 bool CPlayer::HitConditionSmash(const int &nCapColliID)
 {
 	return (nCapColliID == CCapsuleCollider::TYPEID_FOREARM_R) || (nCapColliID == CCapsuleCollider::TYPEID_UPPERARM_R);
+}
+
+//==================================================================================================================
+//　モーションの取得
+//==================================================================================================================
+CMotion::MOTION_TYPE CPlayer::GetMotion(void)
+{
+	return m_pModelCharacter->GetMotion();
 }
 
 //==================================================================================================================

@@ -6,7 +6,7 @@
 #include "sceneX.h"
 #include "fade.h"
 #include "character.h"
-
+#include "motion.h"
 
 #define TEXTURE_PLAYER "data/TEXTURE/field000.jpg"
 #define PLAYER_MODEL "data/MODEL/testmodel.x"		
@@ -38,6 +38,7 @@ public:
 	int GetnPlayer(void) { return m_nPlayer; }		
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
 	inline bool & GetbMotionBegin(void) { return m_bMotionBegin; }
+	CMotion::MOTION_TYPE GetMotion(void);
 	CPlayer*GetAnotherPlayer(void);				
 
 	void Daunted(const int nGap);	// ‹¯‚Ý
