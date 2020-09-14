@@ -36,7 +36,11 @@ void C3DParticle::Load(void)
 		{ "data/TEXT/Effect/ParticleOffset/StoneNormalBlue.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/StoneDisAppearBlue.txt" },
 
+		{ "data/TEXT/Effect/ParticleOffset/StoneFlash.txt" },
+
 		{ "data/TEXT/Effect/ParticleOffset/HitOffset.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StrongAttackHit.txt" },
+
 		{ "data/TEXT/Effect/ParticleOffset/SmashAttackStart.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/SmashAttackHit.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/SmashDash.txt" },
@@ -47,6 +51,9 @@ void C3DParticle::Load(void)
 		{ "data/TEXT/Effect/ParticleOffset/ChargeGreen.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/ChargeBlue.txt" },
 
+		{ "data/TEXT/Effect/ParticleOffset/StoneHaveRed.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneHaveGreen.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/StoneHaveBlue.txt" },
 	};
 
 	for (int nCntOffset = 0; nCntOffset < OFFSETNAME::OFFSET_MAX; nCntOffset++)

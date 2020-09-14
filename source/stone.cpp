@@ -447,6 +447,11 @@ void CStone::NormalProc(void)
 		}
 	}
 
+	if (m_nCntState % 15 == 0)
+	{
+		C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEFLASH);
+	}
+
 	// 回転処理
 	CMylibrary::SetFixTheRotation(&(this->m_rot.y += CSTONE_ROTSPEED));
 	// ゆらゆら
