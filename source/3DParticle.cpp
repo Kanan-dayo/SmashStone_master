@@ -39,6 +39,14 @@ void C3DParticle::Load(void)
 		{ "data/TEXT/Effect/ParticleOffset/HitOffset.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/SmashAttackStart.txt" },
 		{ "data/TEXT/Effect/ParticleOffset/SmashAttackHit.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/SmashDash.txt" },
+
+		{ "data/TEXT/Effect/ParticleOffset/HitReflection.txt" },
+
+		{ "data/TEXT/Effect/ParticleOffset/ChargeRed.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/ChargeGreen.txt" },
+		{ "data/TEXT/Effect/ParticleOffset/ChargeBlue.txt" },
+
 	};
 
 	for (int nCntOffset = 0; nCntOffset < OFFSETNAME::OFFSET_MAX; nCntOffset++)

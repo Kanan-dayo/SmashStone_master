@@ -729,6 +729,16 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 		{// 衝突しているか判別する種類は除く
 			continue;
 		}
+		if (bReflection == true)
+		{
+			if (pOtherCollider->pScene != nullptr)
+			{
+				if (pOtherCollider->pScene->GetPriority() == CScene::PRIORITY_PLAYER)
+				{
+					continue;
+				}
+			}
+		}
 		if (pOtherCollider->ColliderType == C3DBoxCollider::COLLIDER_TYPE_NORMAL)
 		{
 			// Y軸が重なっているとき
@@ -862,10 +872,23 @@ bool C3DBoxCollider::CollisionBox(int n3DBoxColliderID, D3DXVECTOR3 &pos, D3DXVE
 				{
 					// 角度を設定
 					float radian = atan2f(-diffPos.x, -diffPos.y);
+					float fSinValue = sinf(radian)*fRadius;
+					float fCosValue = cosf(radian)*fRadius;
 					pOwnerCollider->pos.x = pOtherCollider->pos.x + sinf(radian)*(fRadius);
 					pOwnerCollider->pos.z = pOtherCollider->pos.z + cosf(radian)*(fRadius);
 					pos.x = pOwnerCollider->pos.x;
 					pos.z = pOwnerCollider->pos.z;
+
+					if (bReflection == true)
+					{
+						D3DXVECTOR3 norm;	// 面そしてのベクトル
+
+						norm = D3DXVECTOR3(fSinValue, 0.0f, fCosValue);
+						CMylibrary::CreateUnitVector(&norm, &norm);
+						*pOut_intersect = pos;
+						*pOut_nor = norm;
+						bCollision = true;
+					}
 				}
 			}
 		}
