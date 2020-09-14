@@ -537,32 +537,39 @@ bool CCapsuleCollider::Collision(void)
 	D3DXVECTOR3 HitPos;// “–‚½‚Á‚½ˆÊ’u
 #ifdef _DEBUG
 	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
-	// 2ü•ª‚ÌÅ’Z‹—‚ð‹‚ß‚é
-	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
+	// –³“G‚Å‚È‚¢‚Æ‚«
+	if (pOthers->GetInvincible() == false)
 	{
-		switch (pOwn->GetMotion())
+		// 2ü•ª‚ÌÅ’Z‹—‚ð‹‚ß‚é
+		if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 		{
-			MLB_CASE(CMotion::PLAYER_ATTACK_0) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-			MLB_CASE(CMotion::PLAYER_ATTACK_1)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-			MLB_CASE(CMotion::PLAYER_ATTACK_2)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-			MLB_CASE(CMotion::PLAYER_ATTACK_3)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
-			MLB_CASE(CMotion::PLAYER_SMASH)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+			switch (pOwn->GetMotion())
+			{
+				MLB_CASE(CMotion::PLAYER_ATTACK_0) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_1)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_2)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_3)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
+				MLB_CASE(CMotion::PLAYER_SMASH)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+			}
+			CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒKƒb);
+			pOwn->SetAttakHit(true);
+			pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
 		}
-		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒKƒb);
-		pOwn->SetAttakHit(true);
-		pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
-	}
-	else
-	{
+		else
+		{
+		}
 	}
 #else
-
+	// –³“G‚Å‚È‚¢‚Æ‚«
+	if (pOthers->GetInvincible() == false)
+	{
 	// 2ü•ª‚ÌÅ’Z‹—‚ð‹‚ß‚é
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
 		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ƒhƒ“ƒb);
 		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 		pOwn->SetAttakHit(true);
+	}
 	}
 
 #endif // _DEBUG

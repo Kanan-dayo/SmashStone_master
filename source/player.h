@@ -81,10 +81,11 @@ private:
 	void MotionSmashCharge(void);
 	void MotionSmash(void);
 	void MotionGetUp(void);
+	void MotionGetUpActive(void);
 	bool SmashJudge(void);
 
 	void RotToEnemy(void);
-
+	
 	void SetLanding(void);
 
 	void CollisionAttack(void);						

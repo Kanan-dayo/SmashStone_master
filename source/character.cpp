@@ -61,6 +61,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_StateLift			= STATE_NONE;
 	m_bAttakHit			= false;
 	m_bAttakHitStone	= false;
+	m_bInvincible		= false;
 	
 	// ‘”‚ğ‰ÁZ
 	m_nNumCharacter++;

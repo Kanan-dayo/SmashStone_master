@@ -122,6 +122,7 @@ public:
 
 	inline bool				 GetStoneType(int nID)				{ return m_bGetStoneType[nID]; }	// 取得したストーンタイプ取得
 	inline bool				 GetTrans(void)						{ return m_bTrans; }				// 変身したかどうか
+	inline bool				 GetInvincible(void)				{ return m_bInvincible; }			// 無敵かどうか
 	inline int				 GetTransCnt(void)					{ return m_nCntTrans; }				// 変身カウント取得
 	inline CHARACTER_STANDSTATE GetStandState(void)				{ return m_stateStand; }			// 立ち状態の行動取得
 	inline CHARACTER_JUMPSTATE GetJumpState(void)				{ return m_stateJump; }				// ジャンプ状態の行動取得

@@ -52,6 +52,8 @@
 #define TIME_MAX_DOWN			(60)		// 最大までダウンできる時間
 #define TIME_MAX_CHARGE			(100)		// 最大までチャージできる時間
 #define TIME_JUMP_TO_FALL		(15)		// ジャンプから落下までの時間
+#define TIME_GETUP				(40)		// 起き上がりの時間
+#define TIME_GETUP_ACTIVE		(35)		// 起き上がりの時間
 
 #define CHARGEPARTICLE_MAX_CHARGE	(12)		// 最大までチャージできる時間
 
@@ -137,7 +139,12 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	CGame::GAMESTATE gameState = CManager::GetRenderer()->GetGame()->GetGameState();
-	if (m_stateStand != STANDSTATE_SMASHBLOWAWAY&& m_stateStand != STANDSTATE_BLOWAWAY && m_stateStand != STANDSTATE_DAUNTED &&
+	if (m_stateStand != STANDSTATE_SMASHBLOWAWAY &&
+		m_stateStand != STANDSTATE_BLOWAWAY && 
+		m_stateStand != STANDSTATE_DAUNTED &&
+		m_stateStand != STANDSTATE_DOWN && 
+		m_stateStand != STANDSTATE_GETUP &&
+		m_stateStand != STANDSTATE_GETUP_ACTIVE &&
 		(gameState == CGame::GAMESTATE_NORMAL || gameState == CGame::GAMESTATE_BEFORE))
 	{
 		// 操作
@@ -679,6 +686,10 @@ void CPlayer::Motion(void)
 	case STANDSTATE_GETUP:
 		MotionGetUp();
 		break;
+		// 起き上がり
+	case STANDSTATE_GETUP_ACTIVE:
+		MotionGetUpActive();
+		break;
 		// 歩行
 	case STANDSTATE_WALK:
 		MotionWalk();
@@ -774,6 +785,7 @@ void CPlayer::MotionDown(void)
 		m_nCntState = 0;
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
+		m_bInvincible = true;
 	}
 
 	// カウント加算
@@ -837,6 +849,7 @@ void CPlayer::MotionBlowAway(void)
 		m_nCntState = 0;
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
+		m_bInvincible = true;
 	}
 
 	// 地面に着く
@@ -1013,6 +1026,39 @@ void CPlayer::MotionSmash(void)
 //==================================================================================================================
 void CPlayer::MotionGetUp(void)
 {
+	// 起き上がり
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_GETUP)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_GETUP);
+		m_nCntState = 0;
+	}
+	m_nCntState++;
+
+	if (m_nCntState >= TIME_GETUP)
+	{
+		m_stateStand = STANDSTATE_NEUTRAL;
+		m_bInvincible = false;
+	}
+}
+
+//==================================================================================================================
+// 起き上がりモーション
+//==================================================================================================================
+void CPlayer::MotionGetUpActive(void)
+{
+	// 起き上がり
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_GETUP_ACTIVE)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_GETUP_ACTIVE);
+		m_nCntState = 0;
+	}
+	m_nCntState++;
+
+	if (m_nCntState >= TIME_GETUP_ACTIVE)
+	{
+		m_stateStand = STANDSTATE_NEUTRAL;
+		m_bInvincible = false;
+	}
 }
 
 //==================================================================================================================
@@ -1230,8 +1276,7 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	{
 		// ジャンプ中でなければ、ニュートラル
 		if (m_stateStand != STANDSTATE_JUMP&&
-			m_stateStand != STANDSTATE_ATTACK && 
-			m_stateStand != STANDSTATE_DOWN)
+			m_stateStand != STANDSTATE_ATTACK)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1273,8 +1318,7 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	{
 		// ジャンプ中でなければ、ニュートラル
 		if (m_stateStand != STANDSTATE_JUMP &&
-			m_stateStand != STANDSTATE_ATTACK&&
-			m_stateStand != STANDSTATE_DOWN)
+			m_stateStand != STANDSTATE_ATTACK)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1629,6 +1673,7 @@ void CPlayer::ShowDebugInfo()
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);
+		ImGui::Text("bInvincible : %d", m_bInvincible);
 	}
 }
 #endif
