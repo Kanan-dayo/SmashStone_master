@@ -38,7 +38,7 @@ SETPARAM
 	LENGTHRAND = NULL
 	
 	// 色 r g b a
-	COL = 1.0 1.0 1.0 1.0
+	COL = 1.0 1.0 1.0 0.5
 	
 	// 半径
 	RADIUS = 15.0
@@ -47,7 +47,7 @@ SETPARAM
 	RADIUSRAND = NULL
 	
 	// 半径の変化量
-	RADIUSVALUE = 10.0
+	RADIUSVALUE = 5.0
 	
 	// 噴射角度
 	ANGLE = 0.0

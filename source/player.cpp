@@ -1548,19 +1548,19 @@ inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const flo
 //==================================================================================================================
 void CPlayer::UpdateStoneParticle(void)
 {
-	if (m_nCntParticle++ == 60)
+	if (++m_nCntParticle == 1)
 	{
 		if (m_bGetStoneType[0] == true)
 		{
-			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONENORMAL_R);
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONEHAVE_R);
 		}
 		if (m_bGetStoneType[1] == true)
 		{
-			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONENORMAL_G);
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONEHAVE_G);
 		}
 		if (m_bGetStoneType[2] == true)
 		{
-			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONENORMAL_B);
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONEHAVE_B);
 		}
 		m_nCntParticle = 0;
 	}
@@ -1571,16 +1571,18 @@ void CPlayer::UpdateStoneParticle(void)
 //==================================================================================================================
 void CPlayer::SetChargeParticle(void)
 {
-	// パーツのポインタ
-	CModelParts *pParts = &m_pModelCharacter->GetModelParts()[CModelParts::PARTSNAME_UPARM_R];
-	D3DXVECTOR3 ParticlePos = D3DXVECTOR3(pParts->GetMtx()->_41, pParts->GetMtx()->_42, pParts->GetMtx()->_43);
-
-	static int aOffsetName[3] =
+	static const int aOffsetName[3] =
 	{
 		C3DParticle::CHARGE_R,
 		C3DParticle::CHARGE_G,
 		C3DParticle::CHARGE_B,
 	};
+
+	// パーツのポインタ
+	CModelParts *pParts = &m_pModelCharacter->GetModelParts()[CModelParts::PARTSNAME_UPARM_R];
+	D3DXVECTOR3 ParticlePos = D3DXVECTOR3(pParts->GetMtx()->_41, pParts->GetMtx()->_42, pParts->GetMtx()->_43);
+
+
 
 	if (CHARGEPARTICLE_MAX_CHARGE == m_nCntTimingChargeParticle)
 	{
