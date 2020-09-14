@@ -11,7 +11,7 @@ MOTIONSET
 	NUM_KEY = 3		# ÉLÅ[êî
 
 	KEYSET			# ----- << KEY :  0 / 3 >> -----
-		FRAME = 15
+		FRAME = 3
 		MOVE = 10
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -4.00 0.00

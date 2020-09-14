@@ -11,7 +11,7 @@ MOTIONSET
 	NUM_KEY = 4		# ÉLÅ[êî
 
 	KEYSET			# ----- << KEY :  0 / 4 >> -----
-		FRAME = 5
+		FRAME = 3
 		ATTACK_ON
 		ATTACK_INDEX = 5
 		MOVE = 10
