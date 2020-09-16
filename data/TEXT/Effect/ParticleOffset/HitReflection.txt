@@ -44,10 +44,10 @@ SETPARAM
 	RADIUS = 0.0
 	
 	// 半径のランダム(最小 最大) 使わない場合NULL
-	RADIUSRAND = 10 3
+	RADIUSRAND = 10 2
 	
 	// 半径の変化量
-	RADIUSVALUE = -0.5
+	RADIUSVALUE = -0.1
 	
 	// 噴射角度
 	ANGLE = 1.0
@@ -65,10 +65,10 @@ SETPARAM
 	LIFE = 0
 	
 	// ライフのランダム(最小 最大) 使わない場合NULL
-	LIFERAND = 10 2
+	LIFERAND = 60 60
 	
 	// 重力
-	GRAVITY = 0.0
+	GRAVITY = -1.0
 	
 	// 向き
 	ROT = 0.0 0.0 0.0
@@ -138,7 +138,7 @@ SETPARAM
 	RADIUSRAND = NULL
 	
 	// 半径の変化量
-	RADIUSVALUE = 10.0
+	RADIUSVALUE = 20.0
 	
 	// 噴射角度
 	ANGLE = 0.0

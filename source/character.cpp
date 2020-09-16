@@ -29,7 +29,7 @@
 #define SPEED_ROT			(0.1f)		// 回転のスピード
 #define TIME_MAX_DOWN		(60)		// 最大までダウンできる時間
 
-#define INERTIA_SMASH		(0.005f)	// スマッシュ吹き飛び時の慣性
+#define INERTIA_SMASH		(0.001f)	// スマッシュ吹き飛び時の慣性
 #define INERTIA_BLOWAWAY	(0.02f)		// 通常吹き飛び時の慣性
 
 //=============================================================================
@@ -61,6 +61,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_StateLift			= STATE_NONE;
 	m_bAttakHit			= false;
 	m_bAttakHitStone	= false;
+	m_bInvincible		= false;
 	
 	// 総数を加算
 	m_nNumCharacter++;
@@ -202,11 +203,23 @@ void CCharacter::SetCylinderCoillider(void)
 	// 左上腕の設定
 	m_pCapColi[CCharacter::COLLIPARTS_UPPERARM_L] =
 		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_UPARM_L].GetMtx(), CCapsuleCollider::TYPEID_UPPERARM_L);
+
+	// 右太腿の設定
+	m_pCapColi[CCharacter::COLLIPARTS_FEMUR_R] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_THIGH_R].GetMtx(), CCapsuleCollider::TYPEID_THIGH_R);
+	// 右下腿部の設定
+	m_pCapColi[CCharacter::COLLIPARTS_LOWERLEG_R] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LEG_R].GetMtx(), CCapsuleCollider::TYPEID_LOWERLEG_R);
+	// 左太腿の設定
+	m_pCapColi[CCharacter::COLLIPARTS_FEMUR_L] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_THIGH_L].GetMtx(), CCapsuleCollider::TYPEID_THIGH_L);
+	// 左下腿部の設定
+	m_pCapColi[CCharacter::COLLIPARTS_LOWERLEG_L] =
+		CCapsuleCollider::Create(this, pParts[CModelParts::PARTSNAME_LEG_L].GetMtx(), CCapsuleCollider::TYPEID_LOWERLEG_L);
+
 	// 体の設定
 	m_pCapColi[CCharacter::COLLIPARTS_BODY] =
 		CCapsuleCollider::Create(this, &m_mtxWorld, CCapsuleCollider::TYPEID_BODY);
-
-
 }
 
 #define CASE(Key)	break;case (Key):

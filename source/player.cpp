@@ -36,6 +36,8 @@
 #include "polyCollMana.h"
 #include "shadow.h"
 #include "motion.h"
+#include "3DParticle.h"
+#include "modelParts.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -43,15 +45,19 @@
 #define HEIGHT_CEILING	(400.0f)			// 天井の高さ
 #define HEIGHT_FLOOR	(0.0f)				// 床の高さ
 
-#define BLOWAWAYFORCE_SMASH		(100.0f)	// 吹き飛ばし力(スマッシュ攻撃)
+#define BLOWAWAYFORCE_SMASH		(100)		// 吹き飛ばし力(スマッシュ攻撃)
 #define BLOWAWAYFORCE_NORMAL	(8.0f)		// 吹き飛ばし力(通常攻撃)
 
 #define TIME_LIFT_BEGIN			(60)		// 持ち上げ開始のモーション時間
 #define TIME_MAX_DOWN			(60)		// 最大までダウンできる時間
-
 #define TIME_MAX_CHARGE			(100)		// 最大までチャージできる時間
-
 #define TIME_JUMP_TO_FALL		(15)		// ジャンプから落下までの時間
+#define TIME_GETUP				(40)		// 起き上がりの時間
+#define TIME_GETUP_ACTIVE		(35)		// 起き上がりの時間
+
+#define CHARGEPARTICLE_MAX_CHARGE	(12)		// 最大までチャージできる時間
+
+#define DISTANCE_CHASE_ENEMY	(100.0f)	// 敵を追尾する距離
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -84,6 +90,13 @@ void CPlayer::Init(void)
 	m_nCntState = 0;
 	m_nCntGap = 0;
 	m_nAttackFrame = 0;
+	m_nCntParticle = 0;
+	m_nCntChargeParticle = 0;
+	m_nCntTimingChargeParticle = 0;
+	m_nTimingChargeParticle = 0;
+	m_nCntSmashDashParticle = 0;
+	m_fMotionMove = 0.0f;
+	m_vecP_to_E = ZeroVector3;
 
 	// 最大ポリゴン数までカウント
 	for (int nCnt = 0; nCnt < 3; nCnt++)
@@ -126,12 +139,20 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {
 	CGame::GAMESTATE gameState = CManager::GetRenderer()->GetGame()->GetGameState();
-	if (m_stateStand != STANDSTATE_SMASHBLOWAWAY&& m_stateStand != STANDSTATE_BLOWAWAY && m_stateStand != STANDSTATE_DAUNTED &&
+	if (m_stateStand != STANDSTATE_SMASHBLOWAWAY &&
+		m_stateStand != STANDSTATE_BLOWAWAY && 
+		m_stateStand != STANDSTATE_DAUNTED &&
+		m_stateStand != STANDSTATE_DOWN && 
+		m_stateStand != STANDSTATE_GETUP &&
+		m_stateStand != STANDSTATE_GETUP_ACTIVE &&
 		(gameState == CGame::GAMESTATE_NORMAL || gameState == CGame::GAMESTATE_BEFORE))
 	{
 		// 操作
 		Control();
 	}
+
+	// ストーンパーティクルの更新
+	UpdateStoneParticle();
 
 
 	// 更新
@@ -276,8 +297,8 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	out_intersect = ZeroVector3;
-	out_nor = ZeroVector3;
+	//out_intersect = ZeroVector3;
+	//out_nor = ZeroVector3;
 
 	// 当たり判定位置の更新
 	C3DBoxCollider::ChangePosition(this->m_nBoxColliderID, this->m_pos, MYLIB_3DVECTOR_ZERO);
@@ -332,8 +353,8 @@ void CPlayer::Collision(void)
 		}
 	}
 
-	out_intersect = ZeroVector3;
-	out_nor = ZeroVector3;
+	//out_intersect = ZeroVector3;
+	//out_nor = ZeroVector3;
 
 	// 壁との当たり判定
 	if (pWall->Collision(&m_pos, &m_posOld, &out_intersect, &out_nor, bSmashBlowAway) == true)
@@ -375,9 +396,11 @@ void CPlayer::Collision(void)
 //==================================================================================================================
 void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
+#ifdef _RELEASE
 	// 変身していなければ、処理しない
 	if (!m_bTrans)
 		return;
+#endif
 
 	// チャージ中にボタンを離すと、スマッシュ
 	if (m_stateStand == STANDSTATE_SMASHCHARGE &&
@@ -409,7 +432,7 @@ void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 void CPlayer::NormalAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
 	// キー入力
-	if (m_stateStand != STANDSTATE_JUMP && m_stateStand != STANDSTATE_ATTACK &&
+	if ((m_stateStand == STANDSTATE_NEUTRAL || m_stateStand == STANDSTATE_WALK) &&
 		((pGamepad && pGamepad->GetbConnect() && pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)) ||
 		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_ATTACK)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_ATTACK))))))
 	{
@@ -663,6 +686,10 @@ void CPlayer::Motion(void)
 	case STANDSTATE_GETUP:
 		MotionGetUp();
 		break;
+		// 起き上がり
+	case STANDSTATE_GETUP_ACTIVE:
+		MotionGetUpActive();
+		break;
 		// 歩行
 	case STANDSTATE_WALK:
 		MotionWalk();
@@ -677,11 +704,22 @@ void CPlayer::Motion(void)
 		break;
 	case STANDSTATE_SMASHCHARGE:
 		MotionSmashCharge();
+		SetChargeParticle();
 		break;
 	case STANDSTATE_SMASH:
 		MotionSmash();
 		break;
 	}
+
+	//// モーション開始時か判別
+	//if (m_nCntState == 0)
+	//{
+	//	m_bMotionBegin = true;
+	//}
+	//else if (m_nCntState == 1)
+	//{
+	//	m_bMotionBegin = false;
+	//}
 }
 
 //==================================================================================================================
@@ -694,6 +732,8 @@ void CPlayer::MotionNeutral(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_NEUTRAL);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 }
 
@@ -707,6 +747,8 @@ void CPlayer::MotionWalk(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_WALK);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
 	}
 }
 
@@ -715,17 +757,20 @@ void CPlayer::MotionWalk(void)
 //==================================================================================================================
 void CPlayer::MotionJump(void)
 {
-	// 攻撃の状態を初期化
-	m_nAttackFlow = 0;
+	// 最初はジャンプモーション
+	if (m_nCntState == 0 && m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
+		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+	}
+	// 以降は落下モーション
+	else if (m_nCntState == TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
+
 	// カウンタを加算
 	m_nCntState++;
-	
-	// 最初はジャンプモーション
-	if (m_nCntState <= TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
-	// 以降は落下モーション
-	else if (m_nCntState > TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
 }
 
 //==================================================================================================================
@@ -738,6 +783,9 @@ void CPlayer::MotionDown(void)
 	{
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_DOWN);
 		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+		m_bInvincible = true;
 	}
 
 	// カウント加算
@@ -801,10 +849,17 @@ void CPlayer::MotionBlowAway(void)
 		m_nCntState = 0;
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
+		m_bInvincible = true;
 	}
 
 	// 地面に着く
 	if (m_move.y <= -3.0f)
+	{
+		// ダウン開始
+		m_stateStand = STANDSTATE_DOWN;
+	}
+	else if (m_move.y == 0.0f &&
+		m_moveOld.y == 0.0f)
 	{
 		// ダウン開始
 		m_stateStand = STANDSTATE_DOWN;
@@ -832,6 +887,13 @@ void CPlayer::MotionSmashBlowAway(void)
 		// ダウン開始
 		m_stateStand = STANDSTATE_DOWN;
 	}
+	else if (m_stateStand != STANDSTATE_SMASHBLOWAWAY &&
+		abs(m_move.y) <= 1.0f &&
+		abs(m_moveOld.y) <= 1.0f)
+	{
+		// ダウン開始
+		m_stateStand = STANDSTATE_DOWN;
+	}
 }
 
 //==================================================================================================================
@@ -849,8 +911,22 @@ void CPlayer::MotionAttack(void)
 		m_bAttakHitStone = false;
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
-
 		m_nAttackFlow++;
+
+		int nEnemyID = 0;
+		if (m_nPlayer == 0)
+			nEnemyID = 1;
+
+		float fDis = CKananLibrary::OutputSqrt(CGame::GetPlayer(nEnemyID)->GetPos() - m_pos);
+
+		if (fDis <= DISTANCE_CHASE_ENEMY)
+		{
+			// 敵のほうを向く
+			RotToEnemy();
+			m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
+			m_move.x += -m_vecP_to_E.x * m_fMotionMove;
+			m_move.z += -m_vecP_to_E.z * m_fMotionMove;
+		}
 	}
 
 	// 攻撃フレーム加算
@@ -888,6 +964,8 @@ void CPlayer::MotionSmashCharge(void)
 	// スマッシュチャージ
 	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH_CHARGE)
 	{
+		// 敵のほうを向く
+		RotToEnemy();
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH_CHARGE);
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHCHARGE);
 		// 攻撃が当たったフラグをオフにする
@@ -903,15 +981,43 @@ void CPlayer::MotionSmash(void)
 	// スマッシュ
 	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_SMASH)
 	{
+		// 敵のほうを向く
+		RotToEnemy();
 		m_pModelCharacter->SetMotion(CMotion::PLAYER_SMASH);
 		// 攻撃フレームを設定
 		m_nAttackFrame = m_pModelCharacter->GetAllFrame();
+
+		m_fMotionMove = CMotion::GetMotionMove((PARAM_TYPE)(m_type / 2), m_pModelCharacter->GetMotion(), m_pModelCharacter->GetNowKey());
+		C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::SMASHATTACKSTART);
+		m_nCntChargeParticle = 0;
+		m_nCntTimingChargeParticle = 0;
+		m_nTimingChargeParticle = 0;
 	}
+
 	m_nCntState++;
+
+	m_move.x += -m_vecP_to_E.x * m_fMotionMove;
+	m_move.z += -m_vecP_to_E.z * m_fMotionMove;
+
 	if (m_nCntState >= m_nAttackFrame)
 	{
 		m_stateStand = STANDSTATE_NEUTRAL;
 		m_nCntState = 0;
+	}
+	else
+	{
+		if (m_nCntSmashDashParticle == 7)
+		{
+			m_nCntSmashDashParticle = 0;
+			// パーツのポインタ
+			CModelParts *pParts = &m_pModelCharacter->GetModelParts()[CModelParts::PARTSNAME_UPARM_R];
+			D3DXVECTOR3 ParticlePos = D3DXVECTOR3(pParts->GetMtx()->_41, pParts->GetMtx()->_42, pParts->GetMtx()->_43);
+			C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME::SMASHDASH));
+		}
+		else
+		{
+			m_nCntSmashDashParticle++;
+		}
 	}
 }
 
@@ -920,6 +1026,39 @@ void CPlayer::MotionSmash(void)
 //==================================================================================================================
 void CPlayer::MotionGetUp(void)
 {
+	// 起き上がり
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_GETUP)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_GETUP);
+		m_nCntState = 0;
+	}
+	m_nCntState++;
+
+	if (m_nCntState >= TIME_GETUP)
+	{
+		m_stateStand = STANDSTATE_NEUTRAL;
+		m_bInvincible = false;
+	}
+}
+
+//==================================================================================================================
+// 起き上がりモーション
+//==================================================================================================================
+void CPlayer::MotionGetUpActive(void)
+{
+	// 起き上がり
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_GETUP_ACTIVE)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_GETUP_ACTIVE);
+		m_nCntState = 0;
+	}
+	m_nCntState++;
+
+	if (m_nCntState >= TIME_GETUP_ACTIVE)
+	{
+		m_stateStand = STANDSTATE_NEUTRAL;
+		m_bInvincible = false;
+	}
 }
 
 //==================================================================================================================
@@ -935,6 +1074,22 @@ bool CPlayer::SmashJudge(void)
 	}
 
 	return false;
+}
+
+//==================================================================================================================
+// 敵のほうを向く
+//==================================================================================================================
+void CPlayer::RotToEnemy(void)
+{
+	// 敵のIDを決定
+	int nEnemyID = 0;
+	if (m_nPlayer == 0)
+		nEnemyID = 1;
+
+	// プレイヤーから敵へのベクトルを取得
+	m_vecP_to_E = CKananLibrary::OutputVector(CGame::GetPlayer(nEnemyID)->GetPos(), m_pos);
+
+	m_rotDest.y = atan2f((float)m_vecP_to_E.x, (float)m_vecP_to_E.z);
 }
 
 //==================================================================================================================
@@ -958,6 +1113,7 @@ void CPlayer::Daunted(const int nGap)
 {
 	// カウントを設定し、怯み状態に移行
 	m_pModelCharacter->ResetMotion();
+	m_nCntState = 0;
 	m_nCntGap = nGap;
 	m_stateStand = STANDSTATE_DAUNTED;
 	m_pModelCharacter->SetMotion(CMotion::PLAYER_DAUNTED);
@@ -1087,6 +1243,14 @@ bool CPlayer::HitConditionSmash(const int &nCapColliID)
 }
 
 //==================================================================================================================
+//　モーションの取得
+//==================================================================================================================
+CMotion::MOTION_TYPE CPlayer::GetMotion(void)
+{
+	return m_pModelCharacter->GetMotion();
+}
+
+//==================================================================================================================
 // 違うプレイヤーの取得
 //==================================================================================================================
 CPlayer * CPlayer::GetAnotherPlayer(void)
@@ -1112,8 +1276,7 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 	{
 		// ジャンプ中でなければ、ニュートラル
 		if (m_stateStand != STANDSTATE_JUMP&&
-			m_stateStand != STANDSTATE_ATTACK && 
-			m_stateStand != STANDSTATE_DOWN)
+			m_stateStand != STANDSTATE_ATTACK)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1155,8 +1318,7 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 	{
 		// ジャンプ中でなければ、ニュートラル
 		if (m_stateStand != STANDSTATE_JUMP &&
-			m_stateStand != STANDSTATE_ATTACK&&
-			m_stateStand != STANDSTATE_DOWN)
+			m_stateStand != STANDSTATE_ATTACK)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1290,7 +1452,7 @@ void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 	// ダメージ
 	this->Damage(2);
 	// 変身中以外は吹き飛ぶ
-	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	BlowAway(pAnother, 0.2f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
 	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
 
@@ -1348,7 +1510,7 @@ void CPlayer::TakeSmashDamage(CPlayer * pAnother)
 	// ダメージ
 	this->Damage(2);
 	// 変身中以外は吹き飛ぶ
-	BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_SMASH);
+	BlowAway(pAnother, 0.0f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
 	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
 	// 当てたフラグを立てる
@@ -1425,6 +1587,68 @@ inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const flo
 	return true;
 }
 
+//==================================================================================================================
+// ストーンパーティクルの更新
+//==================================================================================================================
+void CPlayer::UpdateStoneParticle(void)
+{
+	if (++m_nCntParticle == 1)
+	{
+		if (m_bGetStoneType[0] == true)
+		{
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONEHAVE_R);
+		}
+		if (m_bGetStoneType[1] == true)
+		{
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONEHAVE_G);
+		}
+		if (m_bGetStoneType[2] == true)
+		{
+			C3DParticle::Set(&m_pos, &m_rot, C3DParticle::OFFSETNAME::STONEHAVE_B);
+		}
+		m_nCntParticle = 0;
+	}
+}
+
+//==================================================================================================================
+// チャージパーティクルの設定
+//==================================================================================================================
+void CPlayer::SetChargeParticle(void)
+{
+	static const int aOffsetName[3] =
+	{
+		C3DParticle::CHARGE_R,
+		C3DParticle::CHARGE_G,
+		C3DParticle::CHARGE_B,
+	};
+
+	// パーツのポインタ
+	CModelParts *pParts = &m_pModelCharacter->GetModelParts()[CModelParts::PARTSNAME_UPARM_R];
+	D3DXVECTOR3 ParticlePos = D3DXVECTOR3(pParts->GetMtx()->_41, pParts->GetMtx()->_42, pParts->GetMtx()->_43);
+
+
+
+	if (CHARGEPARTICLE_MAX_CHARGE == m_nCntTimingChargeParticle)
+	{
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[0]);
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[1]);
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[2]);
+	}
+	else if ((CHARGEPARTICLE_MAX_CHARGE - m_nCntTimingChargeParticle) == m_nTimingChargeParticle)
+	{
+		C3DParticle::Set(&ParticlePos, pParts->GetRot(), (C3DParticle::OFFSETNAME)aOffsetName[m_nCntChargeParticle]);
+		m_nCntChargeParticle++;
+		if (m_nCntChargeParticle == 3)
+		{
+			m_nCntChargeParticle = 0;
+		}
+		m_nCntTimingChargeParticle++;
+		m_nTimingChargeParticle = 0;
+	}
+	m_nTimingChargeParticle++;
+
+}
+
 #ifdef _DEBUG
 //==================================================================================================================
 // ImGuiの更新
@@ -1439,6 +1663,7 @@ void CPlayer::ShowDebugInfo()
 		int nAllFrame = m_pModelCharacter->GetAllFrame();
 		// 情報の表示
 		CKananLibrary::ShowOffsetInfo(GetPos(), GetRot(), GetMove());
+		ImGui::Text("movOld (%.4f, %.4f, %.4f)", m_moveOld.x, m_moveOld.y, m_moveOld.z);
 		ImGui::Text("nLife       : %f", m_nLife);
 		ImGui::Text("AttackFlow  : %d", m_nAttackFlow);
 		ImGui::Text("AttackFrame : %d / %d", m_nCntState, m_nAttackFrame);
@@ -1448,6 +1673,7 @@ void CPlayer::ShowDebugInfo()
 		ImGui::Text("GetNumStone : %d", m_nNumStone);
 		if (m_bTrans)
 			ImGui::Text("TransTime   : %d", TIME_TRANS - m_nCntTrans);
+		ImGui::Text("bInvincible : %d", m_bInvincible);
 	}
 }
 #endif

@@ -216,11 +216,24 @@ float CKananLibrary::OutputSqrt(D3DXVECTOR3 difpos)
 }
 
 //=============================================================================
-// 距離計算ん
+// 距離計算
 //=============================================================================
 float CKananLibrary::OutputDistance(D3DXVECTOR3 difpos)
 {
 	return difpos.x * difpos.x + difpos.y * difpos.y + difpos.z * difpos.z;
+}
+
+//=============================================================================
+// ベクトル計算
+//=============================================================================
+D3DXVECTOR3 CKananLibrary::OutputVector(const D3DXVECTOR3 & start, const D3DXVECTOR3 & end)
+{
+	// ベクトルを保存する変数
+	D3DXVECTOR3 vector = end - start;
+	// ベクトルを正規化
+	D3DXVec3Normalize(&vector, &vector);
+	// ベクトルを返す
+	return vector;
 }
 
 //=============================================================================

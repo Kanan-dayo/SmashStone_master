@@ -1,6 +1,6 @@
 #============================================================
 #
-# モーション
+# 攻撃モーション(3番目のコンボ、最後の攻撃)
 # Author : KANAN NAGANAWA
 #
 #============================================================
@@ -10,10 +10,11 @@ MOTIONSET
 	LOOP = 0		# (0 : ループしない / 1 : ループする)
 	NUM_KEY = 5		# キー数
 
-	KEYSET			# ----- << KEY :  0 / 4 >> -----
-		FRAME = 5
+	KEYSET			# ----- << KEY :  0 / 5 >> -----
+		FRAME = 3
+		MOVE = 10
 		KEY # ----- [ 0 ] -----
-			POS = 0.00 -5.50 0.40
+			POS = 0.00 -5.50 0.00
 			ROT = -0.54 1.85 0.00
 		END_KEY
 
@@ -63,7 +64,7 @@ MOTIONSET
 		END_KEY
 	END_KEYSET
 
-	KEYSET			# ----- << KEY :  1 / 4 >> -----
+	KEYSET			# ----- << KEY :  1 / 5 >> -----
 		FRAME = 3
 		ATTACK_ON
 		ATTACK_INDEX = 3
@@ -118,7 +119,7 @@ MOTIONSET
 		END_KEY
 	END_KEYSET
 
-	KEYSET			# ----- << KEY :  2 / 4 >> -----
+	KEYSET			# ----- << KEY :  2 / 5 >> -----
 		FRAME = 7
 		ATTACK_ON
 		ATTACK_INDEX = 3
@@ -173,10 +174,12 @@ MOTIONSET
 		END_KEY
 	END_KEYSET
 
-	KEYSET			# ----- << KEY :  3 / 4 >> -----
+	KEYSET			# ----- << KEY :  3 / 5 >> -----
 		FRAME = 30
+		ATTACK_ON
+		ATTACK_INDEX = 3
 		KEY # ----- [ 0 ] -----
-			POS = 0.00 0.00 0.00
+			POS = 0.00 -3.00 0.00
 			ROT = -1.35 -0.20 -0.50
 		END_KEY
 
@@ -226,10 +229,10 @@ MOTIONSET
 		END_KEY
 	END_KEYSET
 
-	KEYSET			# ----- << KEY :  3 / 4 >> -----
+	KEYSET			# ----- << KEY :  4 / 5 >> -----
 		FRAME = 10
 		KEY # ----- [ 0 ] -----
-			POS = 0.00 0.00 0.00
+			POS = 0.00 -3.00 0.00
 			ROT = -1.35 -0.20 -0.50
 		END_KEY
 

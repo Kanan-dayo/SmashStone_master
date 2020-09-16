@@ -5,7 +5,7 @@
 SCRIPT
 
 // パラメータ数
-NUMPARAM = 2
+NUMPARAM = 4
 
 SETPARAM
 	// タイマー 出現時間
@@ -24,7 +24,7 @@ SETPARAM
 	TEXTYPE = 0
 	
 	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 0.0 0.0
+	POS = 0.0 20.0 0.0
 	
 	// 位置ランダム (最小 最大)  使わない場合NULL
 	POSXRAND = NULL
@@ -59,7 +59,7 @@ SETPARAM
 	SPEED = 0.0
 	
 	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 10 5
+	SPEEDRAND = 20 5
 	
 	// ライフ
 	LIFE = 0
@@ -74,7 +74,7 @@ SETPARAM
 	ROT = 0.0 0.0 -1.0
 	
 	// 親フラグ true = 1 false = 0
-	PARENT = 1
+	PARENT = 0
 	
 	// 方向と噴射位置を同じにする true = 1 false = 0
 	DIREQUAPOS = 1
@@ -101,7 +101,7 @@ SETPARAM
 	TEXTYPE = 1
 	
 	// 位置
-	POS = 0.0 0.0 0.0
+	POS = 0.0 20.0 0.0
 	
 	// 位置ランダム (最小 最大)  
 	POSXRAND = NULL
@@ -115,7 +115,7 @@ SETPARAM
 	LENGTHRAND = NULL
 	
 	// 色 r g b a
-	COL = 1.0 1.0 1.0 1.0
+	COL = 1.0 0.0 0.0 1.0
 	
 	// 半径
 	RADIUS = 15.0
@@ -133,7 +133,7 @@ SETPARAM
 	ANGLERAND = NULL
 	
 	// 速度
-	SPEED = 10
+	SPEED = 15
 	
 	// 速度のランダム(最小 最大)
 	SPEEDRAND = NULL
@@ -151,7 +151,159 @@ SETPARAM
 	ROT = 0.0 0.0 -1.0
 	
 	// 親フラグ
-	PARENT = 1
+	PARENT = 0
+	
+	// 方向と噴射位置を同じにする
+	DIREQUAPOS = 0
+	
+	BILLBOARD = 0
+	
+END_SETPARAM
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 1
+	
+	// フレーム数 継続時間
+	FRAME = 1
+
+	// 個数
+	NUMBER = 1
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 1
+	
+	// 位置
+	POS = 0.0 20.0 0.0
+	
+	// 位置ランダム (最小 最大)  
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 0.0
+	
+	// 原点からの距離ランダム (最小 最大)
+	LENGTHRAND = NULL
+	
+	// 色 r g b a
+	COL = 0.0 1.0 0.0 1.0
+	
+	// 半径
+	RADIUS = 15.0
+	
+	// 半径のランダム(最小 最大)
+	RADIUSRAND = NULL
+	
+	// 半径の変化量
+	RADIUSVALUE = 13.0
+	
+	// 噴射角度
+	ANGLE = 0.0
+	
+	// 噴射角度のランダム(最小 最大)
+	ANGLERAND = NULL
+	
+	// 速度
+	SPEED = 15
+	
+	// 速度のランダム(最小 最大)
+	SPEEDRAND = NULL
+	
+	// ライフ
+	LIFE = 7
+	
+	// ライフのランダム(最小 最大)
+	LIFERAND = NULL
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 0.0 -1.0
+	
+	// 親フラグ
+	PARENT = 0
+	
+	// 方向と噴射位置を同じにする
+	DIREQUAPOS = 0
+	
+	BILLBOARD = 0
+	
+END_SETPARAM
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 2
+	
+	// フレーム数 継続時間
+	FRAME = 1
+
+	// 個数
+	NUMBER = 1
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 1
+	
+	// 位置
+	POS = 0.0 20.0 0.0
+	
+	// 位置ランダム (最小 最大)  
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 0.0
+	
+	// 原点からの距離ランダム (最小 最大)
+	LENGTHRAND = NULL
+	
+	// 色 r g b a
+	COL = 0.0 0.0 1.0 1.0
+	
+	// 半径
+	RADIUS = 15.0
+	
+	// 半径のランダム(最小 最大)
+	RADIUSRAND = NULL
+	
+	// 半径の変化量
+	RADIUSVALUE = 13.0
+	
+	// 噴射角度
+	ANGLE = 0.0
+	
+	// 噴射角度のランダム(最小 最大)
+	ANGLERAND = NULL
+	
+	// 速度
+	SPEED = 15
+	
+	// 速度のランダム(最小 最大)
+	SPEEDRAND = NULL
+	
+	// ライフ
+	LIFE = 7
+	
+	// ライフのランダム(最小 最大)
+	LIFERAND = NULL
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 0.0 -1.0
+	
+	// 親フラグ
+	PARENT = 0
 	
 	// 方向と噴射位置を同じにする
 	DIREQUAPOS = 0

@@ -24,7 +24,7 @@ SETPARAM
 	TEXTYPE = 0
 	
 	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 -20.0 0.0
+	POS = 0.0 0.0 0.0
 	
 	// 位置ランダム (最小 最大)  使わない場合NULL
 	POSXRAND = -15 30
@@ -101,7 +101,7 @@ SETPARAM
 	TEXTYPE = 0
 	
 	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 -20.0 0.0
+	POS = 0.0 0.0 0.0
 	
 	// 位置ランダム (最小 最大)  使わない場合NULL
 	POSXRAND = -15 30
@@ -178,7 +178,7 @@ SETPARAM
 	TEXTYPE = 0
 	
 	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 -20.0 0.0
+	POS = 0.0 0.0 0.0
 	
 	// 位置ランダム (最小 最大)  使わない場合NULL
 	POSXRAND = -15 30

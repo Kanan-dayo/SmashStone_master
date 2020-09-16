@@ -15,7 +15,7 @@ SETPARAM
 	FRAME = 1
 
 	// 個数
-	NUMBER = 10
+	NUMBER = 5
 	
 	// 種類
 	TYPE = 0
@@ -32,22 +32,22 @@ SETPARAM
 	POSZRAND = NULL
 	
 	// 原点からの距離
-	LENGTH = 10.0
+	LENGTH = 0
 	
 	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
-	LENGTHRAND = NULL
+	LENGTHRAND = 40 10
 	
 	// 色 r g b a
-	COL = 1.0 1.0 1.0 1.0
+	COL = 0.0 1.0 0.0 1.0
 	
 	// 半径
 	RADIUS = 0.0
 	
 	// 半径のランダム(最小 最大) 使わない場合NULL
-	RADIUSRAND = 10 3
+	RADIUSRAND = 10 2
 	
 	// 半径の変化量
-	RADIUSVALUE = -0.5
+	RADIUSVALUE = -0.1
 	
 	// 噴射角度
 	ANGLE = 1.0
@@ -59,7 +59,7 @@ SETPARAM
 	SPEED = 0.0
 	
 	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 10 5
+	SPEEDRAND = -15 10
 	
 	// ライフ
 	LIFE = 0
@@ -71,7 +71,7 @@ SETPARAM
 	GRAVITY = 0.0
 	
 	// 向き
-	ROT = 0.0 0.0 0.0
+	ROT = 0.0 1.0 0.0
 	
 	// 親フラグ true = 1 false = 0
 	PARENT = 0
@@ -129,16 +129,16 @@ SETPARAM
 	LENGTHRAND = NULL
 	
 	// 色 r g b a
-	COL = 1.0 1.0 1.0 1.0
+	COL = 0.0 1.0 0.0 1.0
 	
 	// 半径
-	RADIUS = 15.0
+	RADIUS = 100.0
 	
 	// 半径のランダム(最小 最大)
 	RADIUSRAND = NULL
 	
 	// 半径の変化量
-	RADIUSVALUE = 10.0
+	RADIUSVALUE = -10.0
 	
 	// 噴射角度
 	ANGLE = 0.0
@@ -153,7 +153,7 @@ SETPARAM
 	SPEEDRAND = NULL
 	
 	// ライフ
-	LIFE = 5
+	LIFE = 10
 	
 	// ライフのランダム(最小 最大)
 	LIFERAND = NULL

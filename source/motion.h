@@ -34,6 +34,7 @@ public:
 	{
 		KEY *pKey;					// キーのポインタ
 		int nFrame;					// フレーム数
+		float fMove;				// 移動値
 		std::vector<int> nAttackIndex;	// 攻撃パーツの取得
 	} KEY_INFO;
 
@@ -85,6 +86,8 @@ public:
 		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].pKey[nIndex].posDest; }	// モーションの回転のゴール取得
 	static int GetFrame(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
 		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].nFrame; }					// モーションの総フレーム数の取得
+	static float GetMotionMove(PARAM_TYPE charaType, MOTION_TYPE motiontype, int nKey)
+		{ return m_pMotionInfo[charaType][motiontype].pKeyInfo[nKey].fMove; }					// モーションの移動値取得
 	static int GetNumKey(PARAM_TYPE charaType, MOTION_TYPE motiontype)
 		{ return m_pMotionInfo[charaType][motiontype].nNumKey; }								// モーションの総キー数の取得
 	static bool GetLoop(PARAM_TYPE charaType, MOTION_TYPE motiontype)

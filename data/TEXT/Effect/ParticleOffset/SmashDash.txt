@@ -5,7 +5,240 @@
 SCRIPT
 
 // パラメータ数
-NUMPARAM = 3
+NUMPARAM = 4
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 0
+	
+	// フレーム数 継続時間
+	FRAME = 5
+
+	// 個数
+	NUMBER = 3
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 0
+	
+	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
+	POS = 0.0 0.0 0.0
+	
+	// 位置ランダム (最小 最大)  使わない場合NULL
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 0
+	
+	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
+	LENGTHRAND = 40 10
+	
+	// 色 r g b a
+	COL = 1.0 0.0 0.0 1.0
+	
+	// 半径
+	RADIUS = 0.0
+	
+	// 半径のランダム(最小 最大) 使わない場合NULL
+	RADIUSRAND = 5 2
+	
+	// 半径の変化量
+	RADIUSVALUE = -0.1
+	
+	// 噴射角度
+	ANGLE = 1.0
+	
+	// 噴射角度のランダム(最小 最大) 使わない場合NULL
+	ANGLERAND = 0 0
+	
+	// 速度
+	SPEED = 0.0
+	
+	// 速度のランダム(最小 最大) 使わない場合NULL
+	SPEEDRAND = -15 10
+	
+	// ライフ
+	LIFE = 0
+	
+	// ライフのランダム(最小 最大) 使わない場合NULL
+	LIFERAND = 8 2
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 1.0 0.0
+	
+	// 親フラグ true = 1 false = 0
+	PARENT = 0
+	
+	// 方向と噴射位置を同じにする true = 1 false = 0
+	DIREQUAPOS = 1
+	
+	// ビルボードフラグ
+	BILLBOARD = 1
+
+END_SETPARAM
+
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 0
+	
+	// フレーム数 継続時間
+	FRAME = 5
+
+	// 個数
+	NUMBER = 3
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 0
+	
+	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
+	POS = 0.0 0.0 0.0
+	
+	// 位置ランダム (最小 最大)  使わない場合NULL
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 0
+	
+	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
+	LENGTHRAND = 40 10
+	
+	// 色 r g b a
+	COL = 0.0 1.0 0.0 1.0
+	
+	// 半径
+	RADIUS = 0.0
+	
+	// 半径のランダム(最小 最大) 使わない場合NULL
+	RADIUSRAND = 5 2
+	
+	// 半径の変化量
+	RADIUSVALUE = -0.1
+	
+	// 噴射角度
+	ANGLE = 1.0
+	
+	// 噴射角度のランダム(最小 最大) 使わない場合NULL
+	ANGLERAND = 0 0
+	
+	// 速度
+	SPEED = 0.0
+	
+	// 速度のランダム(最小 最大) 使わない場合NULL
+	SPEEDRAND = -15 10
+	
+	// ライフ
+	LIFE = 0
+	
+	// ライフのランダム(最小 最大) 使わない場合NULL
+	LIFERAND = 8 2
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 1.0 0.0
+	
+	// 親フラグ true = 1 false = 0
+	PARENT = 0
+	
+	// 方向と噴射位置を同じにする true = 1 false = 0
+	DIREQUAPOS = 1
+	
+	// ビルボードフラグ
+	BILLBOARD = 1
+
+END_SETPARAM
+
+SETPARAM
+	// タイマー 出現時間
+	TIMER = 0
+	
+	// フレーム数 継続時間
+	FRAME = 5
+
+	// 個数
+	NUMBER = 3
+	
+	// 種類
+	TYPE = 0
+	
+	// テクスチャの種類
+	TEXTYPE = 0
+	
+	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
+	POS = 0.0 0.0 0.0
+	
+	// 位置ランダム (最小 最大)  使わない場合NULL
+	POSXRAND = NULL
+	POSYRAND = NULL
+	POSZRAND = NULL
+	
+	// 原点からの距離
+	LENGTH = 0
+	
+	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
+	LENGTHRAND = 40 10
+	
+	// 色 r g b a
+	COL = 0.0 0.0 1.0 1.0
+	
+	// 半径
+	RADIUS = 0.0
+	
+	// 半径のランダム(最小 最大) 使わない場合NULL
+	RADIUSRAND = 5 2
+	
+	// 半径の変化量
+	RADIUSVALUE = -0.1
+	
+	// 噴射角度
+	ANGLE = 1.0
+	
+	// 噴射角度のランダム(最小 最大) 使わない場合NULL
+	ANGLERAND = 0 0
+	
+	// 速度
+	SPEED = 0.0
+	
+	// 速度のランダム(最小 最大) 使わない場合NULL
+	SPEEDRAND = -15 10
+	
+	// ライフ
+	LIFE = 0
+	
+	// ライフのランダム(最小 最大) 使わない場合NULL
+	LIFERAND = 8 2
+	
+	// 重力
+	GRAVITY = 0.0
+	
+	// 向き
+	ROT = 0.0 1.0 0.0
+	
+	// 親フラグ true = 1 false = 0
+	PARENT = 0
+	
+	// 方向と噴射位置を同じにする true = 1 false = 0
+	DIREQUAPOS = 1
+	
+	// ビルボードフラグ
+	BILLBOARD = 1
+
+END_SETPARAM
+
 
 SETPARAM
 	// タイマー 出現時間
@@ -21,222 +254,66 @@ SETPARAM
 	TYPE = 0
 	
 	// テクスチャの種類
-	TEXTYPE = 0
+	TEXTYPE = 1
 	
-	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
+	// 位置
 	POS = 0.0 0.0 0.0
 	
-	// 位置ランダム (最小 最大)  使わない場合NULL
-	POSXRAND = -15 30
+	// 位置ランダム (最小 最大)  
+	POSXRAND = NULL
 	POSYRAND = NULL
-	POSZRAND = -15 30
+	POSZRAND = NULL
 	
 	// 原点からの距離
 	LENGTH = 0.0
 	
-	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
+	// 原点からの距離ランダム (最小 最大)
 	LENGTHRAND = NULL
 	
 	// 色 r g b a
-	COL = 1.0 0.0 0.0 1.0
+	COL = 1.0 1.0 1.0 1.0
 	
 	// 半径
-	RADIUS = 0.0
+	RADIUS = 10
 	
-	// 半径のランダム(最小 最大) 使わない場合NULL
-	RADIUSRAND = 4 10
+	// 半径のランダム(最小 最大)
+	RADIUSRAND = NULL
 	
 	// 半径の変化量
-	RADIUSVALUE = -0.5
+	RADIUSVALUE = 10.0
 	
 	// 噴射角度
-	ANGLE = 0.1
+	ANGLE = 0.0
 	
-	// 噴射角度のランダム(最小 最大) 使わない場合NULL
-	ANGLERAND = 0 0
+	// 噴射角度のランダム(最小 最大)
+	ANGLERAND = NULL
 	
 	// 速度
 	SPEED = 0.0
 	
-	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 5 7
+	// 速度のランダム(最小 最大)
+	SPEEDRAND = NULL
 	
 	// ライフ
-	LIFE = 0
+	LIFE = 5
 	
-	// ライフのランダム(最小 最大) 使わない場合NULL
-	LIFERAND = 50 10
+	// ライフのランダム(最小 最大)
+	LIFERAND = NULL
 	
 	// 重力
 	GRAVITY = 0.0
 	
 	// 向き
-	ROT = 0.0 1.0 0.0
+	ROT = 0.0 0.0 0.0
 	
-	// 親フラグ true = 1 false = 0
-	PARENT = 1
+	// 親フラグ
+	PARENT = 0
 	
-	// 方向と噴射位置を同じにする true = 1 false = 0
+	// 方向と噴射位置を同じにする
 	DIREQUAPOS = 0
 	
-	// ビルボードフラグ
 	BILLBOARD = 1
-
+	
 END_SETPARAM
-
-SETPARAM
-	// タイマー 出現時間
-	TIMER = 20
-	
-	// フレーム数 継続時間
-	FRAME = 1
-
-	// 個数
-	NUMBER = 1
-	
-	// 種類
-	TYPE = 0
-	
-	// テクスチャの種類
-	TEXTYPE = 0
-	
-	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 0.0 0.0
-	
-	// 位置ランダム (最小 最大)  使わない場合NULL
-	POSXRAND = -15 30
-	POSYRAND = NULL
-	POSZRAND = -15 30
-	
-	// 原点からの距離
-	LENGTH = 0.0
-	
-	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
-	LENGTHRAND = NULL
-	
-	// 色 r g b a
-	COL = 1.0 0.0 0.0 1.0
-	
-	// 半径
-	RADIUS = 0.0
-	
-	// 半径のランダム(最小 最大) 使わない場合NULL
-	RADIUSRAND = 4 10
-	
-	// 半径の変化量
-	RADIUSVALUE = -0.5
-	
-	// 噴射角度
-	ANGLE = 0.1
-	
-	// 噴射角度のランダム(最小 最大) 使わない場合NULL
-	ANGLERAND = 0 0
-	
-	// 速度
-	SPEED = 0.0
-	
-	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 5 7
-	
-	// ライフ
-	LIFE = 0
-	
-	// ライフのランダム(最小 最大) 使わない場合NULL
-	LIFERAND = 50 10
-	
-	// 重力
-	GRAVITY = 0.0
-	
-	// 向き
-	ROT = 0.0 1.0 0.0
-	
-	// 親フラグ true = 1 false = 0
-	PARENT = 1
-	
-	// 方向と噴射位置を同じにする true = 1 false = 0
-	DIREQUAPOS = 0
-	
-	// ビルボードフラグ
-	BILLBOARD = 1
-
-END_SETPARAM
-
-SETPARAM
-	// タイマー 出現時間
-	TIMER = 40
-	
-	// フレーム数 継続時間
-	FRAME = 1
-
-	// 個数
-	NUMBER = 1
-	
-	// 種類
-	TYPE = 0
-	
-	// テクスチャの種類
-	TEXTYPE = 0
-	
-	// 位置 使わない場合NULLランダムがNULLなら必ず数値を入れる
-	POS = 0.0 0.0 0.0
-	
-	// 位置ランダム (最小 最大)  使わない場合NULL
-	POSXRAND = -15 30
-	POSYRAND = NULL
-	POSZRAND = -15 30
-	
-	// 原点からの距離
-	LENGTH = 0.0
-	
-	// 原点からの距離ランダム (最小 最大) 使わない場合NULL
-	LENGTHRAND = NULL
-	
-	// 色 r g b a
-	COL = 1.0 0.0 0.0 1.0
-	
-	// 半径
-	RADIUS = 0.0
-	
-	// 半径のランダム(最小 最大) 使わない場合NULL
-	RADIUSRAND = 4 10
-	
-	// 半径の変化量
-	RADIUSVALUE = -0.5
-	
-	// 噴射角度
-	ANGLE = 0.1
-	
-	// 噴射角度のランダム(最小 最大) 使わない場合NULL
-	ANGLERAND = 0 0
-	
-	// 速度
-	SPEED = 0.0
-	
-	// 速度のランダム(最小 最大) 使わない場合NULL
-	SPEEDRAND = 5 7
-	
-	// ライフ
-	LIFE = 0
-	
-	// ライフのランダム(最小 最大) 使わない場合NULL
-	LIFERAND = 50 10
-	
-	// 重力
-	GRAVITY = 0.0
-	
-	// 向き
-	ROT = 0.0 1.0 0.0
-	
-	// 親フラグ true = 1 false = 0
-	PARENT = 1
-	
-	// 方向と噴射位置を同じにする true = 1 false = 0
-	DIREQUAPOS = 0
-	
-	// ビルボードフラグ
-	BILLBOARD = 1
-
-END_SETPARAM
-
 
 END_SCRIPT

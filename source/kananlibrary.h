@@ -233,6 +233,7 @@ public:
 
 	static float OutputSqrt(D3DXVECTOR3 difpos);				// 平方根計算
 	static float OutputDistance(D3DXVECTOR3 difpos);			// 距離計算
+	static D3DXVECTOR3 OutputVector(const D3DXVECTOR3 & start, const D3DXVECTOR3 & end);	// ベクトル計算
 
 	static void SameLineDummy(const float & fX, const float & fY);
 

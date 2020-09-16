@@ -6,7 +6,7 @@
 #include "sceneX.h"
 #include "fade.h"
 #include "character.h"
-
+#include "motion.h"
 
 #define TEXTURE_PLAYER "data/TEXTURE/field000.jpg"
 #define PLAYER_MODEL "data/MODEL/testmodel.x"		
@@ -37,6 +37,8 @@ public:
 	int GetNumStone(void)	{ return m_nNumStone; }	
 	int GetnPlayer(void) { return m_nPlayer; }		
 	inline int GetBoxColliderID(void) { return m_nBoxColliderID; }
+	inline bool & GetbMotionBegin(void) { return m_bMotionBegin; }
+	CMotion::MOTION_TYPE GetMotion(void);
 	CPlayer*GetAnotherPlayer(void);				
 
 	void Daunted(const int nGap);	// 怯み
@@ -79,8 +81,11 @@ private:
 	void MotionSmashCharge(void);
 	void MotionSmash(void);
 	void MotionGetUp(void);
+	void MotionGetUpActive(void);
 	bool SmashJudge(void);
 
+	void RotToEnemy(void);
+	
 	void SetLanding(void);
 
 	void CollisionAttack(void);						
@@ -102,19 +107,29 @@ private:
 	void TakeSmashDamage(CPlayer * pAnother);		
 
 
-	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);	
+	bool BlowAway(CPlayer *pAnother, const float MoveVecY, const float fBlowAwayForce);
+
+	void UpdateStoneParticle(void);					// ストーンパーティクルの更新
+
+	void SetChargeParticle(void);
 
 	int m_nPlayer;			
 	int m_nBoxColliderID;	
 	int m_nCntState;		// 状態管理用のカウンタ
 	int m_nCntGap;			// 被ダメージ時の後隙カウンタ
-
+	float m_fMotionMove;	// モーション時の移動量
 	int	m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
-
 
 	bool m_bIn[3];		// ポリゴンの範囲内フラグ
 	bool m_bCancelAttack;	// 攻撃のキャンセルフラグ
+	bool m_bMotionBegin;	// モーションの最初かどうか
+	D3DXVECTOR3 m_vecP_to_E;	// プレイヤーから敵までのベクトル
 
+	int m_nCntParticle;				// パーティクルカウント
+	int m_nCntChargeParticle;		// チャージパーティクルのカウント
+	int m_nTimingChargeParticle;	// チャージパーティクルのタイミング
+	int m_nCntTimingChargeParticle;	// チャージパーティクルのタイミングのカウント
+	int m_nCntSmashDashParticle;	// スマッシュダッシュカウント
 #ifdef _DEBUG
 	void ShowDebugInfo(void);									
 #endif

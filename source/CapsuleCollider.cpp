@@ -537,25 +537,39 @@ bool CCapsuleCollider::Collision(void)
 	D3DXVECTOR3 HitPos;// 当たった位置
 #ifdef _DEBUG
 	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
-	// 2線分の最短距を求める
-	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
+	// 無敵でないとき
+	if (pOthers->GetInvincible() == false)
 	{
-		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
-		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKSTART);
-		pOwn->SetAttakHit(true);
-		pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
-	}
-	else
-	{
+		// 2線分の最短距を求める
+		if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
+		{
+			switch (pOwn->GetMotion())
+			{
+				MLB_CASE(CMotion::PLAYER_ATTACK_0) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_1)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_2)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_3)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
+				MLB_CASE(CMotion::PLAYER_SMASH)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+			}
+			CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
+			pOwn->SetAttakHit(true);
+			pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
+		}
+		else
+		{
+		}
 	}
 #else
-
+	// 無敵でないとき
+	if (pOthers->GetInvincible() == false)
+	{
 	// 2線分の最短距を求める
 	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 	{
 		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ドンッ);
 		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 		pOwn->SetAttakHit(true);
+	}
 	}
 
 #endif // _DEBUG
@@ -568,9 +582,10 @@ bool CCapsuleCollider::Collision(void)
 //-------------------------------------------------------------------------------------------------------------
 bool CCapsuleCollider::CollisionStone(void)
 {
-	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;
-	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();	
-	CModelCharacter *pOwnModelChar = pOwn->GetModelCharacter();								// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
+	// 変数宣言
+	CPlayer*                         pOwn = (CPlayer *)m_ColliderInfo.pScene;	// このコライダーを持っているプレイヤー
+	C3DBoxCollider::_3DBOXCOLLIDER * pBoxColli = C3DBoxCollider::GetInfo();		// ボックスコライダーのポインタ
+	CModelCharacter *pOwnModelChar = pOwn->GetModelCharacter();					// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
 
 	//　現在のキーが攻撃状態かどうか
 	if (pOwnModelChar->AttackKeyCondition() == false ||
@@ -608,32 +623,40 @@ bool CCapsuleCollider::CollisionStone(void)
 		return false;
 	}
 
-
+	// ボックスコライダー分ループ
 	for (int nCntBox = 0; nCntBox < _3DBOXCOLLIDER_MAX; nCntBox++)
 	{
+		// シーンnullチェック
 		if (pBoxColli[nCntBox].pScene == NULL)
-		{
+		{// 処理をスキップ
 			continue;
 		}
+		// 使用していない時又は、ストーンじゃない時
 		if (pBoxColli[nCntBox].bUse == false ||
 			pBoxColli[nCntBox].pScene->GetPriority() != CScene::PRIORITY_STONE)
-		{
+		{// 処理をスキップ
 			continue;
 		}
-
-		D3DXVECTOR3 HitPos;
-
+		// 変数宣言
+		D3DXVECTOR3 HitPos;	// 当たった位置
+		// カプセルと球の判定
 		if (CMylibrary::colCapsuleSphere(m_ColliderInfo.Capsule, pBoxColli[nCntBox].pos, ikuminLib::VEC3(pBoxColli[nCntBox].size).Length(), HitPos) == true)
 		{
+			// ストーンポインタの取得
 			CStone *pStone = (CStone *)pBoxColli[nCntBox].pScene;
+			// ストーンに攻撃を当てたフラグ
 			pOwn->SetAttakHitStone(true);
+			// パーティクルの設定
+			C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+			// ダメージを与えるライフが0になったときtrue
 			if (pStone->ApplyDamage() == true)
-			{
+			{// 文字のエフェクトを設定
 				CCharEffectOffset::Set(pStone->GetPos(), CCharEffectOffset::OFFSETNAME::STR_キーン);
+				// 石を入手
 				pOwn->CatchStone(pStone);
 			}
 			else
-			{
+			{// 文字のエフェクトを設定
 				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ゴッ);
 			}
 		}
