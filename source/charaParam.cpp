@@ -38,6 +38,7 @@ char						CCharaParam::m_aFileName[PARAM_MAX][64] =
 	"data/PARAMETER/parameter_yonyasu.txt"
 };
 
+
 //=============================================================================
 // コンストラクタ
 //=============================================================================
@@ -128,6 +129,18 @@ HRESULT CCharaParam::Load(void)
 							&m_playerParam[type].motionParam[nCntAttack].CancelFrame.start,
 							&cDieText,
 							&m_playerParam[type].motionParam[nCntAttack].CancelFrame.end);
+					// ダメージ
+					if (strcmp(cHeadText, "DAMAGE") == 0)
+						sscanf(cReadText, "%s %s %d",
+							&cDieText,
+							&cDieText,
+							&m_playerParam[type].motionParam[nCntAttack].nDamage);
+					//怯みフレーム
+					if (strcmp(cHeadText, "DAUNTED") == 0)
+						sscanf(cReadText, "%s %s %d",
+							&cDieText,
+							&cDieText,
+							&m_playerParam[type].motionParam[nCntAttack].nDaunted);
 					// 吹き飛び方
 					if (strcmp(cHeadText, "BLOWAWAY_TYPE") == 0)
 						sscanf(cReadText, "%s %s %d",
@@ -263,6 +276,16 @@ HRESULT CCharaParam::Save(const PARAM_TYPE type)
 			m_playerParam[type].motionParam[nCnt].CancelFrame.end);
 		fputs(cWriteText, pFile);													//		CANCEL_FRAME = start - end
 
+		sprintf(cWriteText, "	DAMAGE %s %d\n",
+			&cEqual,
+			m_playerParam[type].motionParam[nCnt].nDamage);
+		fputs(cWriteText, pFile);													//		DAMAGE = nDamage
+
+		sprintf(cWriteText, "	DAUNTED %s %d\n",
+			&cEqual,
+			m_playerParam[type].motionParam[nCnt].nDaunted);
+		fputs(cWriteText, pFile);													//		DAUNTED = nDaunted
+
 		strcpy(cHeadText, "BLOWAWAY_TYPE");
 		sprintf(cWriteText, "	%s %s %d\n",
 			&cHeadText,
@@ -349,10 +372,10 @@ void CCharaParam::ShowCharaParam(const char cName[16], PARAM_TYPE type)
 		// モーション名の表記を設定
 		char cMotionName[ATTACK_MAX][64] =
 		{
-			"NormalAttack_0",
-			"NormalAttack_1",
-			"NormalAttack_2",
-			"NormalAttack_3",
+			"0_Normal",
+			"1_Normal",
+			"2_Normal",
+			"3_Normal",
 			"AirPunch",
 			"AirKick",
 			"Smash",
@@ -364,17 +387,29 @@ void CCharaParam::ShowCharaParam(const char cName[16], PARAM_TYPE type)
 		ImGui::DragFloat("JumpPower", &m_playerParam[type].moveParam.fJumpPower, SPEED_IMGUI_DRAGFLOAT);
 		ImGui::DragFloat("AttackPower", &m_playerParam[type].fAttackPower, SPEED_IMGUI_DRAGFLOAT);
 		ImGui::DragFloat("DefensePower", &m_playerParam[type].fDefensePower, SPEED_IMGUI_DRAGFLOAT);
+		ImGui::Dummy(ImVec2(0.0f, 2.0f));
 
-		for (int nCnt = 0; nCnt < ATTACK_MAX; nCnt++)
+
+		// タブ用の線を表示
+		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 		{
-			// モーション名
-			ImGui::Text(cMotionName[nCnt]);
-			sprintf(cMotionName[nCnt], "%d", nCnt);
-			// 項目名
-			ImGui::Text("CancelFrame");
-			ImGui::SameLine();
-			ImGui::InputInt2(cMotionName[nCnt], &m_playerParam[type].motionParam[nCnt].CancelFrame.start);
-			ImGui::Dummy(ImVec2(0.0f, 2.0f));
+			for (int nCnt = 0; nCnt < ATTACK_MAX; nCnt++)
+			{
+				// タブ名
+				if (ImGui::BeginTabItem(cMotionName[nCnt]))
+				{
+					// 項目名
+					ImGui::InputInt2("CancelFrame", &m_playerParam[type].motionParam[nCnt].CancelFrame.start);
+					ImGui::InputInt("Damage", &m_playerParam[type].motionParam[nCnt].nDamage);
+					ImGui::InputInt("Daunted", &m_playerParam[type].motionParam[nCnt].nDaunted);
+					ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+					// タブの終了に必ず書く
+					ImGui::EndTabItem();
+				}
+			}
+			// タブの終了に必ず書く
+			ImGui::EndTabBar();
 		}
 
 		if (ImGui::Button("Save"))

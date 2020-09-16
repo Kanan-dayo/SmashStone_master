@@ -62,6 +62,8 @@ public:
 	typedef struct
 	{	// 攻撃のパラメーター
 		INT_START_END	CancelFrame;	// キャンセルフレーム
+		int				nDamage;		// ダメージ
+		int				nDaunted;		// 怯みフレーム
 		BLOWAWAY_TYPE	blowType;		// 吹っ飛びの種類
 	} MOTION_PARAM;
 
@@ -86,7 +88,11 @@ public:
 	static HRESULT         Load(void);						// 全キャラクターのパラメーターロード
 	static HRESULT		   Save(const PARAM_TYPE type);		// 各キャラクターのパラメーターセーブ
 	static PLAYER_PARAM	   GetPlayerParam(PARAM_TYPE type) { return m_playerParam[type]; }	// パラメーターの取得
-	
+	static inline int	   &GetAttackDamage(PARAM_TYPE type, PLAYER_ATTACK_TYPE attackType)
+		{ return m_playerParam[type].motionParam[attackType].nDamage; }						// ダメージ量の取得
+	static inline int	   &GetAttackDaunted(PARAM_TYPE type, PLAYER_ATTACK_TYPE attackType)
+		{ return m_playerParam[type].motionParam[attackType].nDaunted; }					// 怯みフレームの取得
+
 #ifdef _DEBUG
 	static void UpdateImGui(void);										// ImGuiの更新
 	static bool GetShowWindow(void) { return m_bShowWindow; }			// ウィンドウ表示の取得

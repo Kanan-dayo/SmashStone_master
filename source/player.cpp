@@ -1388,10 +1388,10 @@ void CPlayer::CatchStone(CStone *pStone)
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
 	// ダメージ
-	this->Damage(2);
+	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_1));
 	if (!m_bTrans)
 		// 怯み
-		this->Daunted(20);
+		this->Daunted(CCharaParam::GetAttackDaunted((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_1));
 }
 
 //==================================================================================================================
@@ -1400,10 +1400,10 @@ void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 {
 	// ダメージ
-	this->Damage(2);
+	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_2));
 	if (!m_bTrans)
 		// 怯み
-		this->Daunted(20);
+		this->Daunted(CCharaParam::GetAttackDaunted((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_2));
 }
 
 //==================================================================================================================
@@ -1412,10 +1412,10 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 {
 	// ダメージ
-	this->Damage(2);
+	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_3));
 	if (!m_bTrans)
 		// 怯み
-		this->Daunted(20);
+		this->Daunted(CCharaParam::GetAttackDaunted((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_3));
 }
 
 //==================================================================================================================
@@ -1424,7 +1424,7 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 {
 	// ダメージ
-	this->Damage(2);
+	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_4));
 	// 変身中以外は吹き飛ぶ
 	if (!m_bTrans)
 	{
@@ -1450,7 +1450,7 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 {
 	// ダメージ
-	this->Damage(2);
+	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_SMASH));
 	// 変身中以外は吹き飛ぶ
 	BlowAway(pAnother, 0.2f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
