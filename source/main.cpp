@@ -7,6 +7,7 @@
 #include "main.h"
 #include "manager.h"
 #include "renderer.h"
+#include "resource.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <time.h>
@@ -55,12 +56,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		0,									// 通常使用しないので0指定
 		0,									// 通常使用しないので0指定
 		hInstance,							// Windowsの引数のインスタンスハンドル指定
-		LoadIcon(hInstance, ICON_NAME),	// タスクバーに使用するアイコン指定
+		LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)),		// タスクバーに使用するアイコン指定
 		LoadCursor(NULL, IDC_ARROW),		// 使用するマウスカーソル指定
 		(HBRUSH)(COLOR_WINDOW + 1),			// ウィンドウクライアント領域の色収差
 		NULL,								// メニューを指定
 		CLASS_NAME,							// ウィンドウクラスの名前
-		LoadIcon(hInstance, ICON_NAME)		// 小さいアイコンの指定
+		LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1))		// 小さいアイコンの指定
 	};
 
 	HWND hWnd;					// ウィンドウハンドル
