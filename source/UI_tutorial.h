@@ -52,35 +52,38 @@ private:
 	//=============================================================================
 	typedef enum
 	{
-		LOGOTYPE_GEAR0 = 0,			// 歯車0
-		LOGOTYPE_CLOCK0,			// 時計土台0
-		LOGOTYPE_CLOCKHANDS0,		// 時計の針0
-		LOGOTYPE_CLOCKGEAR0,		// 時計の歯車0
-		LOGOTYPE_GEAR1,				// 歯車0
-		LOGOTYPE_CLOCK1,			// 時計土台0
-		LOGOTYPE_CLOCKHANDS1,		// 時計の針0
-		LOGOTYPE_CLOCKGEAR1,		// 時計の歯車0
-		LOGOTYPE_CHARAFULL,			// キャラクター全員
-		LOGOTYPE_1PCHARA,			// 1Pキャラクター
-		LOGOTYPE_2PCHARA,			// 2Pキャラクター
-		LOGOTYPE_1PCHARA_FREAM,		// 1Pキャラクター枠線
-		LOGOTYPE_2PCHARA_FREAM,		// 2Pキャラクター枠線
-		LOGOTYPE_1PCHARA_NAME,		// 1Pキャラクターネーム
-		LOGOTYPE_2PCHARA_NAME,		// 2Pキャラクターネーム
-		LOGOTYPE_1PREADY,			// 1Pキャラクター準備完了
-		LOGOTYPE_2PREADY,			// 2Pキャラクター準備完了
-		LOGOTYPE_SELECTICON,		// プレイヤーセレクトアイコン
-		LOGOTYPE_MAX				// 最大
+		UITYPE_GEAR0 = 0,		// 歯車0
+		UITYPE_CLOCK0,			// 時計土台0
+		UITYPE_CLOCKHANDS0,		// 時計の針0
+		UITYPE_CLOCKGEAR0,		// 時計の歯車0
+		UITYPE_GEAR1,			// 歯車0
+		UITYPE_CLOCK1,			// 時計土台0
+		UITYPE_CLOCKHANDS1,		// 時計の針0
+		UITYPE_CLOCKGEAR1,		// 時計の歯車0
+		UITYPE_CHARAFULLBG,		// キャラクター全員背景
+		UITYPE_CHARAFULL,		// キャラクター全員
+		UITYPE_1PCHARABG,		// キャラクター1P背景
+		UITYPE_2PCHARABG,		// キャラクター2P背景
+		UITYPE_1PCHARA,			// 1Pキャラクター
+		UITYPE_2PCHARA,			// 2Pキャラクター
+		UITYPE_1PCHARA_FREAM,	// 1Pキャラクター枠線
+		UITYPE_2PCHARA_FREAM,	// 2Pキャラクター枠線
+		UITYPE_1PCHARA_NAME,	// 1Pキャラクターネーム
+		UITYPE_2PCHARA_NAME,	// 2Pキャラクターネーム
+		UITYPE_1PREADY,			// 1Pキャラクター準備完了
+		UITYPE_2PREADY,			// 2Pキャラクター準備完了
+		UITYPE_SELECTICON,		// プレイヤーセレクトアイコン
+		UITYPE_MAX				// 最大
 	} UI_TUTORIAL_TYPE;
 
 	void TutorialUpdate(CInputKeyboard *pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// チュートリアルの更新処理
 	void ControlGamepad(CInputGamepad *pGamepad0, CInputGamepad *pGamepad1);// ゲームパッド操作
 	void ControlKeyboard(CInputKeyboard *pKeyboard);	// キーボード操作
 
-	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];	// テクスチャ情報
-	static char *m_apFileName[LOGOTYPE_MAX];			// ロゴのファイル名
+	static LPDIRECT3DTEXTURE9 m_pTexture[UITYPE_MAX];	// テクスチャ情報
+	static char *m_apFileName[UITYPE_MAX];			// ロゴのファイル名
 
-	CScene2D *m_pScene2D[LOGOTYPE_MAX];					// scene2Dの情報
+	CScene2D *m_pScene2D[UITYPE_MAX];					// scene2Dの情報
 
 	int m_nCharaNum[MAX_PLAYER];						// キャラ番号
 	int m_nCntRot[MAX_PLAYER];							// 時計の針回転用カウンタ

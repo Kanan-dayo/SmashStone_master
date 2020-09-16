@@ -57,8 +57,8 @@
 //==================================================================================================================
 // Ã“Iƒƒ“ƒo[•Ï”‚Ì‰Šú‰»
 //==================================================================================================================
-LPDIRECT3DTEXTURE9 CUI_tutorial::m_pTexture[LOGOTYPE_MAX] = {};		// ƒeƒNƒXƒ`ƒƒî•ñ
-char *CUI_tutorial::m_apFileName[LOGOTYPE_MAX] =						// “Ç‚Ýž‚Þƒ‚ƒfƒ‹‚Ìƒ\[ƒXæ
+LPDIRECT3DTEXTURE9 CUI_tutorial::m_pTexture[UITYPE_MAX] = {};		// ƒeƒNƒXƒ`ƒƒî•ñ
+char *CUI_tutorial::m_apFileName[UITYPE_MAX] =						// “Ç‚Ýž‚Þƒ‚ƒfƒ‹‚Ìƒ\[ƒXæ
 {
 	{ "data/TEXTURE/gear.png" },		// Ž•ŽÔ0
 	{ "data/TEXTURE/clock.png" },		// ŽžŒv“y‘ä0
@@ -68,7 +68,10 @@ char *CUI_tutorial::m_apFileName[LOGOTYPE_MAX] =						// “Ç‚Ýž‚Þƒ‚ƒfƒ‹‚Ìƒ\[ƒX
 	{ "data/TEXTURE/clock.png" },		// ŽžŒv“y‘ä1
 	{ "data/TEXTURE/Clock hands.png" },	// ŽžŒv‚Ìj1
 	{ "data/TEXTURE/clock gear.png" },	// ŽžŒv‚ÌŽ•ŽÔ1
+	{ "data/TEXTURE/FULLcharaBG.jpg" },	// ƒLƒƒƒ‰ƒNƒ^[‘Sˆõ”wŒi
 	{ "data/TEXTURE/FULLchara.png" },	// ƒLƒƒƒ‰ƒNƒ^[‘Sˆõ
+	{ "data/TEXTURE/FULLcharaBG.jpg" },	// ƒLƒƒƒ‰ƒNƒ^[1P”wŒi
+	{ "data/TEXTURE/FULLcharaBG.jpg" },	// ƒLƒƒƒ‰ƒNƒ^[2P”wŒi
 	{ "data/TEXTURE/FULLchara.png" },	// 1PƒLƒƒƒ‰ƒNƒ^[
 	{ "data/TEXTURE/FULLchara.png" },	// 2PƒLƒƒƒ‰ƒNƒ^[
 	{ "data/TEXTURE/1Pchara.png" },		// 1PƒLƒƒƒ‰ƒNƒ^[˜g
@@ -128,7 +131,7 @@ void CUI_tutorial::Init(void)
 	}
 
 	// ƒƒS‚ÌÅ‘å–‡”ƒJƒEƒ“ƒg
-	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < UITYPE_MAX; nCnt++)
 	{
 		// ¶¬ˆ—
 		m_pScene2D[nCnt] = CScene2D::Create();
@@ -201,7 +204,7 @@ HRESULT CUI_tutorial::Load(void)
 
 	//==============================ƒeƒNƒXƒ`ƒƒ‚Ì“Ç‚Ýž‚Ý==============================//
 	// ƒeƒNƒXƒ`ƒƒ‚ÌÅ‘å”‚Ü‚ÅƒJƒEƒ“ƒg
-	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < UITYPE_MAX; nCnt++)
 	{
 		// ƒeƒNƒXƒ`ƒƒ‚Ì“Ç‚Ýž‚Ý
 		D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
@@ -217,7 +220,7 @@ HRESULT CUI_tutorial::Load(void)
 void CUI_tutorial::Unload(void)
 {
 	// ƒƒS‚ÌÅ‘åŽí—Þ‚Ü‚ÅƒJƒEƒ“ƒg
-	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < UITYPE_MAX; nCnt++)
 	{
 		m_pTexture[nCnt]->Release();		// ŠJ•ú
 		m_pTexture[nCnt] = NULL;			// NULL‚É‚·‚é
@@ -230,7 +233,8 @@ void CUI_tutorial::Unload(void)
 void CUI_tutorial::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGamepad0, CInputGamepad *pGamepad1)
 {
 	// ƒLƒƒƒ‰ƒNƒ^[‘SˆõUI
-	SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, CHARAUI_POS_Y, 0.0f), CHARAFULLUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_CHARAFULL, WhiteColor);
+	SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, CHARAUI_POS_Y, 0.0f), CHARAFULLUI_SIZE_X, CHARAFULLUI_SIZE_Y, UITYPE_CHARAFULL, WhiteColor);
+	SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, CHARAUI_POS_Y, 0.0f), CHARAFULLUI_SIZE_X, CHARAFULLUI_SIZE_Y, UITYPE_CHARAFULLBG, WhiteColor);
 
 	// ƒQ[ƒ€ƒpƒbƒh—LŒøŽž
 	if (pGamepad0->GetbConnect() || pGamepad1->GetbConnect())
@@ -242,13 +246,13 @@ void CUI_tutorial::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGa
 		ControlKeyboard(pKeyboard);
 
 	// ŽžŒv“y‘ä0UI
-	SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCK0, WhiteColor);
+	SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, UITYPE_CLOCK0, WhiteColor);
 	// ŽžŒv‚Ìj0UI
-	SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKHANDS0, WhiteColor);
+	SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, UITYPE_CLOCKHANDS0, WhiteColor);
 	// ŽžŒv‚Ìj‰ñ“]Ý’è
-	m_pScene2D[LOGOTYPE_CLOCKHANDS0]->SetRot(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0), -D3DX_PI / 6 - m_nCntRot[0] * CLOCK_HANDS_DIFF, ZeroVector3);
+	m_pScene2D[UITYPE_CLOCKHANDS0]->SetRot(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0), -D3DX_PI / 6 - m_nCntRot[0] * CLOCK_HANDS_DIFF, ZeroVector3);
 	// ŽžŒv‚Ìj0UI
-	SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKGEAR0, WhiteColor);
+	SetUI(D3DXVECTOR3(CLOCKUI0_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, UITYPE_CLOCKGEAR0, WhiteColor);
 
 	// ŽžŒv‚Ìj‚ª“®‚¢‚Ä‚¢‚¢ó‘Ô‚Ì‚Æ‚«
 	if (m_bUIClockHands[0])
@@ -288,12 +292,12 @@ void CUI_tutorial::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGa
 	}
 
 	// ŽžŒv“y‘ä1UI
-	SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCK1, WhiteColor);
+	SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, UITYPE_CLOCK1, WhiteColor);
 	// ŽžŒv‚Ìj1UI
-	SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKHANDS1, WhiteColor);
-	m_pScene2D[LOGOTYPE_CLOCKHANDS1]->SetRot(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0), D3DX_PI / 6 + m_nCntRot[1] * CLOCK_HANDS_DIFF, ZeroVector3);
+	SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, UITYPE_CLOCKHANDS1, WhiteColor);
+	m_pScene2D[UITYPE_CLOCKHANDS1]->SetRot(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0), D3DX_PI / 6 + m_nCntRot[1] * CLOCK_HANDS_DIFF, ZeroVector3);
 	// ŽžŒv‚Ìj1UI
-	SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, LOGOTYPE_CLOCKGEAR1, WhiteColor);
+	SetUI(D3DXVECTOR3(CLOCKUI1_POS_X, CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFREAMUI_SIZE_X, UITYPE_CLOCKGEAR1, WhiteColor);
 
 	// ŽžŒv‚Ìj‚ª“®‚¢‚Ä‚¢‚¢ó‘Ô‚Ì‚Æ‚«
 	if (m_bUIClockHands[1])
@@ -364,7 +368,7 @@ void CUI_tutorial::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGa
 		m_fAngle[nCnt] = 180 * m_fDiff[nCnt] / (D3DX_PI * fRadius);						// Šp“xŽZo
 		m_fRad[nCnt] = D3DX_PI * m_fAngle[nCnt] / 360;					// ƒ‰ƒWƒAƒ“’l
 
-																		// ˆÊ’u‚Ì·‚ª³‚Ì‚Æ‚«
+		// ˆÊ’u‚Ì·‚ª³‚Ì‚Æ‚«
 		if (m_fPosCul[nCnt] > 0)
 		{
 			m_fRotGear[nCnt] = m_fRotGear[nCnt] + m_fRad[nCnt];					// Šp“xŠi”[(‰ÁŽZ)
@@ -376,18 +380,18 @@ void CUI_tutorial::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGa
 	}
 
 	// 1PƒLƒƒƒ‰ƒNƒ^[˜güUI
-	SetUI(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_1PCHARA_FREAM, WhiteColor);
+	SetUI(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, UITYPE_1PCHARA_FREAM, WhiteColor);
 	// Ž•ŽÔ0UI
-	SetUI(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR0, WhiteColor);
+	SetUI(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, UITYPE_GEAR0, WhiteColor);
 	// ‰ñ“]Ý’è
-	m_pScene2D[LOGOTYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], GEAR_POS_Y, 0), m_fRotGear[0], ZeroVector3);
+	m_pScene2D[UITYPE_GEAR0]->SetRot(D3DXVECTOR3(m_fPos[0] + m_fPosCul[0], GEAR_POS_Y, 0), m_fRotGear[0], ZeroVector3);
 
 	// 2PƒLƒƒƒ‰ƒNƒ^[˜güUI
-	SetUI(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, LOGOTYPE_2PCHARA_FREAM, WhiteColor);
+	SetUI(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], CHARAUI_POS_Y, 0.0f), CHARAFREAMUI_SIZE_X, CHARAFULLUI_SIZE_Y, UITYPE_2PCHARA_FREAM, WhiteColor);
 	// Ž•ŽÔ1UI
-	SetUI(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, LOGOTYPE_GEAR1, WhiteColor);
+	SetUI(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], GEAR_POS_Y, 0.0f), CHARAFULLUI_SIZE_Y, CHARAFULLUI_SIZE_Y, UITYPE_GEAR1, WhiteColor);
 	// ‰ñ“]Ý’è
-	m_pScene2D[LOGOTYPE_GEAR1]->SetRot(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], GEAR_POS_Y, 0), m_fRotGear[1], ZeroVector3);
+	m_pScene2D[UITYPE_GEAR1]->SetRot(D3DXVECTOR3(m_fPos[1] + m_fPosCul[1], GEAR_POS_Y, 0), m_fRotGear[1], ZeroVector3);
 
 	// Å‘ål”‚Ü‚ÅƒJƒEƒ“ƒg
 	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
@@ -408,49 +412,57 @@ void CUI_tutorial::TutorialUpdate(CInputKeyboard * pKeyboard, CInputGamepad *pGa
 	}
 
 	// 1PƒLƒƒƒ‰ƒNƒ^[UI
-	SetUI(CHARA1PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_1PCHARA, WhiteColor);
+	SetUI(CHARA1PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, UITYPE_1PCHARA, WhiteColor);
 	// ƒeƒNƒXƒ`ƒƒÝ’è
-	m_pScene2D[LOGOTYPE_1PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[0]);
+	m_pScene2D[UITYPE_1PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[0]);
+	// 1PƒLƒƒƒ‰ƒNƒ^[UI
+	SetUI(CHARA1PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, UITYPE_1PCHARABG, WhiteColor);
+	// ƒeƒNƒXƒ`ƒƒÝ’è
+	m_pScene2D[UITYPE_1PCHARABG]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[0]);
 	// 2PƒLƒƒƒ‰ƒNƒ^[UI
-	SetUI(CHARA2PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, LOGOTYPE_2PCHARA, WhiteColor);
+	SetUI(CHARA2PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, UITYPE_2PCHARA, WhiteColor);
 	// ƒeƒNƒXƒ`ƒƒÝ’è
-	m_pScene2D[LOGOTYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
+	m_pScene2D[UITYPE_2PCHARA]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
+	// 2PƒLƒƒƒ‰ƒNƒ^[UI
+	SetUI(CHARA2PUI_POS, CHARATEX_SISE_X, CHARATEX_SISE_Y, UITYPE_2PCHARABG, WhiteColor);
+	// ƒeƒNƒXƒ`ƒƒÝ’è
+	m_pScene2D[UITYPE_2PCHARABG]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1]);
 
 	// 1PƒLƒƒƒ‰ƒNƒ^[ƒl[ƒ€UI
-	SetUI(READY1PUI_POS, 400, 120, LOGOTYPE_1PCHARA_NAME, WhiteColor);
+	SetUI(READY1PUI_POS, 400, 120, UITYPE_1PCHARA_NAME, WhiteColor);
 	// ƒeƒNƒXƒ`ƒƒÝ’è
-	m_pScene2D[LOGOTYPE_1PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0]) * 0.25f, 0.0f + (m_nCharaNum[0]) * 0.25f, 0);
+	m_pScene2D[UITYPE_1PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0]) * 0.25f, 0.0f + (m_nCharaNum[0]) * 0.25f, 0);
 	// 2PƒLƒƒƒ‰ƒNƒ^[ƒl[ƒ€UI
-	SetUI(READY2PUI_POS, 400, 120, LOGOTYPE_2PCHARA_NAME, WhiteColor);
+	SetUI(READY2PUI_POS, 400, 120, UITYPE_2PCHARA_NAME, WhiteColor);
 	// ƒeƒNƒXƒ`ƒƒÝ’è
-	m_pScene2D[LOGOTYPE_2PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1]) * 0.25f, 0.0f + (m_nCharaNum[1]) * 0.25f, 0);
+	m_pScene2D[UITYPE_2PCHARA_NAME]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1]) * 0.25f, 0.0f + (m_nCharaNum[1]) * 0.25f, 0);
 
 	// 1PƒLƒƒƒ‰ƒNƒ^[‘I‘ð‚³‚ê‚Ä‚¢‚é‚Æ‚«
 	if (m_bCharaDecide[0])
 	{
 		// 1PƒLƒƒƒ‰ƒNƒ^[€”õŠ®—¹
-		SetUI(READY1PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_1PREADY, WhiteColor);
+		SetUI(READY1PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, UITYPE_1PREADY, WhiteColor);
 	}
 	else
 	{// 1PƒLƒƒƒ‰ƒNƒ^[‘I‘ð‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚«
 	 // 1PƒLƒƒƒ‰ƒNƒ^[€”õŠ®—¹
-		SetUI(READY1PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_1PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		SetUI(READY1PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, UITYPE_1PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 	}
 
 	// 2PƒLƒƒƒ‰ƒNƒ^[‘I‘ð‚³‚ê‚Ä‚¢‚é‚Æ‚«
 	if (m_bCharaDecide[1])
 	{
 		// 2PƒLƒƒƒ‰ƒNƒ^[UI
-		SetUI(READY2PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_2PREADY, WhiteColor);
+		SetUI(READY2PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, UITYPE_2PREADY, WhiteColor);
 	}
 	else
 	{// 2PƒLƒƒƒ‰ƒNƒ^[‘I‘ð‚³‚ê‚Ä‚¢‚È‚¢‚Æ‚«
 	 // 2PƒLƒƒƒ‰ƒNƒ^[€”õŠ®—¹
-		SetUI(READY2PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, LOGOTYPE_2PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		SetUI(READY2PUI_POS, READYUI_SIZE_X, READYUI_SIZE_Y, UITYPE_2PREADY, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 	}
 
 	// ƒLƒƒƒ‰ƒNƒ^[‘I‘ðƒAƒCƒRƒ“
-	SetUI(CHARA_SELECTUI_POS, CHARA_SELECTUI_SIZE_X, CHARA_SELECTUI_SIZE_Y, LOGOTYPE_SELECTICON, WhiteColor);
+	SetUI(CHARA_SELECTUI_POS, CHARA_SELECTUI_SIZE_X, CHARA_SELECTUI_SIZE_Y, UITYPE_SELECTICON, WhiteColor);
 }
 
 //==================================================================================================================

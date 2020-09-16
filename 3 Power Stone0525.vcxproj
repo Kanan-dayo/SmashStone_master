@@ -272,6 +272,7 @@
     <ClInclude Include="source\PolygonCollider.h" />
     <ClInclude Include="source\Reflection.h" />
     <ClInclude Include="source\renderer.h" />
+    <ClInclude Include="source\resource.h" />
     <ClInclude Include="source\scene.h" />
     <ClInclude Include="source\scene2D.h" />
     <ClInclude Include="source\scene3D.h" />
@@ -294,6 +295,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="source\mylibrary.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="source\3 Power Stone0525.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\TEXTURE\Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -399,6 +399,9 @@
     <ClInclude Include="source\shadow.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\resource.h">
+      <Filter>リソースファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ImGui">
@@ -425,10 +428,23 @@
     <Filter Include="scene">
       <UniqueIdentifier>{6e2b6ff1-c449-4fde-83b4-56dca700e5de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソースファイル">
+      <UniqueIdentifier>{f5676665-aa07-4ed6-98d8-cfdea249795f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\mylibrary.inl">
       <Filter>ヘッダーファイル</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="source\3 Power Stone0525.rc">
+      <Filter>リソースファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\TEXTURE\Icon.ico">
+      <Filter>リソースファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>
