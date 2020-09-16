@@ -375,9 +375,9 @@ void CGame::SetNextMode(const int nextMode)
 void CGame::AppearStone(void)
 {
 	// ランダムでポイントを決める
-	int RandPos = CKananLibrary::DecideRandomValue(STONE_POS, m_bSetPos);
+	int RandPos = CKananLibrary::DecideRandomValue(STONE_POS, m_bSetPos, false);
 	// ランダムでポイントを決める
-	int RandType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetType);
+	int RandType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetType, false);
 	// 決められた位置からランダムで生成
 	CStone::Create(RandPos, (CStone::STONE_ID)RandType, CObjectManager::GetDefaultStonePos(m_nStageType, RandPos));
 	// 生成された

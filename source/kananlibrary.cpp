@@ -787,20 +787,29 @@ HRESULT CKananLibrary::GetMoveByGamepad(CInputGamepad * pGamepad)
 //=============================================================================
 // 選択肢の中からランダムな値を返す
 //=============================================================================
-int CKananLibrary::DecideRandomValue(int nMaxValue, bool * bSelect)
+int CKananLibrary::DecideRandomValue(int nMaxSelectType, bool * bSelect, bool compType)
 {
-	// ランダムの範囲
-	int RandRange = nMaxValue;
+	// 選択肢の数
+	int RandRange = 0;
 
-	// 選択肢の数を減らす
-	for (int nCnt = 0; nCnt < nMaxValue; nCnt++)
+	// 選択肢の数を増やす
+	for (int nCnt = 0; nCnt < nMaxSelectType; nCnt++)
 	{
-		if (bSelect[nCnt])
-			RandRange--;
+		// 正の選択肢からの場合
+		if (compType)
+		{
+			if (bSelect[nCnt])
+				RandRange++;
+		}
+		// 負の選択肢からの場合
+		else
+			if (!bSelect[nCnt])
+				RandRange++;
 	}
 
 	// 選択肢の数だけメモリ確保
 	int *RandType = new int[RandRange];
+	// 初期化
 	for (int nCnt = 0; nCnt < RandRange; nCnt++)
 	{
 		RandType[nCnt] = 0;
@@ -808,13 +817,26 @@ int CKananLibrary::DecideRandomValue(int nMaxValue, bool * bSelect)
 	// 番号カウンタ
 	int nCntRand = 0;
 
-	// 生成されていない番号を配列に保存
-	for (int nCnt = 0; nCnt < nMaxValue; nCnt++)
+	// 生成されていない変数の番号を配列に保存
+	for (int nCnt = 0; nCnt < nMaxSelectType; nCnt++)
 	{
-		if (!bSelect[nCnt])
+		// 正の選択肢からの場合
+		if (compType)
 		{
-			RandType[nCntRand] = nCnt;
-			nCntRand++;
+			if (bSelect[nCnt])
+			{
+				RandType[nCntRand] = nCnt;
+				nCntRand++;
+			}
+		}
+		// 負の選択肢からの場合
+		else
+		{
+			if (!bSelect[nCnt])
+			{
+				RandType[nCntRand] = nCnt;
+				nCntRand++;
+			}
 		}
 	}
 

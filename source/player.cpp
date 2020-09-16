@@ -1436,8 +1436,12 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 		{
 			// 所持ストーンを一つ減らす
 			m_nNumStone--;
+			// 減らすストーンのタイプを取得
+			int nRemoveType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetStoneType, true);
+			// 使っていない状態に戻す
+			m_bGetStoneType[nRemoveType] = false;
 			// 再配置できるようストーンを使用されていない状態にする
-			CGame::RemoveTypeStone(CKananLibrary::DecideRandomValue(m_nNumStone + 1, m_bGetStoneType));
+			CGame::RemoveTypeStone(nRemoveType);
 			// 減らしたストーンを即生成
 			CGame::AppearStone();
 		}
@@ -1495,7 +1499,7 @@ void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
 			// 所持ストーンを一つ減らす
 			m_nNumStone--;
 			// 再配置できるようストーンを使用されていない状態にする
-			CGame::RemoveTypeStone(CKananLibrary::DecideRandomValue(m_nNumStone + 1, m_bGetStoneType));
+			CGame::RemoveTypeStone(CKananLibrary::DecideRandomValue(m_nNumStone + 1, m_bGetStoneType, true));
 			// 減らしたストーンを即生成
 			CGame::AppearStone();
 		}

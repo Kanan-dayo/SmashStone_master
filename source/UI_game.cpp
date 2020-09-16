@@ -196,6 +196,24 @@ void CUI_game::Unload(void)
 //==================================================================================================================
 void CUI_game::GameUpdate(void)
 {
+	/* *
+	* 修正しろ
+	プレイヤーポインタを配列にして、for文で回して可読性を上げる。
+	プレイヤー1の取得状況の後プレイヤー2の取得状況でUIを設定しているが、
+	設定しているUIが同じなので、プレイヤー2の設定しか反映されていないので、
+	組みなおししてください。
+	Setを一括だけの奴だけではなく、単体のやつもしっかり用意する。
+	m_bDisplayの意味がない描画処理のところでやるべき
+
+	* 余裕があれば
+	何回も設定しているので、必要最低限の設定だで済ませる事
+	（毎フレーム設定する必要はない、呼ばれたタイミングで設定できるようにする）
+	固定値は静的メンバ変数にしてあらかじめ用意しておく（SCREEN_WIDTH / 2　とか）
+	*/
+
+
+
+
 	CPlayer *pPlayer0, *pPlayer1;
 
 	// プレイヤー情報取得
@@ -236,19 +254,34 @@ void CUI_game::GameUpdate(void)
 			// 宝石赤
 			SetUI(D3DXVECTOR3(125, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, WhiteColor, m_bDisplay);
 		}
+		else
+		{
+			// 宝石赤
+			SetUI(D3DXVECTOR3(125, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, AlphaColor, m_bDisplay);
+		}
 
 		// 1Pが緑石を取ったとき
 		if (m_bStoneID[0][1])
 		{
-			// 宝石青
+			// 宝石緑
 			SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, WhiteColor, m_bDisplay);
+		}
+		else
+		{
+			// 宝石緑
+			SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, AlphaColor, m_bDisplay);
 		}
 
 		// 1Pが青石を取ったとき
 		if (m_bStoneID[0][2])
 		{
-			// 宝石緑
+			// 宝石青
 			SetUI(D3DXVECTOR3(275, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, WhiteColor, m_bDisplay);
+		}
+		else
+		{
+			// 宝石青
+			SetUI(D3DXVECTOR3(275, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, AlphaColor, m_bDisplay);
 		}
 	}
 	else
@@ -274,19 +307,34 @@ void CUI_game::GameUpdate(void)
 			// 宝石赤
 			SetUI(D3DXVECTOR3(1005, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, WhiteColor, m_bDisplay);
 		}
+		else
+		{
+			// 宝石赤
+			SetUI(D3DXVECTOR3(1005, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, AlphaColor, m_bDisplay);
+		}
 
 		// 2Pが緑石を取ったとき
 		if (m_bStoneID[1][1])
 		{
-			// 宝石青
+			// 宝石緑
 			SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, WhiteColor, m_bDisplay);
+		}
+		else
+		{
+			// 宝石緑
+			SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, AlphaColor, m_bDisplay);
 		}
 
 		// 2Pが青石を取ったとき
 		if (m_bStoneID[1][2])
 		{
-			// 宝石緑
+			// 宝石青
 			SetUI(D3DXVECTOR3(1155, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, WhiteColor, m_bDisplay);
+		}
+		else
+		{
+			// 宝石青
+			SetUI(D3DXVECTOR3(1155, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, AlphaColor, m_bDisplay);
 		}
 	}
 	else
