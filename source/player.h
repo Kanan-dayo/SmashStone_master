@@ -60,6 +60,7 @@ public:
 protected:
 
 private:
+	void Trans(void);
 	void Control(void);								
 	void Collision(void);							
 	void Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey);
@@ -90,12 +91,11 @@ private:
 
 	void CollisionAttack(void);						
 
-	static CHitPoint *m_pHitPoint;					
+	CHitPoint *m_pHitPoint;					
 	CShadow *m_pShadow;								// âeÇÃèÓïÒÉ|ÉCÉìÉ^
 
 	void ControlGamepad(CInputGamepad *pGamepad);	
 	void ControlKeyboard(CInputKeyboard *pKeyboard);
-	void SetnPlayer(int nPlayerNum);				
 
 	void AnotherPlayerAttack0(CPlayer *pAnother);	
 	void AnotherPlayerAttack1(CPlayer *pAnother);	

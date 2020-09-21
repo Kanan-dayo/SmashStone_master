@@ -13,6 +13,7 @@
 #include "fade.h"
 #include "inputKeyboard.h"
 #include "meshField.h"
+#include "scene2D.h"
 #include "scene3D.h"
 #include "camera.h"
 #include "light.h"
@@ -236,6 +237,14 @@ void CGame::Uninit(void)
 		m_pUIKO = nullptr;
 	}
 
+	if (m_pUI)
+	{
+		// 破棄
+		m_pUI->Uninit();
+		delete m_pUI;
+		m_pUI = nullptr;
+	}
+
 	// ポーズの終了処理
 	m_pPause->Uninit();
 
@@ -250,7 +259,19 @@ void CGame::Uninit(void)
 	delete m_pLight;					// メモリ削除
 	m_pLight = nullptr;					// ポインタNULL
 
-	m_pTime = nullptr;					// ポインタNULL
+	if (m_pTime)
+	{
+		m_pTime->Uninit();
+		delete m_pTime;
+		m_pTime = nullptr;					// ポインタNULL
+	}
+
+	if (m_pTransformBar)
+	{
+		m_pTransformBar->Uninit();
+		delete m_pTransformBar;
+		m_pTransformBar = nullptr;
+	}
 }
 
 //==================================================================================================================
@@ -279,6 +300,13 @@ void CGame::Update(void)
 	// リザルト
 	else if (m_gameState == GAMESTATE_RESULT)
 		GameResult();
+
+	if (m_pUI)
+		m_pUI->Update();
+	if (m_pTime)
+		m_pTime->Update();
+	if (m_pTransformBar)
+		m_pTransformBar->Update();
 
 #ifdef _DEBUG
 	// キーボードの[0]を押したとき
@@ -312,6 +340,13 @@ void CGame::Draw(void)
 
 	// カメラの描画処理
 	m_pCamera->Draw();
+
+	if (m_pUI)
+		m_pUI->Draw();
+	if (m_pTime)
+		m_pTime->Draw();
+	if (m_pTransformBar)
+		m_pTransformBar->Draw();
 
 	// ポーズ状態がtrueのとき
 	if (m_pPause->GetPause() == true)

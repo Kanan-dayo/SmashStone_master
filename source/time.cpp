@@ -12,6 +12,7 @@
 #include "debugProc.h"
 #include "player.h"
 #include "inputKeyboard.h"
+#include "UI_game.h"
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -23,7 +24,7 @@ int CTime::m_nTime = NULL;			// タイム
 // コンストラクタ
 //
 //==================================================================================================================
-CTime::CTime(PRIORITY type = CScene::PRIORITY_UI) : CScene(type)
+CTime::CTime()
 {
 	// 初期化
 	m_nTime = 0;					// タイム
@@ -46,7 +47,6 @@ void CTime::Init(void)
 {
 	// 初期化
 	m_dStartTime = (int)(START_TIMU * FRAME_TIMU);		// 始まるタイム
-	m_bDisplay = true;									// UIを表示させるかどうか
 
 	// 最大桁数までカウント
 	for (int nCntScore = 0; nCntScore < MAX_TIME; nCntScore++)
@@ -127,28 +127,6 @@ void CTime::Update(void)
 			//CFade::SetFade(CRenderer::MODE_RESULT, DEFAULT_FADE_TIME);
 		}
 	}
-
-#ifdef _DEBUG
-	// 表示しているとき
-	if (m_bDisplay)
-	{
-		// キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
-		{
-			// 表示させないようにする
-			m_bDisplay = false;
-		}
-	}
-	else
-	{// 表示していないとき
-	 // キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
-		{
-			// 表示させるようにする
-			m_bDisplay = true;
-		}
-	}
-#endif // DEBUG
 }
 
 //==================================================================================================================
@@ -157,17 +135,19 @@ void CTime::Update(void)
 void CTime::Draw(void)
 {
 	// UIを表示させていいとき
-	if (m_bDisplay)
+	if (!CUI_game::GetbDisp())
 	{
-		// 最大桁数までカウント
-		for (int nCntScore = 0; nCntScore < MAX_TIME; nCntScore++)
+		return;
+	}
+
+	// 最大桁数までカウント
+	for (int nCntScore = 0; nCntScore < MAX_TIME; nCntScore++)
+	{
+		// 数字があるとき
+		if (m_apNumber[nCntScore] != NULL)
 		{
-			// 数字があるとき
-			if (m_apNumber[nCntScore] != NULL)
-			{
-				// 描画処理
-				m_apNumber[nCntScore]->Draw();
-			}
+			// 描画処理
+			m_apNumber[nCntScore]->Draw();
 		}
 	}
 }
@@ -178,7 +158,7 @@ void CTime::Draw(void)
 CTime *CTime::Create(void)
 {
 	// シーン動的に確保
-	CTime *pTime = new CTime(CScene::PRIORITY_UI);
+	CTime *pTime = new CTime();
 
 	// タイムの初期化
 	pTime->Init();

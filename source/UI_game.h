@@ -11,23 +11,23 @@
 // インクルードファイル
 //==================================================================================================================
 #include "main.h"
-#include "scene.h"
 #include "stone.h"
 
 //==================================================================================================================
 // 前方宣言
 //==================================================================================================================
-class CScene2D;
+class CPolygon2D;
+class CStone;
 
 //==================================================================================================================
 //
 // ロゴクラスの定義
 //
 //==================================================================================================================
-class CUI_game : public CScene
+class CUI_game
 {
 public:
-	CUI_game(PRIORITY type);		// コンストラクタ
+	CUI_game();		// コンストラクタ
 	~CUI_game();					// デストラクタ
 	void Init(void);				// 初期化処理
 	void Uninit(void);				// 終了処理
@@ -38,38 +38,46 @@ public:
 	static HRESULT Load(void);		// テクスチャ情報ロード処理
 	static void Unload(void);		// テクスチャ情報アンロード処理
 
-	void SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col, bool bDisplay);	// ロゴ設定処理
+	static void CreateUI(int nPlayer, int type, D3DXVECTOR3 pos, D3DXVECTOR3 size);	// ロゴ設定処理
+	static void DeleteUI(int nPlayer, int type);									// ロゴ破棄
+
+	void CreateBG();											// 背景の生成
+
+	static void SetbDisp(bool bDisp)	{ m_bDisplay = bDisp; }	// 表示の設定
+	static bool GetbDisp(void)			{ return m_bDisplay; }	// 表示の取得
+
+	static void CatchStone(int nPlayer, CStone::STONE_ID type);
+	static void ReleaseStone(int nPlayer, CStone::STONE_ID type);
+	static void TransPlayer(int nPlayer);
+	static void FinishTrans(int nPlayer);
 
 protected:
 
 private:
-	// テクスチャの種類
+	// プレイヤーテクスチャの種類
 	typedef enum
 	{
-		LOGOTYPE_GAMEBG,			// ゲーム背景
-		LOGOTYPE_JEWELRYBG1P,		// 宝石背景1P
-		LOGOTYPE_JEWELRYBG2P,		// 宝石背景2P
+		LOGOTYPE_JEWELRYBG,			// 宝石背景
 		LOGOTYPE_JEWELRYRED,		// 宝石赤
-		LOGOTYPE_JEWELRYBULE,		// 宝石青
 		LOGOTYPE_JEWELRYGREEN,		// 宝石緑
-		LOGOTYPE_PLAYER1,			// プレイヤーアイコン1P
-		LOGOTYPE_PLAYER2,			// プレイヤーアイコン2P
-		LOGOTYPE_CHARANAME0,		// 1Pのキャラクターネーム
-		LOGOTYPE_CHARANAME1,		// 2Pのキャラクターネーム
+		LOGOTYPE_JEWELRYBULE,		// 宝石青
+		LOGOTYPE_PLAYERICON,		// プレイヤーアイコン
+		LOGOTYPE_CHARANAME,			// キャラクターネーム
 		LOGOTYPE_MAX				// 最大
 	} UI_GAME_TYPE;
 
-	void GameUpdate(void);								// ゲームの更新処理
+	void SetDefaultUI(void);							// 開始時のUIをセット
 
-	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];	// テクスチャ情報
-	static char *m_apFileName[LOGOTYPE_MAX];			// ロゴのファイル名
+	static LPDIRECT3DTEXTURE9 m_pTexBG;						// テクスチャ情報
+	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];		// テクスチャ情報
+	static char m_FileBG[MAX_TEXT];							// ゲームBGのファイル名
+	static char *m_apFileName[LOGOTYPE_MAX];				// ロゴのファイル名
 
-	CScene2D *m_pScene2D[LOGOTYPE_MAX];					// scene2Dの情報
+	CPolygon2D *m_pPolyBG;									// 表示するBG画像
+	static CPolygon2D *m_pPolygon[MAX_PLAYER][LOGOTYPE_MAX];// 表示するプレイヤー画像
+	static D3DXVECTOR3 m_posUI[MAX_PLAYER][LOGOTYPE_MAX];	// UIの座標
+	static D3DXVECTOR3 m_sizeUI[MAX_PLAYER][LOGOTYPE_MAX];	// UIのサイズ
 
-	int m_nCharaNum[MAX_PLAYER];						// キャラ番号
-
-	bool m_bTransform[MAX_PLAYER];						// 変身したかどうか
-	bool m_bStoneID[MAX_PLAYER][CStone::STONE_ID_MAX];	// ストーンID
-	bool m_bDisplay;									// UIを表示するかどうか
+	static bool m_bDisplay;									// UIを表示するかどうか
 };
 #endif

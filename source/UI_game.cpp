@@ -13,6 +13,7 @@
 #include "game.h"
 #include "inputKeyboard.h"
 #include "debugProc.h"
+#include "polygon2D.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -21,30 +22,78 @@
 #define STONE_SIZE_X 60								// 石大きさX
 #define STONE_SIZE_Y 50								// 石大きさY
 
+#define POS_GAMEBG	(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f))	// ゲーム背景の座標
+#define SIZE_GAMEBG	(D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f))			// ゲーム背景のサイズ
+
+#define UVSIZE_CHARAICON	(D3DXVECTOR2(0.25f, 1.0f))							// キャラアイコンのUVサイズ
+#define UVSIZE_CHARANAME	(D3DXVECTOR2(1.0f, 0.25f))							// キャラ名のUVサイズ
+
 //==================================================================================================================
 // 静的メンバー変数の初期化
 //==================================================================================================================
-LPDIRECT3DTEXTURE9 CUI_game::m_pTexture[LOGOTYPE_MAX] = {};		// テクスチャ情報
-char *CUI_game::m_apFileName[LOGOTYPE_MAX] =					// 読み込むモデルのソース先
+LPDIRECT3DTEXTURE9 CUI_game::m_pTexBG					= NULL;		// テクスチャ情報
+LPDIRECT3DTEXTURE9 CUI_game::m_pTexture[LOGOTYPE_MAX]	= {};		// テクスチャ情報
+char CUI_game::m_FileBG[MAX_TEXT] = "data/TEXTURE/gameBG.png";		// ゲーム背景
+char *CUI_game::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 {
-	{ "data/TEXTURE/gameBG.png" },		// ゲーム背景
-	{ "data/TEXTURE/jewelryBG.png" },	// 宝石背景1P
-	{ "data/TEXTURE/jewelryBG.png" },	// 宝石背景2P
+	{ "data/TEXTURE/jewelryBG.png" },	// 宝石背景
 	{ "data/TEXTURE/jewelryRed.png" },	// 宝石赤
-	{ "data/TEXTURE/jewelryBule.png" },	// 宝石青
 	{ "data/TEXTURE/jewelryGreen.png" },// 宝石緑
-	{ "data/TEXTURE/FULLchara.png" },	// キャラ1P
-	{ "data/TEXTURE/FULLchara.png" },	// キャラ2P
-	{ "data/TEXTURE/charaName0.png" },	// 1Pのキャラクターネーム
-	{ "data/TEXTURE/charaName1.png" },	// 2Pのキャラクターネーム
+	{ "data/TEXTURE/jewelryBule.png" },	// 宝石青
+	{ "data/TEXTURE/FULLchara.png" },	// キャラアイコン
+	{ "data/TEXTURE/charaName0.png" },	// キャラクターネーム
 };
+
+CPolygon2D *CUI_game::m_pPolygon[MAX_PLAYER][LOGOTYPE_MAX] = {};	// プレイヤー関連の画像
+
+D3DXVECTOR3 CUI_game::m_posUI[MAX_PLAYER][LOGOTYPE_MAX] =			// UIの座標
+{
+	{	
+		D3DXVECTOR3(200, STONE_POS_Y, 0) ,
+		D3DXVECTOR3(125, STONE_POS_Y, 0) ,
+		D3DXVECTOR3(200, STONE_POS_Y, 0) ,
+		D3DXVECTOR3(275, STONE_POS_Y, 0) ,
+		D3DXVECTOR3(55, 70, 0) ,
+		D3DXVECTOR3(205, 155, 0) 
+	},
+	{
+		D3DXVECTOR3(1080, STONE_POS_Y, 0),
+		D3DXVECTOR3(1005, STONE_POS_Y, 0),
+		D3DXVECTOR3(1080, STONE_POS_Y, 0),
+		D3DXVECTOR3(1155, STONE_POS_Y, 0),
+		D3DXVECTOR3(1225, 70, 0),
+		D3DXVECTOR3(1075, 155, 0)
+	}
+};
+
+D3DXVECTOR3 CUI_game::m_sizeUI[MAX_PLAYER][LOGOTYPE_MAX] =			// UIのサイズ
+{
+	{
+		D3DXVECTOR3(210, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(STONE_SIZE_X, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(STONE_SIZE_X, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(STONE_SIZE_X, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(110, 130, 0.0f),
+		D3DXVECTOR3(400, 50, 0.0f)
+	},
+	{
+		D3DXVECTOR3(210, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(STONE_SIZE_X, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(STONE_SIZE_X, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(STONE_SIZE_X, STONE_SIZE_Y, 0.0f),
+		D3DXVECTOR3(110, 130, 0.0f),
+		D3DXVECTOR3(400, 50, 0.0f)
+	},
+};
+
+bool CUI_game::m_bDisplay = true;
 
 //==================================================================================================================
 //
 // コンストラクタ
 //
 //==================================================================================================================
-CUI_game::CUI_game(PRIORITY type = CScene::PRIORITY_UI) : CScene(type)
+CUI_game::CUI_game()
 {
 
 }
@@ -64,28 +113,8 @@ CUI_game::~CUI_game()
 //==================================================================================================================
 void CUI_game::Init(void)
 {
-	m_bDisplay = true;		// UIを表示するかどうか
-
-	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
-	{
-		m_nCharaNum[nCnt] = 0;	// キャラクター番号
-		m_bTransform[nCnt] = false;// 変身したかどうか
-
-		for (int nCntType = 0; nCntType < CStone::STONE_ID_MAX; nCntType++)
-		{
-			m_bStoneID[nCnt][nCntType] = false;// ストーンを取得したかどうか
-		}
-	}
-
-	// ロゴの最大枚数カウント
-	for (int nCnt = 0; nCnt < LOGOTYPE_MAX; nCnt++)
-	{
-		// 生成処理
-		m_pScene2D[nCnt] = CScene2D::Create();
-
-		// テクスチャを貼る
-		m_pScene2D[nCnt]->BindTex(m_pTexture[nCnt]);
-	}
+	// ゲーム開始時のUIをセット
+	SetDefaultUI();
 }
 
 //==================================================================================================================
@@ -93,7 +122,26 @@ void CUI_game::Init(void)
 //==================================================================================================================
 void CUI_game::Uninit(void)
 {
+	// 終了
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
+	{
+		for (int nCntLogo = 0; nCntLogo < LOGOTYPE_MAX; nCntLogo++)
+		{
+			if (m_pPolygon[nCntPlayer][nCntLogo])
+			{
+				m_pPolygon[nCntPlayer][nCntLogo]->Uninit();
+				delete m_pPolygon[nCntPlayer][nCntLogo];
+				m_pPolygon[nCntPlayer][nCntLogo] = nullptr;
+			}
+		}
+	}
 
+	if (m_pPolyBG)
+	{
+		m_pPolyBG->Uninit();
+		delete m_pPolyBG;
+		m_pPolyBG = nullptr;
+	}
 }
 
 //==================================================================================================================
@@ -101,38 +149,18 @@ void CUI_game::Uninit(void)
 //==================================================================================================================
 void CUI_game::Update(void)
 {
-	// キーボード取得
-	CInputKeyboard *pKeyboard = CManager::GetInputKeyboard();
+	if (m_pPolyBG)
+		m_pPolyBG->Update();
 
-	// UIゲーム更新処理
-	GameUpdate();
-
-#ifdef _DEBUG
-	// 表示しているとき
-	if (m_bDisplay)
+	// 更新
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
 	{
-		// キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
+		for (int nCntLogo = 0; nCntLogo < LOGOTYPE_MAX; nCntLogo++)
 		{
-			// 表示させないようにする
-			m_bDisplay = false;
+			if (m_pPolygon[nCntPlayer][nCntLogo])
+				m_pPolygon[nCntPlayer][nCntLogo]->Update();
 		}
-		CDebugProc::Print("UI非表示[F3]\n");
-
 	}
-	else
-	{// 表示していないとき
-		// キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
-		{
-			// 表示させるようにする
-			m_bDisplay = true;
-		}
-		CDebugProc::Print("UI表示[F3]\n");
-	}
-
-#endif // DEBUG
-
 }
 
 //==================================================================================================================
@@ -140,7 +168,22 @@ void CUI_game::Update(void)
 //==================================================================================================================
 void CUI_game::Draw(void)
 {
+	// 表示しないなら、処理を終える
+	if (!m_bDisplay)
+		return;
 
+	if (m_pPolyBG)
+		m_pPolyBG->Draw();
+
+	// 描画
+	for (int nCntPlayer = 0; nCntPlayer < MAX_PLAYER; nCntPlayer++)
+	{
+		for (int nCntLogo = 0; nCntLogo < LOGOTYPE_MAX; nCntLogo++)
+		{
+			if (m_pPolygon[nCntPlayer][nCntLogo])
+				m_pPolygon[nCntPlayer][nCntLogo]->Draw();
+		}
+	}
 }
 
 //==================================================================================================================
@@ -149,7 +192,7 @@ void CUI_game::Draw(void)
 CUI_game *CUI_game::Create(void)
 {
 	// シーン動的に確保
-	CUI_game *pUI = new CUI_game(CScene::PRIORITY_UI);
+	CUI_game *pUI = new CUI_game;
 
 	// シーン初期化
 	pUI->Init();
@@ -163,8 +206,7 @@ CUI_game *CUI_game::Create(void)
 //==================================================================================================================
 HRESULT CUI_game::Load(void)
 {
-	CRenderer *pRenderer = CManager::GetRenderer();			// レンダラー情報取得
-	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();		// デバイスの取得
 
 	//==============================テクスチャの読み込み==============================//
 	// テクスチャの最大数までカウント
@@ -173,6 +215,8 @@ HRESULT CUI_game::Load(void)
 		// テクスチャの読み込み
 		D3DXCreateTextureFromFile(pDevice, m_apFileName[nCnt], &m_pTexture[nCnt]);
 	}
+	// テクスチャの読み込み
+	D3DXCreateTextureFromFile(pDevice, m_FileBG, &m_pTexBG);
 
 	// 値を返す
 	return S_OK;
@@ -192,197 +236,139 @@ void CUI_game::Unload(void)
 }
 
 //==================================================================================================================
-// ゲーム更新処理
+// ゲーム開始時のUIをセット
 //==================================================================================================================
-void CUI_game::GameUpdate(void)
+void CUI_game::SetDefaultUI(void)
 {
-	/* *
-	* 修正しろ
-	プレイヤーポインタを配列にして、for文で回して可読性を上げる。
-	プレイヤー1の取得状況の後プレイヤー2の取得状況でUIを設定しているが、
-	設定しているUIが同じなので、プレイヤー2の設定しか反映されていないので、
-	組みなおししてください。
-	Setを一括だけの奴だけではなく、単体のやつもしっかり用意する。
-	m_bDisplayの意味がない描画処理のところでやるべき
-
-	* 余裕があれば
-	何回も設定しているので、必要最低限の設定だで済ませる事
-	（毎フレーム設定する必要はない、呼ばれたタイミングで設定できるようにする）
-	固定値は静的メンバ変数にしてあらかじめ用意しておく（SCREEN_WIDTH / 2　とか）
-	*/
-
-
-
-
-	CPlayer *pPlayer0, *pPlayer1;
-
-	// プレイヤー情報取得
-	pPlayer0 = CGame::GetPlayer(0);
-	pPlayer1 = CGame::GetPlayer(1);
-
-	// プレイヤーが2体いるとき
-	if (pPlayer0 != NULL && pPlayer1 != NULL)
-	{
-		// プレイヤー番号取得
-		m_nCharaNum[0] = pPlayer0->GetCharaType();
-		m_nCharaNum[1] = pPlayer1->GetCharaType();
-
-		// 変身状況取得
-		m_bTransform[0] = pPlayer0->GetTrans();
-		m_bTransform[1] = pPlayer1->GetTrans();
-
-		// 最大石までカウント
-		for (int nCntStone = 0; nCntStone < CStone::STONE_ID_MAX; nCntStone++)
-		{
-			// 各プレイヤーがどの種類の石を獲得したか
-			m_bStoneID[0][nCntStone] = pPlayer0->GetStoneType(nCntStone);
-			m_bStoneID[1][nCntStone] = pPlayer1->GetStoneType(nCntStone);
-		}
-	}
-
 	// ゲーム背景
-	SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_GAMEBG, WhiteColor, m_bDisplay);
+	CreateBG();
 
-	if (!m_bTransform[0])
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
 	{
-		// 宝石背景1P
-		SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), 210, STONE_SIZE_Y, LOGOTYPE_JEWELRYBG1P, WhiteColor, m_bDisplay);
+		// プレイヤーのタイプを取得
+		int nCharaType= (int)CGame::GetPlayer(nCnt)->GetCharaType() / 2;
 
-		// 1Pが赤石を取ったとき
-		if (m_bStoneID[0][0])
-		{
-			// 宝石赤
-			SetUI(D3DXVECTOR3(125, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, WhiteColor, m_bDisplay);
-		}
-		else
-		{
-			// 宝石赤
-			SetUI(D3DXVECTOR3(125, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, AlphaColor, m_bDisplay);
-		}
+		// キャラアイコンを生成・UV設定
+		CreateUI(nCnt, LOGOTYPE_PLAYERICON, m_posUI[nCnt][LOGOTYPE_PLAYERICON], m_sizeUI[nCnt][LOGOTYPE_PLAYERICON]);
+		m_pPolygon[nCnt][LOGOTYPE_PLAYERICON]->SetAnim(D3DXVECTOR2(nCharaType * 0.25f, 0.0f), UVSIZE_CHARAICON);
 
-		// 1Pが緑石を取ったとき
-		if (m_bStoneID[0][1])
-		{
-			// 宝石緑
-			SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, WhiteColor, m_bDisplay);
-		}
-		else
-		{
-			// 宝石緑
-			SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, AlphaColor, m_bDisplay);
-		}
+		// キャラ名を生成・UV設定
+		CreateUI(nCnt, LOGOTYPE_CHARANAME, m_posUI[nCnt][LOGOTYPE_CHARANAME], m_sizeUI[nCnt][LOGOTYPE_CHARANAME]);
+		m_pPolygon[nCnt][LOGOTYPE_CHARANAME]->SetAnim(D3DXVECTOR2(0.0f, nCharaType * 0.25f), UVSIZE_CHARANAME);
 
-		// 1Pが青石を取ったとき
-		if (m_bStoneID[0][2])
-		{
-			// 宝石青
-			SetUI(D3DXVECTOR3(275, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, WhiteColor, m_bDisplay);
-		}
-		else
-		{
-			// 宝石青
-			SetUI(D3DXVECTOR3(275, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, AlphaColor, m_bDisplay);
-		}
+		// キャラ名を生成・UV設定
+		CreateUI(nCnt, LOGOTYPE_JEWELRYBG, m_posUI[nCnt][LOGOTYPE_JEWELRYBG], m_sizeUI[nCnt][LOGOTYPE_JEWELRYBG]);
 	}
-	else
-	{
-		// 宝石背景1P
-		SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), 210, STONE_SIZE_Y, LOGOTYPE_JEWELRYBG1P, AlphaColor, m_bDisplay);
-		// 宝石赤
-		SetUI(D3DXVECTOR3(125, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, AlphaColor, m_bDisplay);
-		// 宝石青
-		SetUI(D3DXVECTOR3(200, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, AlphaColor, m_bDisplay);
-		// 宝石緑
-		SetUI(D3DXVECTOR3(275, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, AlphaColor, m_bDisplay);
-	}
-
-	if (!m_bTransform[1])
-	{
-		// 宝石背景2P
-		SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), 210, STONE_SIZE_Y, LOGOTYPE_JEWELRYBG2P, WhiteColor, m_bDisplay);
-
-		// 2Pが赤石を取ったとき
-		if (m_bStoneID[1][0])
-		{
-			// 宝石赤
-			SetUI(D3DXVECTOR3(1005, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, WhiteColor, m_bDisplay);
-		}
-		else
-		{
-			// 宝石赤
-			SetUI(D3DXVECTOR3(1005, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, AlphaColor, m_bDisplay);
-		}
-
-		// 2Pが緑石を取ったとき
-		if (m_bStoneID[1][1])
-		{
-			// 宝石緑
-			SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, WhiteColor, m_bDisplay);
-		}
-		else
-		{
-			// 宝石緑
-			SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, AlphaColor, m_bDisplay);
-		}
-
-		// 2Pが青石を取ったとき
-		if (m_bStoneID[1][2])
-		{
-			// 宝石青
-			SetUI(D3DXVECTOR3(1155, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, WhiteColor, m_bDisplay);
-		}
-		else
-		{
-			// 宝石青
-			SetUI(D3DXVECTOR3(1155, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, AlphaColor, m_bDisplay);
-		}
-	}
-	else
-	{
-		// 宝石背景2P
-		SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), 210, STONE_SIZE_Y, LOGOTYPE_JEWELRYBG2P, AlphaColor, m_bDisplay);
-		// 宝石赤
-		SetUI(D3DXVECTOR3(1005, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYRED, AlphaColor, m_bDisplay);
-		// 宝石青
-		SetUI(D3DXVECTOR3(1080, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYGREEN, AlphaColor, m_bDisplay);
-		// 宝石緑
-		SetUI(D3DXVECTOR3(1155, STONE_POS_Y, 0), STONE_SIZE_X, STONE_SIZE_Y, LOGOTYPE_JEWELRYBULE, AlphaColor, m_bDisplay);
-	}
-
-	// 1PキャラクターUI
-	SetUI(D3DXVECTOR3(55, 70, 0), 110, 130, LOGOTYPE_PLAYER1, WhiteColor, m_bDisplay);
-	// テクスチャ設定
-	m_pScene2D[LOGOTYPE_PLAYER1]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[0] / 2);
-	// 2PキャラクターUI
-	SetUI(D3DXVECTOR3(1225, 70, 0), 110, 130, LOGOTYPE_PLAYER2, WhiteColor, m_bDisplay);
-	// テクスチャ設定
-	m_pScene2D[LOGOTYPE_PLAYER2]->SetAnimation(0.25f, 1.0f, 0.0f, m_nCharaNum[1] / 2);
-
-	// 1PキャラクターネームUI
-	SetUI(D3DXVECTOR3(205, 155, 0), 400, 50, LOGOTYPE_CHARANAME0, WhiteColor, m_bDisplay);
-	// テクスチャ設定
-	m_pScene2D[LOGOTYPE_CHARANAME0]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[0] / 2) * 0.25f, 0.0f + (m_nCharaNum[0] / 2) * 0.25f, 0);
-	// 2PキャラクターネームUI
-	SetUI(D3DXVECTOR3(1075, 155, 0), 400, 50, LOGOTYPE_CHARANAME1, WhiteColor, m_bDisplay);
-	// テクスチャ設定
-	m_pScene2D[LOGOTYPE_CHARANAME1]->SetAnimation(1.0f, 0.25f + (m_nCharaNum[1] / 2) * 0.25f, 0.0f + (m_nCharaNum[1] / 2) * 0.25f, 0);
 }
 
 //==================================================================================================================
 // ロゴ作成
 //==================================================================================================================
-void CUI_game::SetUI(D3DXVECTOR3 pos, float fSizeX, float fSizeY, int nCnt, D3DXCOLOR col, bool bDisplay)
+void CUI_game::CreateUI(int nPlayer, int type, D3DXVECTOR3 pos, D3DXVECTOR3 size)
 {
-	m_pScene2D[nCnt]->SetPos(pos);									// 位置設定
-	m_pScene2D[nCnt]->SetSize(D3DXVECTOR3(fSizeX, fSizeY, 0.0f));	// 大きさ設定
+	// 存在するなら、処理しない
+	if (m_pPolygon[nPlayer][type])
+		return;
 
-	// 表示していいとき
-	if (m_bDisplay)
+	// 生成
+	m_pPolygon[nPlayer][type] = CPolygon2D::Create();
+	// テクスチャのバインド
+	m_pPolygon[nPlayer][type]->BindTexture(m_pTexture[type]);
+	// 座標設定
+	m_pPolygon[nPlayer][type]->SetPos(pos);
+	// サイズ設定
+	m_pPolygon[nPlayer][type]->SetSize(size);
+	// ポリゴンの原点を設定
+	m_pPolygon[nPlayer][type]->SetPosStart(CPolygon2D::POSSTART_CENTRAL_CENTRAL);
+
+}
+
+//==================================================================================================================
+// ロゴ破棄
+//==================================================================================================================
+void CUI_game::DeleteUI(int nPlayer, int type)
+{
+	if (m_pPolygon[nPlayer][type])
 	{
-		m_pScene2D[nCnt]->SetCol(col);								// 色設定
+		// 終了・破棄
+		m_pPolygon[nPlayer][type]->Uninit();
+		delete m_pPolygon[nPlayer][type];
+		m_pPolygon[nPlayer][type] = nullptr;
 	}
-	else
-	{// 表示させないとき
-		m_pScene2D[nCnt]->SetCol(ZeroColor);						// 色設定
-	}
+}
+
+//==================================================================================================================
+// 背景の生成
+//==================================================================================================================
+void CUI_game::CreateBG()
+{
+	// 存在するなら、処理しない
+	if (m_pPolyBG)
+		return;
+
+	// 生成
+	m_pPolyBG = CPolygon2D::Create();
+	// テクスチャのバインド
+	m_pPolyBG->BindTexture(m_pTexBG);
+	// 座標設定
+	m_pPolyBG->SetPos(POS_GAMEBG);
+	// サイズ設定
+	m_pPolyBG->SetSize(SIZE_GAMEBG);
+	// ポリゴンの原点を設定
+	m_pPolyBG->SetPosStart(CPolygon2D::POSSTART_CENTRAL_CENTRAL);
+}
+
+//==================================================================================================================
+// ストーン取得
+//==================================================================================================================
+void CUI_game::CatchStone(int nPlayer, CStone::STONE_ID type)
+{
+	UI_GAME_TYPE StoneType = (UI_GAME_TYPE)(LOGOTYPE_JEWELRYRED + type);
+
+	// 存在していれば、処理しない
+	if (m_pPolygon[nPlayer][StoneType])
+		return;
+
+	// UI生成
+	CreateUI(nPlayer, StoneType, m_posUI[nPlayer][StoneType], m_sizeUI[nPlayer][StoneType]);
+}
+
+//==================================================================================================================
+// ストーン破棄
+//==================================================================================================================
+void CUI_game::ReleaseStone(int nPlayer, CStone::STONE_ID type)
+{
+	UI_GAME_TYPE StoneType = (UI_GAME_TYPE)(LOGOTYPE_JEWELRYRED + type);
+
+	// 存在していなければ、処理しない
+	if (!m_pPolygon[nPlayer][StoneType])
+		return;
+
+	// UI破棄
+	DeleteUI(nPlayer, StoneType);
+}
+
+//==================================================================================================================
+// 変身
+//==================================================================================================================
+void CUI_game::TransPlayer(int nPlayer)
+{
+	// 宝石背景・宝石を全破棄
+	if (m_pPolygon[nPlayer][LOGOTYPE_JEWELRYBG])
+		DeleteUI(nPlayer, LOGOTYPE_JEWELRYBG);
+	if (m_pPolygon[nPlayer][LOGOTYPE_JEWELRYRED])
+		DeleteUI(nPlayer, LOGOTYPE_JEWELRYRED);
+	if (m_pPolygon[nPlayer][LOGOTYPE_JEWELRYGREEN])
+		DeleteUI(nPlayer, LOGOTYPE_JEWELRYGREEN);
+	if (m_pPolygon[nPlayer][LOGOTYPE_JEWELRYBULE])
+		DeleteUI(nPlayer, LOGOTYPE_JEWELRYBULE);
+}
+
+//==================================================================================================================
+// 変身終了
+//==================================================================================================================
+void CUI_game::FinishTrans(int nPlayer)
+{
+	// 宝石背景を生成
+	CreateUI(nPlayer, LOGOTYPE_JEWELRYBG, m_posUI[nPlayer][LOGOTYPE_JEWELRYBG], m_sizeUI[nPlayer][LOGOTYPE_JEWELRYBG]);
 }

@@ -169,7 +169,6 @@ protected:
 private:
 	void Move(void);									// ˆÚ“®ŠÖ”
 	void Rot(void);										// ‰ñ“]ŠÖ”
-	void Trans(void);									// •ÏgŠÖ”
 };
 
 #endif

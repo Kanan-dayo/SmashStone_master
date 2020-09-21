@@ -22,6 +22,7 @@
 #include "mapSelect.h"
 #include "inputKeyboard.h"
 #include "objManager.h"
+#include "UI_game.h"
 #include "ImGui/imgui.h"			// Imguiの実装に必要
 #include "ImGui/imgui_impl_dx9.h"	// Imguiの実装に必要
 #include "ImGui/imgui_impl_win32.h"	// Imguiの実装に必要
@@ -659,7 +660,7 @@ void CRenderer::ResetDevice()
 //==================================================================================================================
 void CRenderer::DebugCommand(void)
 {
-	// F1キーでモード切替
+	// カメラ固定
 	if (CInputKeyboard::GetKeyboardTrigger(DIK_F1))
 	{
 		if (CCamera::GetCameraMode() == CCamera::CAMERA_GAME)
@@ -668,13 +669,7 @@ void CRenderer::DebugCommand(void)
 			CCamera::SetCameraMode(CCamera::CAMERA_GAME);
 	}
 
-	// デバッグ表示
-	if (CCamera::GetCameraMode() == CCamera::CAMERA_GAME)
-		CDebugProc::Print("カメラモード : ゲーム   [ F1で切替 ]\n");
-	else if (CCamera::GetCameraMode() == CCamera::CAMERA_DEBUG)
-		CDebugProc::Print("カメラモード : デバッグ [ F1で切替 ]\n");
-
-	// F2キーで表示切替
+	// ImGui
 	if (CInputKeyboard::GetKeyboardTrigger(DIK_F2))
 	{
 		CManager::GetShowImGui() ?
@@ -682,12 +677,15 @@ void CRenderer::DebugCommand(void)
 			CManager::SetShowImGui(true);
 	}
 
-	// デバッグ表示
-	CManager::GetShowImGui() ?
-		CDebugProc::Print("ImGui表示中	 [ F2で非表示 ]\n") :
-		CDebugProc::Print("ImGui非表示中 [ F2で表示 ]\n");
+	// ゲームUI
+	if (CInputKeyboard::GetKeyboardTrigger(DIK_F3))
+	{
+		CUI_game::GetbDisp() ?
+			CUI_game::SetbDisp(false) :
+			CUI_game::SetbDisp(true);
+	}
 
-	// F4キーで表示切替
+	// デバッグテキスト
 	if (CInputKeyboard::GetKeyboardTrigger(DIK_F4))
 	{
 		m_bDisplay ?
@@ -695,12 +693,7 @@ void CRenderer::DebugCommand(void)
 			m_bDisplay = true;
 	}
 
-	// デバッグ表示
-	m_bDisplay ?
-		CDebugProc::Print("デバッグテキスト表示中	[ F4で非表示 ]\n") :
-		CDebugProc::Print("デバッグテキスト非表示中 [ F4で表示 ]\n");
-
-	// F4キーで表示切替
+	// コリジョン
 	if (CInputKeyboard::GetKeyboardTrigger(DIK_F5))
 	{
 		m_bDisColl ?
@@ -708,7 +701,24 @@ void CRenderer::DebugCommand(void)
 			m_bDisColl = true;
 	}
 
-	// デバッグ表示
+	/* デバッグテキストとして、状況・コマンドを表示 */
+	if (CCamera::GetCameraMode() == CCamera::CAMERA_GAME)
+		CDebugProc::Print("カメラモード : ゲーム   [ F1で切替 ]\n");
+	else if (CCamera::GetCameraMode() == CCamera::CAMERA_DEBUG)
+		CDebugProc::Print("カメラモード : デバッグ [ F1で切替 ]\n");
+
+	CManager::GetShowImGui() ?
+		CDebugProc::Print("ImGui表示中	 [ F2で非表示 ]\n") :
+		CDebugProc::Print("ImGui非表示中 [ F2で表示 ]\n");
+
+	CUI_game::GetbDisp() ?
+		CDebugProc::Print("ゲームUI表示中	[ F3で非表示 ]\n") :
+		CDebugProc::Print("ゲームUI非表示中 [ F3で表示 ]\n");
+
+	m_bDisplay ?
+		CDebugProc::Print("デバッグテキスト表示中	[ F4で非表示 ]\n") :
+		CDebugProc::Print("デバッグテキスト非表示中 [ F4で表示 ]\n");
+
 	m_bDisColl ?
 		CDebugProc::Print("当たり判定表示中	  [ F5で非表示 ]\n") :
 		CDebugProc::Print("当たり判定非表示中 [ F5で表示 ]\n");

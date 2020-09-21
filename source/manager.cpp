@@ -18,6 +18,7 @@
 #include "CharEffectOffset.h"
 #include "3DParticle.h"
 #include "camera.h"
+#include "UI_game.h"
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -315,6 +316,16 @@ HRESULT CManager::LoadImGuiInfo(void)
 				CCharaParam::SetShowWindow(true);
 		}
 		// 表示の有無
+		else if (strcmp(cHeadText, "SHOW_GAME_UI") == 0)
+		{
+			// 表示の読み込み
+			int bShow = 0;
+			sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &bShow);
+			// 表示
+			if (bShow == 1)
+				CUI_game::SetbDisp(true);
+		}
+		// 表示の有無
 		else if (strcmp(cHeadText, "SHOW_DEBUG_TEXT") == 0)
 		{
 			// 表示の読み込み
@@ -396,6 +407,12 @@ HRESULT CManager::SaveDebugInfo(void)
 		&cEqual,
 		CCharaParam::GetShowWindow());
 	fputs(cWriteText, pFile);														// SHOW_CHARAPARAM_WINDOW = bShow
+	fputs(COMMENT_NEW_LINE, pFile);													// \n
+
+	sprintf(cWriteText, "# ゲームUI表示の有無\nSHOW_GAME_UI %s %d\n",
+		&cEqual,
+		CUI_game::GetbDisp());
+	fputs(cWriteText, pFile);														// SHOW_GAME_UI = bShow
 	fputs(COMMENT_NEW_LINE, pFile);													// \n
 
 	sprintf(cWriteText, "# デバッグテキスト表示の有無\nSHOW_DEBUG_TEXT %s %d\n",

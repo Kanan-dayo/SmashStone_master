@@ -15,6 +15,9 @@ SHOW_OBJECT_WINDOW = 0
 # キャラパラメーター表示の有無
 SHOW_CHARAPARAM_WINDOW = 0
 
+# ゲームUI表示の有無
+SHOW_GAME_UI = 1
+
 # デバッグテキスト表示の有無
 SHOW_DEBUG_TEXT = 1
 

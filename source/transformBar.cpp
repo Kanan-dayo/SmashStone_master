@@ -4,15 +4,11 @@
 // Author : Seiya Takahashi
 //
 //==================================================================================================================
-#define _CRT_SECURE_NO_WARNINGS
 
 //==================================================================================================================
 //	インクルードファイル
 //==================================================================================================================
-#include <stdio.h>
-#include <stdlib.h>
 #include "renderer.h"
-#include "scene2D.h"
 #include "manager.h"
 #include "inputKeyboard.h"
 #include "transformBar.h"
@@ -21,6 +17,7 @@
 #include "character.h"
 #include "debugProc.h"
 #include "game.h"
+#include "UI_game.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -40,7 +37,7 @@ int CTransformBar::m_nInitCnt = 0;				// 初期化用カウンタ
 //==================================================================================================================
 //	コンストラクタ
 //==================================================================================================================
-CTransformBar::CTransformBar(PRIORITY type = PRIORITY_UI) : CScene(type)
+CTransformBar::CTransformBar()
 {
 	m_pBar = NULL;				// バーの情報ポインタ
 }
@@ -183,6 +180,12 @@ void CTransformBar::Update(void)
 //==================================================================================================================
 void CTransformBar::Draw(void)
 {
+	// 表示していない
+	if (!CUI_game::GetbDisp())
+	{
+		return;
+	}
+
 	//Barの描画処理
 	m_pBar->Draw();
 }
@@ -194,7 +197,7 @@ CTransformBar * CTransformBar::Create(float fMaxHP)
 {
 	CTransformBar *pTransformBar = NULL;				// ポインタ変数
 
-	pTransformBar = new CTransformBar(PRIORITY_UI);		// メモリを動的確保
+	pTransformBar = new CTransformBar();				// メモリを動的確保
 	pTransformBar->m_fMaxHP = fMaxHP;				// プレイヤー最大HP代入
 	pTransformBar->Init();							// 初期化処理
 

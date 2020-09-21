@@ -38,6 +38,7 @@
 #include "motion.h"
 #include "3DParticle.h"
 #include "modelParts.h"
+#include "UI_game.h"
 
 //==================================================================================================================
 // マクロ定義
@@ -62,7 +63,6 @@
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
-CHitPoint *CPlayer::m_pHitPoint = NULL;				// HP情報
 
 //==================================================================================================================
 // コンストラクタ
@@ -130,7 +130,10 @@ void CPlayer::Uninit(void)
 {
 	CCharacter::Uninit();
 
-	m_pHitPoint = nullptr;	// 変数NULL
+	if (m_pHitPoint)
+	{
+		m_pHitPoint = nullptr;	// 変数NULL
+	}
 }
 
 //==================================================================================================================
@@ -154,7 +157,6 @@ void CPlayer::Update(void)
 	// ストーンパーティクルの更新
 	UpdateStoneParticle();
 
-
 	// 更新
 	CCharacter::Update();
 
@@ -164,8 +166,8 @@ void CPlayer::Update(void)
 	// モーション処理
 	Motion();
 
-	// プレイヤーの番号設定
-	SetnPlayer(m_nPlayer);
+	// 変身処理
+	Trans();
 
 #ifdef _DEBUG
 	char cText[8];
@@ -209,6 +211,66 @@ CPlayer *CPlayer::Create(int nPlayer, CHARACTER_TYPE type)
 
 	// 値を返す
 	return pPlayer;
+}
+
+//==================================================================================================================
+// 変身
+//==================================================================================================================
+void CPlayer::Trans(void)
+{
+	// 変身していない
+	if (!m_bTrans && m_nCntTrans != 0)
+	{
+		// 変身時間を初期化
+		m_nCntTrans = 0;
+		// 処理を終える
+		return;
+	}
+
+	// 変身後、最初のみ
+	if (m_bTrans && m_nCntTrans == 0)
+	{
+		// モデルを変身用にバインド
+		m_pModelCharacter->ModelRebind(m_typeTrans);
+		// モデルタイプを再設定
+		m_pModelCharacter->SetModelType(m_typeTrans);
+		// ストーンUIを消す
+		CUI_game::TransPlayer(m_nPlayer);
+	}
+
+	// 変身時間を加算
+	if (m_bTrans)
+		m_nCntTrans++;
+	// 変身時間中であれば、処理を終える
+	if (m_nCntTrans < TIME_TRANS)
+		return;
+
+	// ストーンの取得数を初期化
+	m_nNumStone = 0;
+	// ストーンの出現数を初期化
+	CGame::SetNumStone(0);
+	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
+	{
+		m_bGetStoneType[nCnt] = false;
+		// 再配置できるようストーンを使用されていない状態にする
+		CGame::RemoveTypeStone(nCnt);
+	}
+
+	// 変身終了後のUI処理
+	CUI_game::FinishTrans(m_nPlayer);
+	// 変身時間を初期化
+	m_nCntTrans = 0;
+	// 変身を解除
+	m_bTrans = false;
+
+	// モデルの再バインド
+	m_pModelCharacter->ModelRebind(m_type);
+	// モデルタイプを再設定
+	m_pModelCharacter->SetModelType(m_type);
+
+	// BGM変更
+	CRenderer::GetSound()->StopSound(CSound::SOUND_LABEL_BGM_TRANS);
+	CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_BGM_GAME);
 }
 
 //==================================================================================================================
@@ -1354,9 +1416,12 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 //==================================================================================================================
 void CPlayer::CatchStone(CStone *pStone)
 {
+	// ステージのストーン配置数を減らす
 	CGame::RemoveNumStone(pStone->GetIndexPos());
 	// 取得ストーンのタイプを有効
 	int nStoneID = pStone->GetStoneID();
+	// ストーンUIを表示
+	CUI_game::CatchStone(m_nPlayer, (CStone::STONE_ID)nStoneID);
 	m_bGetStoneType[nStoneID] = true;
 	// ストーンの取得
 	pStone->Catch();
@@ -1438,6 +1503,8 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 			m_nNumStone--;
 			// 減らすストーンのタイプを取得
 			int nRemoveType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetStoneType, true);
+			// ストーンのUIをなくす
+			CUI_game::ReleaseStone(m_nPlayer, (CStone::STONE_ID)nRemoveType);
 			// 使っていない状態に戻す
 			m_bGetStoneType[nRemoveType] = false;
 			// 再配置できるようストーンを使用されていない状態にする
@@ -1459,7 +1526,6 @@ void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 	BlowAway(pAnother, 0.2f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行
 	m_stateStand = STANDSTATE_SMASHBLOWAWAY;
-
 }
 
 //==================================================================================================================
@@ -1546,14 +1612,6 @@ void CPlayer::SetHitSound()
 		break;
 	}
 
-}
-
-//==================================================================================================================
-// プレイヤー番号設定処理
-//==================================================================================================================
-void CPlayer::SetnPlayer(int nPlayerNum)
-{
-	m_nPlayer = nPlayerNum;
 }
 
 //==================================================================================================================

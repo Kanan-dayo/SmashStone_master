@@ -4,15 +4,11 @@
 // Author : Seiya Takahashi
 //
 //==================================================================================================================
-#define _CRT_SECURE_NO_WARNINGS
 
 //==================================================================================================================
 //	インクルードファイル
 //==================================================================================================================
-#include <stdio.h>
-#include <stdlib.h>
 #include "renderer.h"
-#include "scene2D.h"
 #include "manager.h"
 #include "inputKeyboard.h"
 #include "hitpoint.h"
@@ -21,6 +17,7 @@
 #include "character.h"
 #include "debugProc.h"
 #include "game.h"
+#include "UI_game.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -101,7 +98,6 @@ void CHitPoint::Init(void)
 	m_nCntPos3 = 21;				// 位置変更用カウンタ
 	m_fNowHP = m_fMaxHP;			// 現在のHP
 	m_fHeight = MAX_HEIGHT;			// 高さ
-	m_bDisplay = true;				// UIを表示させるかどうか
 
 	// 最大本数までカウント
 	for (int nCnt = 0; nCnt < MAX_HPBAR; nCnt++)
@@ -243,28 +239,6 @@ void CHitPoint::Update(void)
 		Bar4Update(NowHP);
 	}
 
-#ifdef _DEBUG
-	// 表示しているとき
-	if (m_bDisplay)
-	{
-		// キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
-		{
-			// 表示させないようにする
-			m_bDisplay = false;
-		}
-	}
-	else
-	{// 表示していないとき
-		// キーボードのF3を押したとき
-		if (pKeyboard->GetKeyboardTrigger(DIK_F3))
-		{
-			// 表示させるようにする
-			m_bDisplay = true;
-		}
-	}
-#endif // DEBUG
-
 }
 
 //==================================================================================================================
@@ -273,11 +247,13 @@ void CHitPoint::Update(void)
 void CHitPoint::Draw(void)
 {
 	// UIを表示させていいとき
-	if (m_bDisplay)
+	if (!CUI_game::GetbDisp())
 	{
-		//Barの描画処理
-		m_pBar->Draw();
+		return;
 	}
+
+	//Barの描画処理
+	m_pBar->Draw();
 }
 
 //==================================================================================================================

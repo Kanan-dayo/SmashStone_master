@@ -110,9 +110,6 @@ void CCharacter::Update()
 	// 回転処理
 	Rot();
 
-	// 変身処理
-	Trans();
-
 	// ワールドマトリックスの設定
 	m_pModelCharacter->SetCharacterMtx(&m_mtxWorld);
 
@@ -298,50 +295,4 @@ void CCharacter::Rot(void)
 
 	// 回転の補間
 	CKananLibrary::InterpolationRot(&m_rot);
-}
-
-//=============================================================================
-// 変身の処理
-//=============================================================================
-void CCharacter::Trans(void)
-{
-	if (!m_bTrans)
-	{
-		// 変身時間を初期化
-		m_nCntTrans = 0;
-		return;
-	}
-
-	// 変身時間を加算
-	m_nCntTrans++;
-	if (m_nCntTrans < TIME_TRANS)
-	{
-		// モデルを変身用にバインド
-		m_pModelCharacter->ModelRebind(m_typeTrans);
-		// モデルタイプを再設定
-		m_pModelCharacter->SetModelType(m_typeTrans);
-		return;
-	}
-
-	// ストーンの取得数を初期化
-	m_nNumStone = 0;
-	// ストーンの出現数を初期化
-	CGame::SetNumStone(0);	
-	for (int nCnt = 0; nCnt < CStone::STONE_ID_MAX; nCnt++)
-	{
-		m_bGetStoneType[nCnt] = false;
-		// 再配置できるようストーンを使用されていない状態にする
-		CGame::RemoveTypeStone(nCnt);
-	}
-	// 変身時間を初期化
-	m_nCntTrans = 0;
-	// 変身を解除
-	m_bTrans = false;
-	// モデルの再バインド
-	m_pModelCharacter->ModelRebind(m_type);
-	// モデルタイプを再設定
-	m_pModelCharacter->SetModelType(m_type);
-	// BGM変更
-	CRenderer::GetSound()->StopSound(CSound::SOUND_LABEL_BGM_TRANS);
-	CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_BGM_GAME);
 }
