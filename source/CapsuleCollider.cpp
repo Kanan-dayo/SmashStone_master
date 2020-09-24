@@ -496,7 +496,7 @@ bool CCapsuleCollider::Collision(void)
 	CPlayer          *pOwn            = (CPlayer *)m_ColliderInfo.pScene;						// このコライダーを持っているプレイヤー
 	CPlayer          *pOthers         = pOwn->GetAnotherPlayer();								// その他のプレイヤー
 	CCapsuleCollider *pOthersCapColli = pOthers->GetCapCollider(CCharacter::COLLIPARTS_BODY);	// その他のプレイヤーのコライダー情報
-	CModelCharacter *pOwnModelChar    = pOwn->GetModelCharacter();								// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
+	CModelCharacter  *pOwnModelChar    = pOwn->GetModelCharacter();								// このコライダーを持っているプレイヤーのモデルキャラクタポインタ
 
 	//　現在のキーが攻撃状態かどうか
 	if (pOwnModelChar->AttackKeyCondition() == false ||
@@ -507,9 +507,9 @@ bool CCapsuleCollider::Collision(void)
 
 	int *pAttackPartsIndex = pOwnModelChar->GetAttackPartsIndex();	// 攻撃パーツインデックスの取得
 	int nSize = pOwnModelChar->GetAttackPartsIndexSize();			// 攻撃パーツインデックスの格納数（サイズ）の取得
+
 	// サイズが0の時またはインデックスポインタがnullの時
-	if (nSize == 0 ||
-		pAttackPartsIndex == nullptr)
+	if (nSize == 0 || pAttackPartsIndex == nullptr)
 	{// 処理を中断
 		return false;
 	}
@@ -535,45 +535,30 @@ bool CCapsuleCollider::Collision(void)
 	}
 
 	D3DXVECTOR3 HitPos;// 当たった位置
-#ifdef _DEBUG
-	CDebugProc::Print("COLLIPARTS [%d]", m_ColliderInfo.enmTtpeID);
 	// 無敵でないとき
 	if (pOthers->GetInvincible() == false)
 	{
 		// 2線分の最短距を求める
 		if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
 		{
+			// モーションで当たったときのパーティクルを設定
 			switch (pOwn->GetMotion())
 			{
 				MLB_CASE(CMotion::PLAYER_ATTACK_0) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-				MLB_CASE(CMotion::PLAYER_ATTACK_1)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-				MLB_CASE(CMotion::PLAYER_ATTACK_2)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-				MLB_CASE(CMotion::PLAYER_ATTACK_3)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
-				MLB_CASE(CMotion::PLAYER_SMASH)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_1) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_2) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				MLB_CASE(CMotion::PLAYER_ATTACK_3) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
+				MLB_CASE(CMotion::PLAYER_SMASH)    C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+				MLB_CASE(CMotion::PLAYER_AIRATTACK)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
 			}
+			// 文字エフェクトの設定
 			CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
+			// 攻撃当てたフラグを設定
 			pOwn->SetAttakHit(true);
+			// ダメージを受ける
 			pOthers->TakeDamage(pOwn, pOwnModelChar->GetMotion());
 		}
-		else
-		{
-		}
 	}
-#else
-	// 無敵でないとき
-	if (pOthers->GetInvincible() == false)
-	{
-	// 2線分の最短距を求める
-	if (CMylibrary::colCapsuleCapsule(m_ColliderInfo.Capsule, pOthersCapColli->m_ColliderInfo.Capsule, HitPos) == true)
-	{
-		CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ドンッ);
-		C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
-		pOwn->SetAttakHit(true);
-	}
-	}
-
-#endif // _DEBUG
-
 	return false;
 }
 
