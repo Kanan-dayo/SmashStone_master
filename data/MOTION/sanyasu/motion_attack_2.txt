@@ -11,8 +11,8 @@ MOTIONSET
 	NUM_KEY = 3		# ÉLÅ[êî
 
 	KEYSET			# ----- << KEY :  0 / 3 >> -----
-		FRAME = 12
-		MOVE = 7.0
+		FRAME = 8
+		MOVE = 14.0
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -11.10 0.00
 			ROT = -0.51 -0.56 0.15
@@ -68,7 +68,6 @@ MOTIONSET
 		FRAME = 15
 		ATTACK_ON
 		ATTACK_INDEX = 5
-		MOVE = 3.0
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -0.10 0.00
 			ROT = -0.16 1.04 -0.10
@@ -122,7 +121,6 @@ MOTIONSET
 
 	KEYSET			# ----- << KEY :  2 / 3 >> -----
 		FRAME = 25
-		MOVE = 1.0
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -1.10 0.00
 			ROT = -0.06 1.09 0.00
