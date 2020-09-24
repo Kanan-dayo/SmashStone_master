@@ -182,8 +182,7 @@ HRESULT CCharaParam::Save(const PARAM_TYPE type)
 		"通常攻撃 2",
 		"通常攻撃 3 ",
 		"通常攻撃 4 ",
-		"空中パンチ",
-		"空中キック",
+		"空中攻撃",
 		"スマッシュ",
 	};
 
@@ -376,8 +375,7 @@ void CCharaParam::ShowCharaParam(const char cName[16], PARAM_TYPE type)
 			"1_Normal",
 			"2_Normal",
 			"3_Normal",
-			"AirPunch",
-			"AirKick",
+			"AirAttack",
 			"Smash",
 		};
 

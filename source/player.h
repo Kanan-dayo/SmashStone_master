@@ -66,14 +66,14 @@ private:
 	void Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey);
 	void NormalAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey);
 	bool Jump(CInputGamepad *pGamepad, CInputKeyboard *pKey);
+	bool AirAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey);
 	bool InputKeyMove(CInputKeyboard *pKey);
 	bool InputPadMove(CInputGamepad *pGamepad);
 	void Shadow(void);								// 影関係の更新処理
 
-	void Motion(void);
+	void StandMotion(void);
 	void MotionNeutral(void);
 	void MotionWalk(void);
-	void MotionJump(void);
 	void MotionDown(void);
 	void MotionDaunted(void);
 	void MotionBlowAway(void);
@@ -84,6 +84,12 @@ private:
 	void MotionGetUp(void);
 	void MotionGetUpActive(void);
 	bool SmashJudge(void);
+	bool JumpJudge(void);
+
+	void JumpState(void);
+	void MotionJump(void);
+	void MotionFall(void);
+	void MotionAirAttack(void);
 
 	void RotToEnemy(void);
 	
@@ -101,6 +107,7 @@ private:
 	void AnotherPlayerAttack1(CPlayer *pAnother);	
 	void AnotherPlayerAttack2(CPlayer *pAnother);	
 	void AnotherPlayerAttack3(CPlayer *pAnother);	
+	void AnotherPlayerAirAttack(CPlayer *pAnother);
 	void AnotherPlayerSmash(CPlayer *pAnother);		
 
 	void TakeAttack3Damage(CPlayer * pAnother);		
@@ -118,6 +125,7 @@ private:
 	int m_nCntState;		// 状態管理用のカウンタ
 	int m_nCntGap;			// 被ダメージ時の後隙カウンタ
 	float m_fMotionMove;	// モーション時の移動量
+	D3DXVECTOR3 m_AirMove;	// 空中攻撃時の移動値
 	int	m_nAttackFrame;			// 攻撃モーション切り替えのカウンタ
 
 	bool m_bIn[3];		// ポリゴンの範囲内フラグ

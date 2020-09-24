@@ -70,6 +70,7 @@ public:
 		PLAYER_DOWN,			// プレイヤー ダウン
 		PLAYER_GETUP,			// プレイヤー 起き上がり
 		PLAYER_GETUP_ACTIVE,	// プレイヤー アクティブな起き上がり
+		PLAYER_AIRATTACK,		// プレイヤー 空中攻撃
 		//PLAYER_WALLDOWN,		// プレイヤー 壁は貼り付き
 		MOTION_MAX				// 最大値
 	} MOTION_TYPE;

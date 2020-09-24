@@ -75,7 +75,6 @@ public:
 		JUMPSTATE_JUMP,			// ƒWƒƒƒ“ƒv
 		JUMPSTATE_FALL,			// —Ž‚¿‚é
 		JUMPSTATE_ATTACK,		// UŒ‚
-		JUMPSTATE_BLOWAWAY,		// ‚«”ò‚Ñ
 	} CHARACTER_JUMPSTATE;
 
 	typedef enum

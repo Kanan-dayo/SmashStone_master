@@ -31,8 +31,7 @@ public:
 		ATTACK_NORMAL_2,		// 通常攻撃2
 		ATTACK_NORMAL_3,		// 通常攻撃3
 		ATTACK_NORMAL_4,		// 通常攻撃4
-		ATTACK_AIR_PUNCH,		// 空中パンチ攻撃
-		ATTACK_AIR_KICK,		// 空中キック攻撃
+		ATTACK_AIR_ATTACK,		// 空中キック攻撃
 		ATTACK_SMASH,			// スマッシュ攻撃
 		ATTACK_MAX				// 全ての攻撃
 	} PLAYER_ATTACK_TYPE;

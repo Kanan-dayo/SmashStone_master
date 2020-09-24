@@ -55,10 +55,14 @@
 #define TIME_JUMP_TO_FALL		(15)		// ジャンプから落下までの時間
 #define TIME_GETUP				(40)		// 起き上がりの時間
 #define TIME_GETUP_ACTIVE		(35)		// 起き上がりの時間
+#define TIME_AIR_ATTACK			(30)		// 空中攻撃が敵に当たるまでの時間
 
 #define CHARGEPARTICLE_MAX_CHARGE	(12)		// 最大までチャージできる時間
 
-#define DISTANCE_CHASE_ENEMY	(100.0f)	// 敵を追尾する距離
+#define DISTANCE_CHASE_ENEMY		(100.0f)	// 敵を追尾する距離
+#define DISTANCE_AIR_CAHSE_ENEMY	(200.0f)	// 敵を追尾する距離(空中)
+
+#define VALUE_DIFPOS_Y			(30.0f)		// 空中攻撃時の位置のずれ
 
 //==================================================================================================================
 // 静的メンバ変数の初期化
@@ -97,6 +101,7 @@ void CPlayer::Init(void)
 	m_nCntSmashDashParticle = 0;
 	m_fMotionMove = 0.0f;
 	m_vecP_to_E = ZeroVector3;
+	m_AirMove = ZeroVector3;
 
 	// 最大ポリゴン数までカウント
 	for (int nCnt = 0; nCnt < 3; nCnt++)
@@ -164,7 +169,7 @@ void CPlayer::Update(void)
 	Collision();
 
 	// モーション処理
-	Motion();
+	StandMotion();
 
 	// 変身処理
 	Trans();
@@ -520,12 +525,31 @@ bool CPlayer::Jump(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_JUMP)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_JUMP))))))
 	{
 		m_stateStand = STANDSTATE_JUMP;
+		m_stateJump = JUMPSTATE_JUMP;
 		// 移動値を設定
 		m_move.y = m_param.moveParam.fJumpPower;
 		// ジャンプ実行
 		return true;
 	}
 	// ジャンプしてない
+	return false;
+}
+
+//==================================================================================================================
+// ジャンプ
+//==================================================================================================================
+bool CPlayer::AirAttack(CInputGamepad * pGamepad, CInputKeyboard * pKey)
+{
+	if (m_stateStand == STANDSTATE_JUMP && 
+		((pGamepad && pGamepad->GetbConnect() && pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)) || 
+		( pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardTrigger(ONE_ATTACK)) ||
+		(m_nPlayer == PLAYER_TWO && pKey->GetKeyboardTrigger(TWO_ATTACK))))))
+	{
+		m_stateJump = JUMPSTATE_ATTACK;
+		// ジャンプ攻撃実行
+		return true;
+	}
+	// ジャンプ攻撃していない
 	return false;
 }
 
@@ -721,7 +745,7 @@ void CPlayer::Shadow(void)
 //==================================================================================================================
 // モーション管理関数
 //==================================================================================================================
-void CPlayer::Motion(void)
+void CPlayer::StandMotion(void)
 {
 	switch (m_stateStand)
 	{
@@ -758,7 +782,7 @@ void CPlayer::Motion(void)
 		break;
 		// ジャンプ
 	case STANDSTATE_JUMP:
-		MotionJump();
+		JumpState();
 		break;
 		// 攻撃
 	case STANDSTATE_ATTACK:
@@ -796,6 +820,9 @@ void CPlayer::MotionNeutral(void)
 		m_nCntState = 0;
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
+		// 攻撃ベクトルの初期化
+		m_vecP_to_E = ZeroVector3;
+		m_stateJump = JUMPSTATE_NONE;
 	}
 }
 
@@ -812,27 +839,6 @@ void CPlayer::MotionWalk(void)
 		// 攻撃の状態を初期化
 		m_nAttackFlow = 0;
 	}
-}
-
-//==================================================================================================================
-// ジャンプモーション
-//==================================================================================================================
-void CPlayer::MotionJump(void)
-{
-	// 最初はジャンプモーション
-	if (m_nCntState == 0 && m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
-	{
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
-		m_nCntState = 0;
-		// 攻撃の状態を初期化
-		m_nAttackFlow = 0;
-	}
-	// 以降は落下モーション
-	else if (m_nCntState == TIME_JUMP_TO_FALL && m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
-		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
-
-	// カウンタを加算
-	m_nCntState++;
 }
 
 //==================================================================================================================
@@ -1139,6 +1145,127 @@ bool CPlayer::SmashJudge(void)
 }
 
 //==================================================================================================================
+// ジャンプの判定
+//==================================================================================================================
+bool CPlayer::JumpJudge(void)
+{
+	if (m_stateStand == STANDSTATE_JUMP)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//==================================================================================================================
+// ジャンプ中の処理
+//==================================================================================================================
+void CPlayer::JumpState(void)
+{
+	switch (m_stateJump)
+	{
+		// ジャンプモーション
+	case JUMPSTATE_JUMP:
+		MotionJump();
+		break;
+		// 落下モーション
+	case JUMPSTATE_FALL:
+		MotionFall();
+		break;
+		// 攻撃モーション
+	case JUMPSTATE_ATTACK:
+		MotionAirAttack();
+		break;
+	}
+}
+
+//==================================================================================================================
+// ジャンプモーション
+//==================================================================================================================
+void CPlayer::MotionJump(void)
+{
+	// ジャンプモーション
+	if ( m_pModelCharacter->GetMotion() != CMotion::PLAYER_JUMP)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_JUMP);
+		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+	}
+
+	// 状態カウントを加算
+	m_nCntState++;
+	// 一定時間で落下モーションに移行
+	if (m_nCntState >= TIME_JUMP_TO_FALL)
+		m_stateJump = JUMPSTATE_FALL;
+}
+
+//==================================================================================================================
+// 落下モーション
+//==================================================================================================================
+void CPlayer::MotionFall(void)
+{
+	// 落下モーション
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_FALL)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_FALL);
+	}
+}
+
+//==================================================================================================================
+// 空中攻撃モーション
+//==================================================================================================================
+void CPlayer::MotionAirAttack(void)
+{
+	if (m_pModelCharacter->GetMotion() != CMotion::PLAYER_AIRATTACK)
+	{
+		m_pModelCharacter->SetMotion(CMotion::PLAYER_AIRATTACK);
+		m_nCntState = 0;
+		// 攻撃の状態を初期化
+		m_nAttackFlow = 0;
+		// 攻撃のフラグをオフにする
+		m_bAttakHit = false;
+		m_bAttakHitStone = false;
+
+		// 敵のIDを取得
+		int nEnemyID = 0;
+		if (m_nPlayer == 0)
+			nEnemyID = 1;
+
+		D3DXVECTOR3 difPos = CGame::GetPlayer(nEnemyID)->GetPos() - m_pos;
+
+		// 一定の距離以内
+		if (CKananLibrary::OutputSqrt(difPos) <= DISTANCE_AIR_CAHSE_ENEMY)
+		{
+			// プレイヤーから敵へのベクトルを取得
+			m_vecP_to_E = CKananLibrary::OutputVector(CGame::GetPlayer(nEnemyID)->GetPos(), m_pos);
+			// 向きを決定
+			m_rotDest.y = atan2f((float)m_vecP_to_E.x, (float)m_vecP_to_E.z);
+			// 即振り向き
+			m_rot.y = m_rotDest.y;
+
+			float fDisPosY = CGame::GetPlayer(nEnemyID)->GetPos().y + VALUE_DIFPOS_Y - m_pos.y + VALUE_DIFPOS_Y;
+
+			m_move.y = 0.0f;
+
+			// 移動値を決定
+			m_AirMove.x = sqrt(difPos.x * difPos.x) / TIME_AIR_ATTACK;
+			m_AirMove.y = sqrt(fDisPosY * fDisPosY) / TIME_AIR_ATTACK;
+			m_AirMove.z = sqrt(difPos.z * difPos.z) / TIME_AIR_ATTACK;
+		}
+	}
+
+	float fmoveY = -m_vecP_to_E.y * m_AirMove.y;
+	if (fmoveY >= 0)
+		fmoveY = -0.1f;
+
+	// 移動
+	m_move.x += -m_vecP_to_E.x * m_AirMove.x;
+	m_move.y += fmoveY;
+	m_move.z += -m_vecP_to_E.z * m_AirMove.z;
+}
+
+//==================================================================================================================
 // 敵のほうを向く
 //==================================================================================================================
 void CPlayer::RotToEnemy(void)
@@ -1232,6 +1359,7 @@ bool CPlayer::ReadyToHit(void)
 		case CMotion::PLAYER_ATTACK_1: return true;
 		case CMotion::PLAYER_ATTACK_2: return true;
 		case CMotion::PLAYER_ATTACK_3: return true;
+		case CMotion::PLAYER_AIRATTACK: return true;
 		case CMotion::PLAYER_SMASH:    return true;
 		}
 	}
@@ -1251,6 +1379,7 @@ bool CPlayer::ReadyToHitStone(void)
 		case CMotion::PLAYER_ATTACK_1: return true;
 		case CMotion::PLAYER_ATTACK_2: return true;
 		case CMotion::PLAYER_ATTACK_3: return true;
+		case CMotion::PLAYER_AIRATTACK: return true;
 		case CMotion::PLAYER_SMASH:    return true;
 		}
 	}
@@ -1333,12 +1462,12 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 
 	// 何も入力されていなければ、処理しない
 	if (FAILED(CKananLibrary::GetMoveByGamepad(pGamepad)) &&
-		fValueX == 0 && fValueY == 0 && 
-		!SmashJudge())
+		fValueX == 0 && fValueY == 0 &&
+		!SmashJudge() &&
+		!JumpJudge())
 	{
 		// ジャンプ中でなければ、ニュートラル
-		if (m_stateStand != STANDSTATE_JUMP&&
-			m_stateStand != STANDSTATE_ATTACK)
+		if (m_stateStand != STANDSTATE_ATTACK)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1356,9 +1485,15 @@ void CPlayer::ControlGamepad(CInputGamepad * pGamepad)
 
 		// 攻撃入力
 		NormalAttack(pGamepad, nullptr);
-		
+
 		// 攻撃中であれば、処理を終える
 		if (m_stateStand == STANDSTATE_ATTACK)
+			return;
+
+		// 空中攻撃
+		AirAttack(pGamepad, nullptr);
+
+		if (m_stateJump == JUMPSTATE_ATTACK)
 			return;
 	}
 
@@ -1376,11 +1511,11 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 {
 	// 入力されていなければ処理を終える
 	if (FAILED(CKananLibrary::GetMoveByKeyboard(pKeyboard, m_nPlayer)) &&
-		!SmashJudge())
+		!SmashJudge() &&
+		!JumpJudge())
 	{
-		// ジャンプ中でなければ、ニュートラル
-		if (m_stateStand != STANDSTATE_JUMP &&
-			m_stateStand != STANDSTATE_ATTACK)
+		// 条件付きで、ニュートラル
+		if (m_stateStand != STANDSTATE_ATTACK)
 			m_stateStand = STANDSTATE_NEUTRAL;
 		return;
 	}
@@ -1402,12 +1537,18 @@ void CPlayer::ControlKeyboard(CInputKeyboard * pKeyboard)
 		// 攻撃中であれば、処理を終える
 		if (m_stateStand == STANDSTATE_ATTACK)
 			return;
+
+		// 空中攻撃
+		AirAttack(nullptr, pKeyboard);
+
+		if (m_stateJump == JUMPSTATE_ATTACK)
+			return;
 	}
 
 	// ジャンプ
 	Jump(nullptr, pKeyboard);
 
-	// 移動入力
+	// 移動
 	InputKeyMove(pKeyboard);
 }
 
@@ -1516,6 +1657,39 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 }
 
 //==================================================================================================================
+// 別のプレイヤーが空中攻撃している時
+//==================================================================================================================
+void CPlayer::AnotherPlayerAirAttack(CPlayer * pAnother)
+{
+	// ダメージ
+	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_AIR_ATTACK));
+	// 変身中以外は吹き飛ぶ
+	if (!m_bTrans)
+	{
+		// 吹き飛び
+		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
+		// 吹き飛びを有効
+		m_stateStand = STANDSTATE_BLOWAWAY;
+		m_stateJump = JUMPSTATE_NONE;
+		if (m_nNumStone > 0)
+		{
+			// 所持ストーンを一つ減らす
+			m_nNumStone--;
+			// 減らすストーンのタイプを取得
+			int nRemoveType = CKananLibrary::DecideRandomValue(CStone::STONE_ID_MAX, m_bGetStoneType, true);
+			// ストーンのUIをなくす
+			CUI_game::ReleaseStone(m_nPlayer, (CStone::STONE_ID)nRemoveType);
+			// 使っていない状態に戻す
+			m_bGetStoneType[nRemoveType] = false;
+			// 再配置できるようストーンを使用されていない状態にする
+			CGame::RemoveTypeStone(nRemoveType);
+			// 減らしたストーンを即生成
+			CGame::AppearStone();
+		}
+	}
+}
+
+//==================================================================================================================
 // 別のプレイヤーがスマッシュ攻撃している時
 //==================================================================================================================
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
@@ -1539,6 +1713,7 @@ void CPlayer::TakeDamage(CPlayer * pAnother, const int nAttackMotion)
 	case CMotion::PLAYER_ATTACK_1: AnotherPlayerAttack1(pAnother);return;
 	case CMotion::PLAYER_ATTACK_2: AnotherPlayerAttack2(pAnother);return;
 	case CMotion::PLAYER_ATTACK_3: AnotherPlayerAttack3(pAnother);return;
+	case CMotion::PLAYER_AIRATTACK: AnotherPlayerAttack3(pAnother); return;
 	case CMotion::PLAYER_SMASH:    AnotherPlayerSmash(pAnother);return;
 	}
 
@@ -1605,6 +1780,9 @@ void CPlayer::SetHitSound()
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT2);
 		break;
 	case CMotion::PLAYER_ATTACK_3:
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
+		break;
+	case CMotion::PLAYER_AIRATTACK:
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
 		break;
 	case CMotion::PLAYER_SMASH:
