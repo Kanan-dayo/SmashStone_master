@@ -214,7 +214,8 @@ void CMeshField::Update(void)
 
 	// タイトルのとき 又は チュートリアルのとき
 	if (CRenderer::GetMode() == CRenderer::MODE_TITLE ||
-		CRenderer::GetMode() == CRenderer::MODE_TUTORIAL)
+		CRenderer::GetMode() == CRenderer::MODE_TUTORIAL ||
+		CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
 	{
 		// 動かす
 		fDivide -= 0.05f;
