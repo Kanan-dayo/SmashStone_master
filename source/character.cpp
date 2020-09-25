@@ -226,6 +226,8 @@ void CCharacter::SetCylinderCoillider(void)
 
 #define CASE(Key)	break;case (Key):
 #define DEFAULT		break;default:
+
+
 //=============================================================================
 // モデルインデックスからタイプIDに変換
 //=============================================================================
@@ -233,14 +235,15 @@ void CCharacter::ConfromFromModelIndexToYypeID(int * pOut, const int * pIn)
 {
 	switch ((CModelCharacter::PARTSNAME)*pIn)
 	{
-		CASE(CModelCharacter::UPARM_R)   *pOut = (int)CCapsuleCollider::TYPEID_UPPERARM_R;
-		CASE(CModelCharacter::FOREARM_R) *pOut = (int)CCapsuleCollider::TYPEID_FOREARM_R;
-		CASE(CModelCharacter::UPARM_L)   *pOut = (int)CCapsuleCollider::TYPEID_UPPERARM_L;
-		CASE(CModelCharacter::FOREARM_L) *pOut = (int)CCapsuleCollider::TYPEID_FOREARM_L;
-		CASE(CModelCharacter::THIGH_R)   *pOut = (int)CCapsuleCollider::TYPEID_THIGH_R;
-		CASE(CModelCharacter::LOWERLEG_R)*pOut = (int)CCapsuleCollider::TYPEID_LOWERLEG_R;
-		CASE(CModelCharacter::THIGH_L)   *pOut = (int)CCapsuleCollider::TYPEID_THIGH_L;
-		CASE(CModelCharacter::LOWERLEG_L)*pOut = (int)CCapsuleCollider::TYPEID_LOWERLEG_L;
+		CASE(CModelCharacter::UPARM_R)       *pOut = (int)CCapsuleCollider::TYPEID_UPPERARM_R;
+		CASE(CModelCharacter::FOREARM_R)     *pOut = (int)CCapsuleCollider::TYPEID_FOREARM_R;
+		CASE(CModelCharacter::UPARM_L)       *pOut = (int)CCapsuleCollider::TYPEID_UPPERARM_L;
+		CASE(CModelCharacter::FOREARM_L)     *pOut = (int)CCapsuleCollider::TYPEID_FOREARM_L;
+		CASE(CModelCharacter::THIGH_R)       *pOut = (int)CCapsuleCollider::TYPEID_THIGH_R;
+		CASE(CModelCharacter::LOWERLEG_R)    *pOut = (int)CCapsuleCollider::TYPEID_LOWERLEG_R;
+		CASE(CModelCharacter::THIGH_L)       *pOut = (int)CCapsuleCollider::TYPEID_THIGH_L;
+		CASE(CModelCharacter::LOWERLEG_L)    *pOut = (int)CCapsuleCollider::TYPEID_LOWERLEG_L;
+		CASE(CMODELCHARACTER_PARTSNAME_SMASH)*pOut = (int)CCapsuleCollider::TYPEID_SMASH;
 			DEFAULT *pOut = -1; return;
 	}
 }

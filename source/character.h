@@ -96,6 +96,7 @@ public:
 	void               Update(void);				// 更新
 	void               Draw(void);					// 描画
 
+	inline void        SetPosBegin(const D3DXVECTOR3 & pos)		{ m_posBegin = pos; }				// 位置の設定
 	inline void        SetPos(const D3DXVECTOR3 & pos)			{ m_pos = pos; }					// 位置の設定
 	inline void        SetMove(const D3DXVECTOR3 & move)		{ m_move = move; }					// 移動値の設定
 	inline void        SetRot(const D3DXVECTOR3 & rot)			{ m_rot = rot; }					// 回転の設定

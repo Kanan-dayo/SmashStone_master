@@ -147,6 +147,8 @@ void CGame::Init(void)
 	m_pPlayer[PLAYER_TWO] = CPlayer::Create(PLAYER_TWO, (CHARACTER_TYPE)m_nPlayerType[PLAYER_TWO]);	// プレイヤー生成
 	m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
 	m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_2P);
+	m_pPlayer[PLAYER_ONE]->SetPosBegin(DEFAULTPOS_1P);
+	m_pPlayer[PLAYER_TWO]->SetPosBegin(DEFAULTPOS_2P);
 
 	m_pObjMana    = CObjectManager::Create((STAGETYPE)m_nStageType);// オブジェクトマネージャーの生成
 	m_pWall       = CWall::Create(CWall::WALLTEX_FIELD);			// 壁の生成
@@ -606,10 +608,8 @@ void CGame::NextRound(void)
 		pFade->SetFade(CRenderer::MODE_NONE, TIME_FADE_NEXTROUND);
 		// バトル前へ
 		m_gameState = GAMESTATE_BEFORE;
-		m_pPlayer[PLAYER_ONE]->SetPos(DEFAULTPOS_1P);
-		m_pPlayer[PLAYER_TWO]->SetPos(DEFAULTPOS_1P);
-		m_pPlayer[PLAYER_ONE]->SetLife(m_pPlayer[PLAYER_ONE]->GetMaxLife());
-		m_pPlayer[PLAYER_TWO]->SetLife(m_pPlayer[PLAYER_TWO]->GetMaxLife());
+		m_pPlayer[PLAYER_ONE]->ResetPlayer();
+		m_pPlayer[PLAYER_TWO]->ResetPlayer();
 	}
 }
 

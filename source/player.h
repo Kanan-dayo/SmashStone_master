@@ -42,6 +42,7 @@ public:
 	CPlayer*GetAnotherPlayer(void);				
 
 	void Daunted(const int nGap);	// ‹¯‚Ý
+	void ResetPlayer(void);			// ƒŠƒZƒbƒg
 
 	bool ReadyToHit(void);			
 	bool ReadyToHitStone(void);

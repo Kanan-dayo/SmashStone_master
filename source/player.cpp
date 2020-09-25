@@ -1309,6 +1309,26 @@ void CPlayer::Daunted(const int nGap)
 }
 
 //==================================================================================================================
+// リセット
+//==================================================================================================================
+void CPlayer::ResetPlayer(void)
+{
+	// 値の初期化
+	SetPos(m_posBegin);
+	SetRot(ZeroVector3);
+	SetRotDest(ZeroVector3);
+	SetMove(ZeroVector3);
+	SetLife(m_param.fMaxLife);
+	// 状態の初期化
+	m_bTrans = false;
+	m_stateStand = STANDSTATE_NEUTRAL;
+	m_stateJump = JUMPSTATE_NONE;
+	m_nCntState = 0;
+	// モデルを通常にリバインド
+	m_pModelCharacter->ModelRebind(m_type);
+}
+
+//==================================================================================================================
 // 攻撃判定
 //==================================================================================================================
 void CPlayer::CollisionAttack(void)
