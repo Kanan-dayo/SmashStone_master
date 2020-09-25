@@ -17,17 +17,14 @@
 //==================================================================================================================
 // マクロ定義
 //==================================================================================================================
-#define MAPUI_SIZE_X 300							// マップUI大きさX
-#define MAPUI_SIZE_Y 250							// マップUI大きさY
-#define MAPUI_POS_X0 650							// マップUI縦の位置0列目
-#define MAPUI_POS_X1 1050							// マップUI縦の位置1列目
-#define MAPUI_POS_Y0 200							// マップUI横の位置0列目
+#define MAPUI_SIZE_X 600							// マップUI大きさX
+#define MAPUI_SIZE_Y 650							// マップUI大きさY
+#define MAPUI_POS_X0 310							// マップUI縦の位置0列目
+#define MAPUI_POS_X1 950							// マップUI縦の位置1列目
+#define MAPUI_POS_Y0 360							// マップUI横の位置0列目
 #define MAPUI_POS_Y1 500							// マップUI横の位置1列目
-#define MAPFRAMEUI_SIZE_X 360						// マップ枠線大きさX
-#define MAPFRAMEUI_SIZE_Y 290						// マップ枠線大きさY
-#define MAPEXPLANATION_POS D3DXVECTOR3(250, SCREEN_HEIGHT / 2, 0)// マップ説明UI位置
-#define MAPEXPLANATION_SIZE_X 400					// マップ説明UI大きさX
-#define MAPEXPLANATION_SIZE_Y 600					// マップ説明UI大きさY
+#define MAPFRAMEUI_SIZE_X 640						// マップ枠線大きさX
+#define MAPFRAMEUI_SIZE_Y 690						// マップ枠線大きさY
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
@@ -39,12 +36,6 @@ char *CUI_mapSelect::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース
 	{ "data/TEXTURE/MapFrame.jpg" },	// マップ選択枠
 	{ "data/TEXTURE/map1.jpg" },		// マップ1
 	{ "data/TEXTURE/map2.jpg" },		// マップ2
-	{ "data/TEXTURE/coming soon.jpg" },	// マップ3(coming soon)
-	{ "data/TEXTURE/coming soon.jpg" },	// マップ4(coming soon)
-	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
-	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
-	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
-	{ "data/TEXTURE/MapExplanation.jpg" },// マップ説明
 };
 
 int CUI_mapSelect::m_nMapID = 0;	// マップID
@@ -184,75 +175,23 @@ void CUI_mapSelect::Unload(void)
 //==================================================================================================================
 void CUI_mapSelect::MapSelectUpdate(CInputKeyboard * pKeyboard, CInputGamepad * pGamepad0, CInputGamepad * pGamepad1)
 {
-	// マップ選択画面のとき
-	if (CRenderer::GetMode() == CRenderer::MODE_MAPSELECT)
-	{
-		// 世界地図
-		SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_WORLDMAP, WhiteColor);
+	// 世界地図
+	SetUI(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT, LOGOTYPE_WORLDMAP, WhiteColor);
 
-		// マップ1
-		SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP1, WhiteColor);
+	// マップ1
+	SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP1, WhiteColor);
 
-		// マップ2
-		SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP2, WhiteColor);
+	// マップ2
+	SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP2, WhiteColor);
 
-		// マップ3
-		SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y1, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP3, WhiteColor);
-
-		// マップ4
-		SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y1, 0.0f), MAPUI_SIZE_X, MAPUI_SIZE_Y, LOGOTYPE_MAP4, WhiteColor);
-
-		// マップIDが0より小さい時
-		if (m_nMapID < 0)
-		{
-			// 0にする
-			m_nMapID = 0;
-		}
-
-		// まっぷIDが3より大きい時
-		if (m_nMapID > 3)
-		{
-			// 3にする
-			m_nMapID = 3;
-		}
-
-		switch (m_nMapID)
-		{
-		case 0:
-			// マップ枠線
-			SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
-			// マップ説明
-			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION1, WhiteColor);
-			break;
-		case 1:
-			// マップ枠線
-			SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
-			// マップ説明
-			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION2, WhiteColor);
-			break;
-		case 2:
-			// マップ枠線
-			SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y1, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
-			// マップ説明
-			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION3, WhiteColor);
-			break;
-		case 3:
-			// マップ枠線
-			SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y1, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
-			// マップ説明
-			SetUI(MAPEXPLANATION_POS, MAPEXPLANATION_SIZE_X, MAPEXPLANATION_SIZE_Y, LOGOTYPE_MAPEXPLANATION4, WhiteColor);
-			break;
-		}
-
-		// ゲームパッド有効時
-		if (pGamepad0->GetbConnect() || pGamepad1->GetbConnect())
-			// ゲームパッド操作
-			ControlGamepad(pGamepad0, pGamepad1);
-		// ゲームパッド無効時
-		else
-			// キーボード操作
-			ControlKeyboard(pKeyboard);
-	}
+	// ゲームパッド有効時
+	if (pGamepad0->GetbConnect() || pGamepad1->GetbConnect())
+		// ゲームパッド操作
+		ControlGamepad(pGamepad0, pGamepad1);
+	// ゲームパッド無効時
+	else
+		// キーボード操作
+		ControlKeyboard(pKeyboard);
 }
 
 //==================================================================================================================
@@ -295,24 +234,33 @@ void CUI_mapSelect::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGa
 			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_CURSORMOVE);
 		}
 
-		// 上に傾けたとき
-		if (fValueY0 < 0)
+		// マップIDが0より小さい時
+		if (m_nMapID < 0)
 		{
-			// マップ番号-2
-			m_nMapID -= 2;
-			// 効果音再生
-			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_CURSORMOVE);
-		}
-		else if (fValueY0 > 0)
-		{// 下に傾けたとき
-		 // マップ番号+2
-			m_nMapID += 2;
-			// 効果音再生
-			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_CURSORMOVE);
+			// 0にする
+			m_nMapID = 0;
 		}
 
+		// まっぷIDが3より大きい時
+		if (m_nMapID > 1)
+		{
+			// 3にする
+			m_nMapID = 1;
+		}
+
+		switch (m_nMapID)
+		{
+		case 0:
+			// マップ1
+			SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
+			break;
+		case 1:
+			// マップ2
+			SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
+			break;
+		}
 		// 決定ボタンを押したとき
-		if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_B))
+		if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_X))
 		{
 			// マップを選択した状態にする
 			m_bMapSelect = true;
@@ -344,19 +292,31 @@ void CUI_mapSelect::ControlKeyboard(CInputKeyboard * pKeyboard)
 			// 効果音再生
 			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_CURSORMOVE);
 		}
-		else if (pKeyboard->GetKeyboardTrigger(ONE_UP))
-		{// 1Pが上入力をしたとき
-		 // マップID-2する
-			m_nMapID -= 2;
-			// 効果音再生
-			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_CURSORMOVE);
+
+		// マップIDが0より小さい時
+		if (m_nMapID < 0)
+		{
+			// 0にする
+			m_nMapID = 0;
 		}
-		else if (pKeyboard->GetKeyboardTrigger(ONE_DOWN))
-		{// 1Pがした入力をしたとき
-		 // まっぷID+2する
-			m_nMapID += 2;
-			// 効果音再生
-			CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_CURSORMOVE);
+
+		// まっぷIDが3より大きい時
+		if (m_nMapID > 1)
+		{
+			// 3にする
+			m_nMapID = 1;
+		}
+
+		switch (m_nMapID)
+		{
+		case 0:
+			// マップ1
+			SetUI(D3DXVECTOR3(MAPUI_POS_X0, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
+			break;
+		case 1:
+			// マップ2
+			SetUI(D3DXVECTOR3(MAPUI_POS_X1, MAPUI_POS_Y0, 0.0f), MAPFRAMEUI_SIZE_X, MAPFRAMEUI_SIZE_Y, LOGOTYPE_MAPFRAME, WhiteColor);
+			break;
 		}
 
 		// 1Pが決定ボタンを押したとき

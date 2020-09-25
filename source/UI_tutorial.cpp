@@ -529,7 +529,7 @@ void CUI_tutorial::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGam
 			}
 
 			// 決定ボタンを押したとき
-			if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_B))
+			if (pGamepad0->GetTrigger(CInputGamepad::JOYPADKEY_X))
 			{
 				// キャラクターを選択した状態にする
 				m_bCharaDecide[0] = true;
@@ -599,7 +599,7 @@ void CUI_tutorial::ControlGamepad(CInputGamepad * pGamepad0, CInputGamepad *pGam
 			}
 
 			// 決定ボタンを押したとき
-			if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_B))
+			if (pGamepad1->GetTrigger(CInputGamepad::JOYPADKEY_X))
 			{
 				// キャラクターを選択した状態にする
 				m_bCharaDecide[1] = true;
