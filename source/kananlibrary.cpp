@@ -685,7 +685,7 @@ HRESULT CKananLibrary::Decide(CInputKeyboard * Key, CInputGamepad * pGamepad)
 	if (pGamepad->GetbConnect())
 	{
 		// スティック入力
-		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A))
+		if (pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X))
 			return S_OK;
 	}
 

@@ -140,6 +140,9 @@ public:
 	// 状態の設定
 	void SetState(STATE state);
 
+	// 全てのストーンを消す
+	static void AllDisappearance(void);
+
 private:
 	/* メンバ関数 */
 	// 最大最小の頂点位置の取得

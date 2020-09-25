@@ -50,6 +50,10 @@ public:
 
 	void SetPos(D3DXVECTOR3 pos);	// 位置設定処理
 	void SetTime(int nTime);		// タイム設定処理
+	void SetbActive(bool bActive) {m_bActive = bActive; }	// タイマーを有効にする
+	bool GetbActive(void) { return m_bActive; }				// 有効かどうか
+
+	void ResetTime(void);
 
 protected:
 
@@ -60,5 +64,6 @@ private:
 	CNumber *m_apNumber[MAX_TIME];	// タイムの変数
 
 	D3DXVECTOR3 m_pos;				// 位置
+	bool		m_bActive;
 };
 #endif

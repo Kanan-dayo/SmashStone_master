@@ -55,8 +55,12 @@ public:
 
 	CScene *GetScene(PRIORITY nPriority, int nCntScene);			// シーン取得
 	PRIORITY GetPriority(void) { return m_nPriority; }		// プライオリティの取得
-
+	static CScene *GetTop(PRIORITY priority) { return m_pTop[priority]; }
 	void SetPriority(PRIORITY priority) { m_nPriority = priority; }	// プライオリティの設定
+
+	CScene *GetPrev(void) {return m_pPrev;}			// シーン取得
+	CScene *GetNext(void) {return m_pNext;}			// シーン取得
+
 
 protected:
 

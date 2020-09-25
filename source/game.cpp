@@ -431,6 +431,9 @@ void CGame::AppearStone(void)
 //==================================================================================================================
 void CGame::GameBefore(void)
 {
+	if (m_pTime->GetbActive())
+		m_pTime->SetbActive(false);
+
 	if (!m_pUIGameStart)
 		m_pUIGameStart = CUI_GameStart::Create();
 
@@ -449,6 +452,9 @@ void CGame::GameBefore(void)
 //==================================================================================================================
 void CGame::GameNormal(void)
 {
+	if (!m_pTime->GetbActive())
+		m_pTime->SetbActive(true);
+
 	// nullcheck
 	if (m_pUIGameStart)
 	{
@@ -487,6 +493,9 @@ void CGame::GameNormal(void)
 //==================================================================================================================
 void CGame::GamePause(void)
 {
+	if (m_pTime->GetbActive())
+		m_pTime->SetbActive(false);
+
 	// ポーズの更新処理
 	m_pPause->Update();
 
@@ -503,6 +512,9 @@ void CGame::GamePause(void)
 //==================================================================================================================
 void CGame::GameKO(void)
 {
+	if (m_pTime->GetbActive())
+		m_pTime->SetbActive(false);
+
 	// KOのUIを生成
 	if (!m_pUIKO)
 		m_pUIKO = CUIKO::Create();
@@ -517,6 +529,9 @@ void CGame::GameKO(void)
 //==================================================================================================================
 void CGame::GameKOAfter(void)
 {
+	if (m_pTime->GetbActive())
+		m_pTime->SetbActive(false);
+
 	// カウンタの加算
 	m_nCntAny++;
 	// 一定時間で次へ
@@ -562,6 +577,9 @@ void CGame::SwitchPause(void)
 //==================================================================================================================
 void CGame::NextRound(void)
 {
+	if (m_pTime->GetbActive())
+		m_pTime->SetbActive(false);
+
 	// nullcheck
 	if (m_pUIKO)
 	{
@@ -610,6 +628,14 @@ void CGame::NextRound(void)
 		m_gameState = GAMESTATE_BEFORE;
 		m_pPlayer[PLAYER_ONE]->ResetPlayer();
 		m_pPlayer[PLAYER_TWO]->ResetPlayer();
+		// タイマー初期化
+		m_pTime->ResetTime();
+		m_nNumStone = 0;
+		for (int nCnt = 0; nCnt < 3; nCnt++)
+		{
+			m_bGetType[nCnt] = false;
+		}
+		CStone::AllDisappearance();
 	}
 }
 

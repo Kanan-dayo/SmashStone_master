@@ -406,12 +406,16 @@ void CCapsuleCollider::DrawingVertex(void)
 	// テクスチャの設定
 	pDevice->SetTexture(0, NULL);
 
+#ifdef _DEBUG
 	// 可視化中のみ
 	if (CRenderer::GetbDisColl())
 	{
+#endif
 		// ポリゴンの描画
 		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, m_ColliderInfo.nNumindex, 0, m_ColliderInfo.nNumPolygon);
+#ifdef _DEBUG
 	}
+#endif
 	// ライティングモード有効
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 	// Fill Mode の設定

@@ -9,53 +9,53 @@ SCRIPT	# 消さないで
 #============================================================
 # 基本ステータス
 #============================================================
-MAX_LIFE      = 170.00000 # 最大HP
-RUN_SPEED     = 1.20000 # 移動速度
-JUMP_POWER    = 5.70000 # ジャンプ力
+MAX_LIFE      = 140.00000 # 最大HP
+RUN_SPEED     = 1.50000 # 移動速度
+JUMP_POWER    = 7.00000 # ジャンプ力
 ATTACK_POWER  = 5.00000 # 攻撃力
-DEFENSE_POWER = 15.00000 # 防御力
+DEFENSE_POWER = 0.00000 # 防御力
 
 #============================================================
 # モーションごとのパラメーター
 #============================================================
 SET_MOTIONPARAM	# 通常攻撃 1
-	CANCEL_FRAME = 7 - 16
-	DAMAGE = 5
-	DAUNTED = 30
+	CANCEL_FRAME = 17 - 27
+	DAMAGE = 7
+	DAUNTED = 40
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
 SET_MOTIONPARAM	# 通常攻撃 2
-	CANCEL_FRAME = 20 - 30
-	DAMAGE = 5
-	DAUNTED = 30
+	CANCEL_FRAME = 25 - 35
+	DAMAGE = 7
+	DAUNTED = 40
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
 SET_MOTIONPARAM	# 通常攻撃 3 
-	CANCEL_FRAME = 26 - 41
-	DAMAGE = 5
-	DAUNTED = 50
+	CANCEL_FRAME = 25 - 35
+	DAMAGE = 7
+	DAUNTED = 40
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
 SET_MOTIONPARAM	# 通常攻撃 4 
-	CANCEL_FRAME = 20 - 35
-	DAMAGE = 20
-	DAUNTED = 20
+	CANCEL_FRAME = 37 - 47
+	DAMAGE = 7
+	DAUNTED = 0
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
 SET_MOTIONPARAM	# 空中攻撃
 	CANCEL_FRAME = 10 - 30
-	DAMAGE = 0
+	DAMAGE = 7
 	DAUNTED = 0
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM
 
 SET_MOTIONPARAM	# スマッシュ
 	CANCEL_FRAME = 10 - 30
-	DAMAGE = 15
+	DAMAGE = 2
 	DAUNTED = 0
 	BLOWAWAY_TYPE = 0
 END_MOTIONPARAM

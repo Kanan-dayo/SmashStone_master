@@ -463,11 +463,9 @@ void CPlayer::Collision(void)
 //==================================================================================================================
 void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 {
-#ifdef _RELEASE
 	// 変身していなければ、処理しない
 	if (!m_bTrans)
 		return;
-#endif
 
 	// チャージ中にボタンを離すと、スマッシュ
 	if (m_stateStand == STANDSTATE_SMASHCHARGE &&
@@ -859,6 +857,9 @@ void CPlayer::MotionDown(void)
 	// カウント加算
 	m_nCntState++;
 
+	if (m_nLife <= 0)
+		return;
+
 	CInputGamepad *pGamepad = CManager::GetInputGamepad(m_nPlayer);
 	CInputKeyboard *pKey = CManager::GetInputKeyboard();
 
@@ -898,6 +899,12 @@ void CPlayer::MotionDaunted(void)
 	// 怯み中
 	if (m_nCntState < m_nCntGap)
 		return;
+
+	if (m_nLife <= 0)
+	{
+		m_stateStand = STANDSTATE_DOWN;
+		return;
+	}
 
 	// 怯み解除
 	m_stateStand = STANDSTATE_NEUTRAL;
@@ -1320,10 +1327,28 @@ void CPlayer::ResetPlayer(void)
 	SetMove(ZeroVector3);
 	SetLife(m_param.fMaxLife);
 	// 状態の初期化
-	m_bTrans = false;
+	if (m_bTrans)
+	{
+		m_bTrans = false;
+		// 変身終了後のUI処理
+		CUI_game::FinishTrans(m_nPlayer);
+		// BGM変更
+		CRenderer::GetSound()->StopSound(CSound::SOUND_LABEL_BGM_TRANS);
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_BGM_GAME);
+	}
+	m_bAttakHit = false;
+	m_bAttakHitStone = false;
+	m_bInvincible = false;
 	m_stateStand = STANDSTATE_NEUTRAL;
 	m_stateJump = JUMPSTATE_NONE;
 	m_nCntState = 0;
+	for (int nCnt = 0; nCnt < 3; nCnt++)
+	{
+		m_bGetStoneType[nCnt] = false;
+		// ストーンのUIをなくす
+		CUI_game::ReleaseStone(m_nPlayer, (CStone::STONE_ID)nCnt);
+	}
+	m_nNumStone = 0;
 	// モデルを通常にリバインド
 	m_pModelCharacter->ModelRebind(m_type);
 }
