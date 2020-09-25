@@ -18,13 +18,13 @@
 // マクロ定義
 //==================================================================================================================
 #define MAPUI_SIZE_X 600							// マップUI大きさX
-#define MAPUI_SIZE_Y 650							// マップUI大きさY
+#define MAPUI_SIZE_Y 400							// マップUI大きさY
 #define MAPUI_POS_X0 310							// マップUI縦の位置0列目
 #define MAPUI_POS_X1 950							// マップUI縦の位置1列目
 #define MAPUI_POS_Y0 360							// マップUI横の位置0列目
 #define MAPUI_POS_Y1 500							// マップUI横の位置1列目
 #define MAPFRAMEUI_SIZE_X 640						// マップ枠線大きさX
-#define MAPFRAMEUI_SIZE_Y 690						// マップ枠線大きさY
+#define MAPFRAMEUI_SIZE_Y 440						// マップ枠線大きさY
 
 //==================================================================================================================
 // 静的メンバー変数の初期化
