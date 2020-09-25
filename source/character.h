@@ -47,6 +47,7 @@ public:
 		COLLIPARTS_LOWERLEG_R,  // 右下腿部
 		COLLIPARTS_FEMUR_L,     // 左太腿
 		COLLIPARTS_LOWERLEG_L,  // 左下腿部
+		COLLIPARTS_SMASH,		// スマッシュ
 		COLLIPARTS_MAX			// 最大
 	};
 

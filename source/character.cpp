@@ -217,6 +217,11 @@ void CCharacter::SetCylinderCoillider(void)
 	// 体の設定
 	m_pCapColi[CCharacter::COLLIPARTS_BODY] =
 		CCapsuleCollider::Create(this, &m_mtxWorld, CCapsuleCollider::TYPEID_BODY);
+
+	// スマッシュの設定
+	m_pCapColi[CCharacter::COLLIPARTS_SMASH] =
+		CCapsuleCollider::Create(this, &m_mtxWorld, CCapsuleCollider::TYPEID_SMASH);
+
 }
 
 #define CASE(Key)	break;case (Key):

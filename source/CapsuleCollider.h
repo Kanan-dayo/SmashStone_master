@@ -39,6 +39,8 @@ public:
 		TYPEID_THIGH_L,		// 左太腿
 		TYPEID_LOWERLEG_L,	// 左下腿部
 
+		TYPEID_SMASH,		// スマッシュ
+
 		TYPEID_MAX			// 最大数
 	}TYPEID;
 
