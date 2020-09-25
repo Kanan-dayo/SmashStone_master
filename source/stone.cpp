@@ -24,7 +24,7 @@
 #define CSTONE_SHAKECOEFF			0.02f			// ゆれる係数
 #define CSTONE_ROTSPEED				0.02f			// 回転速度
 
-#define STONE_DEFAULT_LIFE			5				// ストーンの初期ライフ
+#define STONE_DEFAULT_LIFE			3				// ストーンの初期ライフ
 
 #define CSTONE_SOPENFILENAME		"data/TEXT/StoneInfo/StoneTypeFileName.txt"
 

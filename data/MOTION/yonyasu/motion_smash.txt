@@ -13,8 +13,17 @@ MOTIONSET
 	KEYSET			# ----- << KEY :  0 / 4 >> -----
 		FRAME = 7
 		ATTACK_ON
+		ATTACK_INDEX = 0
+		ATTACK_INDEX = 1
+		ATTACK_INDEX = 2
 		ATTACK_INDEX = 3
-		MOVE = 5
+		ATTACK_INDEX = 4
+		ATTACK_INDEX = 5
+		ATTACK_INDEX = 6
+		ATTACK_INDEX = 7
+		ATTACK_INDEX = 8
+		ATTACK_INDEX = 9
+		MOVE = 6
 		KEY # ----- [ 0 ] -----
 			POS = 2.40 -0.40 -3.70
 			ROT = -0.06 1.48 0.09
@@ -69,7 +78,16 @@ MOTIONSET
 	KEYSET			# ----- << KEY :  1 / 4 >> -----
 		FRAME = 12
 		ATTACK_ON
+		ATTACK_INDEX = 0
+		ATTACK_INDEX = 1
+		ATTACK_INDEX = 2
 		ATTACK_INDEX = 3
+		ATTACK_INDEX = 4
+		ATTACK_INDEX = 5
+		ATTACK_INDEX = 6
+		ATTACK_INDEX = 7
+		ATTACK_INDEX = 8
+		ATTACK_INDEX = 9
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -8.90 -3.70
 			ROT = -0.97 0.00 0.00
@@ -124,7 +142,16 @@ MOTIONSET
 	KEYSET			# ----- << KEY :  2 / 4 >> -----
 		FRAME = 60
 		ATTACK_ON
+		ATTACK_INDEX = 0
+		ATTACK_INDEX = 1
+		ATTACK_INDEX = 2
 		ATTACK_INDEX = 3
+		ATTACK_INDEX = 4
+		ATTACK_INDEX = 5
+		ATTACK_INDEX = 6
+		ATTACK_INDEX = 7
+		ATTACK_INDEX = 8
+		ATTACK_INDEX = 9
 		KEY # ----- [ 0 ] -----
 			POS = 0.00 -8.90 -3.70
 			ROT = -1.04 0.00 0.00
