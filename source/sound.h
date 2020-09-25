@@ -35,10 +35,12 @@ public:
 		SOUND_LABEL_SE_HIT1,		// 攻撃を受けた(その１)
 		SOUND_LABEL_SE_HIT2,		// 攻撃を受けた(その２)
 		SOUND_LABEL_SE_HIT3,		// 攻撃を受けた(その３)
+		SOUND_LABEL_SE_HITSTONE,	// 攻撃が石に命中
 		SOUND_LABEL_SE_GETSTONE,	// 石を入手
 		SOUND_LABEL_SE_TRANSFORM,	// 変身
 		SOUND_LABEL_SE_SMASHCHARGE,	// スマッシュ攻撃のチャージ
 		SOUND_LABEL_SE_SMASHHIT,	// スマッシュ攻撃を受けた
+		SOUND_LABEL_SE_KNOCKOUT,	// HPがゼロになった
 		SOUND_LABEL_MAX,			// 最大
 	} SOUND_LABEL;					// 音の種類
 

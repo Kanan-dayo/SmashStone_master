@@ -44,6 +44,7 @@
 #include "transformBar.h"
 #include "polyCollMana.h"
 #include "shadow.h"
+#include "sound.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -467,8 +468,12 @@ void CGame::GameNormal(void)
 	// どちらかのプレイヤーのライフが0
 	if (GetPlayer(PLAYER_ONE)->GetLife() <= 0 ||
 		GetPlayer(PLAYER_TWO)->GetLife() <= 0)
+	{
 		// KO
 		m_gameState = GAMESTATE_KO;
+		// 効果音の再生
+		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_KNOCKOUT);
+	}
 
 	// ポーズの切り替え
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_P))
