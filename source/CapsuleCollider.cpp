@@ -18,7 +18,7 @@
 #include "3DParticle.h"
 #include "modelCharacter.h"
 #include "motion.h"
-
+#include "sound.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -155,16 +155,20 @@ HRESULT CCapsuleCollider::Load(void)
 				aDiffWord[0] = MYLIB_CHAR_UNSET;
 				pCell = &m_ReadInfoFileBuff.pCell[nCntInfo];
 
-				/* 一行分の情報を解析する */
-				//			   SET     メモ   ID  上大きさ               差分                  タイプ
-				sscanf(aRead, "%[^, ],%[^, ], %d, %[^, ], %[^, ], %[^, ],%[^, ], %[^, ], %[^, ], %d",
-					&aEmpty, &aEmpty,
-					&m_ReadInfoFileBuff.pSetThisID[nCntInfo],
-					&aSizeWord,
-					&aEmpty, &aEmpty,
-					&aDiffWord,
-					&aEmpty, &aEmpty,
-					&pCell->nColliderType);
+				if (m_ReadInfoFileBuff.pSetThisID != NULL)
+				{
+					/* 一行分の情報を解析する */
+					//			   SET     メモ   ID  上大きさ               差分                  タイプ
+					sscanf(aRead, "%[^, ],%[^, ], %d, %[^, ], %[^, ], %[^, ],%[^, ], %[^, ], %[^, ], %d",
+						&aEmpty, &aEmpty,
+						&m_ReadInfoFileBuff.pSetThisID[nCntInfo],
+						&aSizeWord,
+						&aEmpty, &aEmpty,
+						&aDiffWord,
+						&aEmpty, &aEmpty,
+						&pCell->nColliderType);
+				}
+
 				// サイズを設定しない時
 				if (strcmp(aSizeWord, "UNSET") != 0)
 				{
@@ -545,11 +549,17 @@ bool CCapsuleCollider::Collision(void)
 			switch (pOwn->GetMotion())
 			{
 				MLB_CASE(CMotion::PLAYER_ATTACK_0) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
 				MLB_CASE(CMotion::PLAYER_ATTACK_1) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
 				MLB_CASE(CMotion::PLAYER_ATTACK_2) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT2);
 				MLB_CASE(CMotion::PLAYER_ATTACK_3) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
 				MLB_CASE(CMotion::PLAYER_SMASH)    C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHHIT);
 				MLB_CASE(CMotion::PLAYER_AIRATTACK)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
 			}
 			// 文字エフェクトの設定
 			CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
@@ -643,6 +653,8 @@ bool CCapsuleCollider::CollisionStone(void)
 			else
 			{// 文字のエフェクトを設定
 				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ゴッ);
+				// 効果音の再生
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HITSTONE);
 			}
 		}
 	}

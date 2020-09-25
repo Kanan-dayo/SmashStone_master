@@ -397,7 +397,8 @@ void CCharaParam::ShowCharaParam(const char cName[16], PARAM_TYPE type)
 				if (ImGui::BeginTabItem(cMotionName[nCnt]))
 				{
 					// çÄñ⁄ñº
-					ImGui::InputInt2("CancelFrame", &m_playerParam[type].motionParam[nCnt].CancelFrame.start);
+					ImGui::Text("MotionFrame : %d", m_playerParam[type].motionParam[nCnt].CancelFrame.end);
+					ImGui::InputInt("CancelFrame", &m_playerParam[type].motionParam[nCnt].CancelFrame.start);
 					ImGui::InputInt("Damage", &m_playerParam[type].motionParam[nCnt].nDamage);
 					ImGui::InputInt("Daunted", &m_playerParam[type].motionParam[nCnt].nDaunted);
 					ImGui::Dummy(ImVec2(0.0f, 2.0f));
