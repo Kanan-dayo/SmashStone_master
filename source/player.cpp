@@ -1391,8 +1391,8 @@ bool CPlayer::ReadyToHitStone(void)
 //==================================================================================================================
 bool CPlayer::HitConditionAttack0(const int &nCapColliID)
 {
-	if((nCapColliID != CCapsuleCollider::TYPEID_FOREARM_L) ||
-		(nCapColliID != CCapsuleCollider::TYPEID_UPPERARM_L))
+	if(nCapColliID != CCapsuleCollider::TYPEID_FOREARM_L ||
+		nCapColliID != CCapsuleCollider::TYPEID_UPPERARM_L)
 	{
 		return false;
 	}
@@ -1593,11 +1593,12 @@ void CPlayer::CatchStone(CStone *pStone)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 {
+	PARAM_TYPE type = (PARAM_TYPE)(pAnother->GetCharaType() / 2);
 	// ダメージ
-	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_1));
+	this->Damage(CCharaParam::GetAttackDamage(type, CCharaParam::ATTACK_NORMAL_1));
 	if (!m_bTrans)
 		// 怯み
-		this->Daunted(CCharaParam::GetAttackDaunted((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_1));
+		this->Daunted(CCharaParam::GetAttackDaunted(type, CCharaParam::ATTACK_NORMAL_1));
 }
 
 //==================================================================================================================
@@ -1605,11 +1606,12 @@ void CPlayer::AnotherPlayerAttack0(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 {
+	PARAM_TYPE type = (PARAM_TYPE)(pAnother->GetCharaType() / 2);
 	// ダメージ
-	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_2));
+	this->Damage(CCharaParam::GetAttackDamage(type, CCharaParam::ATTACK_NORMAL_2));
 	if (!m_bTrans)
 		// 怯み
-		this->Daunted(CCharaParam::GetAttackDaunted((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_2));
+		this->Daunted(CCharaParam::GetAttackDaunted(type, CCharaParam::ATTACK_NORMAL_2));
 }
 
 //==================================================================================================================
@@ -1617,11 +1619,12 @@ void CPlayer::AnotherPlayerAttack1(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 {
+	PARAM_TYPE type = (PARAM_TYPE)(pAnother->GetCharaType() / 2);
 	// ダメージ
-	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_3));
+	this->Damage(CCharaParam::GetAttackDamage(type, CCharaParam::ATTACK_NORMAL_3));
 	if (!m_bTrans)
 		// 怯み
-		this->Daunted(CCharaParam::GetAttackDaunted((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_3));
+		this->Daunted(CCharaParam::GetAttackDaunted(type, CCharaParam::ATTACK_NORMAL_3));
 }
 
 //==================================================================================================================
@@ -1629,8 +1632,9 @@ void CPlayer::AnotherPlayerAttack2(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 {
+	PARAM_TYPE type = (PARAM_TYPE)(pAnother->GetCharaType() / 2);
 	// ダメージ
-	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_NORMAL_4));
+	this->Damage(CCharaParam::GetAttackDamage(type, CCharaParam::ATTACK_NORMAL_4));
 	// 変身中以外は吹き飛ぶ
 	if (!m_bTrans)
 	{
@@ -1661,8 +1665,9 @@ void CPlayer::AnotherPlayerAttack3(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerAirAttack(CPlayer * pAnother)
 {
+	PARAM_TYPE type = (PARAM_TYPE)(pAnother->GetCharaType() / 2);
 	// ダメージ
-	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_AIR_ATTACK));
+	this->Damage(CCharaParam::GetAttackDamage(type, CCharaParam::ATTACK_AIR_ATTACK));
 	// 変身中以外は吹き飛ぶ
 	if (!m_bTrans)
 	{
@@ -1694,8 +1699,9 @@ void CPlayer::AnotherPlayerAirAttack(CPlayer * pAnother)
 //==================================================================================================================
 void CPlayer::AnotherPlayerSmash(CPlayer * pAnother)
 {
+	PARAM_TYPE type = (PARAM_TYPE)(pAnother->GetCharaType() / 2);
 	// ダメージ
-	this->Damage(CCharaParam::GetAttackDamage((PARAM_TYPE)(m_type / 2), CCharaParam::ATTACK_SMASH));
+	this->Damage(CCharaParam::GetAttackDamage(type, CCharaParam::ATTACK_SMASH));
 	// 変身中以外は吹き飛ぶ
 	BlowAway(pAnother, 0.2f, BLOWAWAYFORCE_SMASH);
 	// スマッシュによる吹き飛びを実行

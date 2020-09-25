@@ -807,6 +807,10 @@ int CKananLibrary::DecideRandomValue(int nMaxSelectType, bool * bSelect, bool co
 				RandRange++;
 	}
 
+	// 0のときに、元の値を返す
+	if (RandRange <= 0)
+		return nMaxSelectType;
+
 	// 選択肢の数だけメモリ確保
 	int *RandType = new int[RandRange];
 	// 初期化

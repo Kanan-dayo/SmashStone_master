@@ -63,14 +63,15 @@ public:
 	static CGame *GetGame(void);							// ゲームの取得
 	static CSound *GetSound(void);							// 音の取得
 	static CFade *GetFade(void) { return m_pFade; }			// フェードの取得
+	LPDIRECT3DDEVICE9 GetDevice(void);						// デバイス取得関数
+
+#ifdef _DEBUG
 	static bool GetbDisColl(void) { return m_bDisColl; }	// 当たり判定の可視化フラグを取得
 	static bool GetbDisplay(void) { return m_bDisplay; }	// デバッグテキスト表示フラグの取得
-	LPDIRECT3DDEVICE9 GetDevice(void);						// デバイス取得関数
 
 	static void SetbDisColl(bool bDisplay) { m_bDisColl = bDisplay; }	// 当たり判定可視化の設定
 	static void SetbDisplay(bool bDisplay) { m_bDisplay = bDisplay; }	// デバッグテキスト表示の設定
 
-#ifdef _DEBUG
 	void CleanupDeviceD3D();							// デバイスのクリーンアップ
 #endif
 

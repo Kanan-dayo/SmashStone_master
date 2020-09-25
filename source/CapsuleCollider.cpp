@@ -155,16 +155,20 @@ HRESULT CCapsuleCollider::Load(void)
 				aDiffWord[0] = MYLIB_CHAR_UNSET;
 				pCell = &m_ReadInfoFileBuff.pCell[nCntInfo];
 
-				/* 一行分の情報を解析する */
-				//			   SET     メモ   ID  上大きさ               差分                  タイプ
-				sscanf(aRead, "%[^, ],%[^, ], %d, %[^, ], %[^, ], %[^, ],%[^, ], %[^, ], %[^, ], %d",
-					&aEmpty, &aEmpty,
-					&m_ReadInfoFileBuff.pSetThisID[nCntInfo],
-					&aSizeWord,
-					&aEmpty, &aEmpty,
-					&aDiffWord,
-					&aEmpty, &aEmpty,
-					&pCell->nColliderType);
+				if (m_ReadInfoFileBuff.pSetThisID != NULL)
+				{
+					/* 一行分の情報を解析する */
+					//			   SET     メモ   ID  上大きさ               差分                  タイプ
+					sscanf(aRead, "%[^, ],%[^, ], %d, %[^, ], %[^, ], %[^, ],%[^, ], %[^, ], %[^, ], %d",
+						&aEmpty, &aEmpty,
+						&m_ReadInfoFileBuff.pSetThisID[nCntInfo],
+						&aSizeWord,
+						&aEmpty, &aEmpty,
+						&aDiffWord,
+						&aEmpty, &aEmpty,
+						&pCell->nColliderType);
+				}
+
 				// サイズを設定しない時
 				if (strcmp(aSizeWord, "UNSET") != 0)
 				{
