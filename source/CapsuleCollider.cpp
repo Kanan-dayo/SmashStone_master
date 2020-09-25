@@ -18,7 +18,7 @@
 #include "3DParticle.h"
 #include "modelCharacter.h"
 #include "motion.h"
-
+#include "sound.h"
 
 //-------------------------------------------------------------------------------------------------------------
 // マクロ定義
@@ -545,11 +545,17 @@ bool CCapsuleCollider::Collision(void)
 			switch (pOwn->GetMotion())
 			{
 				MLB_CASE(CMotion::PLAYER_ATTACK_0) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
 				MLB_CASE(CMotion::PLAYER_ATTACK_1) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT1);
 				MLB_CASE(CMotion::PLAYER_ATTACK_2) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT2);
 				MLB_CASE(CMotion::PLAYER_ATTACK_3) C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::STRONGHIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
 				MLB_CASE(CMotion::PLAYER_SMASH)    C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::SMASHATTACKHIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_SMASHHIT);
 				MLB_CASE(CMotion::PLAYER_AIRATTACK)C3DParticle::Set(&HitPos, &pOwn->GetRot(), C3DParticle::OFFSETNAME::HIT);
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HIT3);
 			}
 			// 文字エフェクトの設定
 			CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ガッ);
@@ -643,6 +649,8 @@ bool CCapsuleCollider::CollisionStone(void)
 			else
 			{// 文字のエフェクトを設定
 				CCharEffectOffset::Set(&HitPos, CCharEffectOffset::STR_ゴッ);
+				// 効果音の再生
+				CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_HITSTONE);
 			}
 		}
 	}

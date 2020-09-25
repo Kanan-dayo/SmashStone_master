@@ -50,10 +50,12 @@ SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
 	{ "data/SE/hit1.wav", 0 },				// 攻撃を受けた(その1)
 	{ "data/SE/hit2.wav", 0 },				// 攻撃を受けた(その2)
 	{ "data/SE/hit3.wav", 0 },				// 攻撃を受けた(その3)
+	{ "data/SE/hitstone.wav", 0 },			// 攻撃が石に命中
 	{ "data/SE/getstone.wav", 0 },			// 石を入手
 	{ "data/SE/transform.wav", 0 },			// 変身
 	{ "data/SE/smashcharge.wav", 0 },		// スマッシュ攻撃のチャージ
 	{ "data/SE/smashhit.wav", 0 },			// スマッシュ攻撃を受けた
+	{ "data/SE/knockout.wav", 0 },			// HPがゼロになった
 };
 
 //==================================================================================================================
