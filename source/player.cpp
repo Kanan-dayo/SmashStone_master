@@ -469,7 +469,7 @@ void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 
 	// チャージ中にボタンを離すと、スマッシュ
 	if (m_stateStand == STANDSTATE_SMASHCHARGE &&
-		((pGamepad && pGamepad->GetbConnect() && !pGamepad->GetPress(CInputGamepad::JOYPADKEY_B)) ||
+		((pGamepad && pGamepad->GetbConnect() && !pGamepad->GetPress(CInputGamepad::JOYPADKEY_Y)) ||
 		(pKey && ((m_nPlayer == PLAYER_ONE && !pKey->GetKeyboardPress(ONE_SMASH)) || (m_nPlayer == PLAYER_TWO && !pKey->GetKeyboardPress(TWO_SMASH))))))
 	{
 		m_stateStand = STANDSTATE_SMASH;
@@ -482,7 +482,7 @@ void CPlayer::Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey)
 	}
 
 	// 変身中にボタンを長押しで、スマッシュチャージ
-	if ((pGamepad && pGamepad->GetbConnect() && pGamepad->GetPress(CInputGamepad::JOYPADKEY_B)) ||
+	if ((pGamepad && pGamepad->GetbConnect() && pGamepad->GetPress(CInputGamepad::JOYPADKEY_Y)) ||
 		(pKey && ((m_nPlayer == PLAYER_ONE && pKey->GetKeyboardPress(ONE_SMASH)) || (m_nPlayer == PLAYER_TWO && pKey->GetKeyboardPress(TWO_SMASH)))) &&
 		m_stateStand != STANDSTATE_SMASH)
 	{
