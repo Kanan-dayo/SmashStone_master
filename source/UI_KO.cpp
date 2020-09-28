@@ -154,10 +154,10 @@ void CUIKO::Update(void)
 			// KOを左上にずらす
 			for (int nCnt = 0; nCnt < KOUITEX_BACK; nCnt++)
 			{
-				m_pPolygon[nCnt]->SetPos(*m_pPolygon[nCnt]->GetPos() - POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
+				m_pPolygon[nCnt]->SetPos(m_pPolygon[nCnt]->GetPos() - POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
 			}
 			// 影を反対にずらす
-			m_pPolygon[KOUITEX_BACK]->SetPos(*m_pPolygon[KOUITEX_BACK]->GetPos() + POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
+			m_pPolygon[KOUITEX_BACK]->SetPos(m_pPolygon[KOUITEX_BACK]->GetPos() + POS_SLIDE_SHADOW / TIME_SLIDE_SHADOW);
 		}
 		else
 			// 次のフェーズ
@@ -165,7 +165,7 @@ void CUIKO::Update(void)
 	}
 
 	if (m_nCntFase == KOUI_MAX && m_nCntAny == TIME_AFTER_SLIDE)
-		CGame::SetGameState(CGame::GAMESTATE_NEXTROUND);
+		CGame::SetGameState(CGame::GAMESTATE_KO_AFTER);
 
 	for (int nCnt = 0; nCnt < KOUI_MAX; nCnt++)
 	{
@@ -257,8 +257,8 @@ void CUIKO::MoveUI(void)
 	D3DXVECTOR3 difPos = m_posEnd[m_nCntFase] - m_posBegin[m_nCntFase];
 	D3DXVECTOR3 difSize = m_sizeEnd[m_nCntFase] - m_sizeBegin[m_nCntFase];
 	// 段々移動
-	m_pPolygon[m_nCntFase]->SetPos(*m_pPolygon[m_nCntFase]->GetPos() + difPos / TIME_ZOOM_KO);
-	m_pPolygon[m_nCntFase]->SetSize(*m_pPolygon[m_nCntFase]->GetSize() + difSize / TIME_ZOOM_KO);
+	m_pPolygon[m_nCntFase]->SetPos(m_pPolygon[m_nCntFase]->GetPos() + difPos / TIME_ZOOM_KO);
+	m_pPolygon[m_nCntFase]->SetSize(m_pPolygon[m_nCntFase]->GetSize() + difSize / TIME_ZOOM_KO);
 }
 
 //==================================================================================================================

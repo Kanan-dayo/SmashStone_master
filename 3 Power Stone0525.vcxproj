@@ -219,6 +219,7 @@
     <ClCompile Include="source\UI_gameStart.cpp" />
     <ClCompile Include="source\UI_KO.cpp" />
     <ClCompile Include="source\UI_mapSelect.cpp" />
+    <ClCompile Include="source\UI_TimeUp.cpp" />
     <ClCompile Include="source\UI_title.cpp" />
     <ClCompile Include="source\UI_tutorial.cpp" />
     <ClCompile Include="source\wall.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="source\UI_gameStart.h" />
     <ClInclude Include="source\UI_KO.h" />
     <ClInclude Include="source\UI_mapSelect.h" />
+    <ClInclude Include="source\UI_TimeUp.h" />
     <ClInclude Include="source\UI_title.h" />
     <ClInclude Include="source\UI_tutorial.h" />
     <ClInclude Include="source\wall.h" />

@@ -148,18 +148,6 @@
     <ClCompile Include="source\stone.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\time.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UI_gameResult.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UI_gameStart.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UI_KO.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\wall.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -175,26 +163,41 @@
     <ClCompile Include="source\sceneX.cpp">
       <Filter>scene</Filter>
     </ClCompile>
-    <ClCompile Include="source\UI_title.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UI_tutorial.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UI_mapSelect.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UI_game.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\transformBar.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\polyCollMana.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\shadow.cpp">
       <Filter>ソースファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_tutorial.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_title.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_mapSelect.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_KO.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_gameStart.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_gameResult.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_game.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\transformBar.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\time.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UI_TimeUp.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -363,34 +366,7 @@
     <ClInclude Include="source\stone.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\time.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_gameResult.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_gameStart.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_KO.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\wall.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_title.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_tutorial.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_mapSelect.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UI_game.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\transformBar.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\polyCollMana.h">
@@ -401,6 +377,36 @@
     </ClInclude>
     <ClInclude Include="source\resource.h">
       <Filter>リソースファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_tutorial.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_title.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_mapSelect.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_KO.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_gameStart.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_gameResult.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_game.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\transformBar.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\time.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UI_TimeUp.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -430,6 +436,9 @@
     </Filter>
     <Filter Include="リソースファイル">
       <UniqueIdentifier>{f5676665-aa07-4ed6-98d8-cfdea249795f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{ee7cb9ad-1c9b-475c-9448-a60f5a03fed0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

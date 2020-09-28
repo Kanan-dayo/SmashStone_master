@@ -55,8 +55,9 @@ public:
 	void SetSize(const D3DXVECTOR3 & size);										// 大きさ設定処理
 	void SetAnim(const D3DXVECTOR2 & UV, const D3DXVECTOR2 & size);				// テクスチャ座標設定
 
-	D3DXVECTOR3 *GetPos(void)	{ return &m_pos; }						// 位置取得処理
-	D3DXVECTOR3 *GetSize(void)	{ return &m_size; }						// 大きさ取得処理
+	D3DXVECTOR3 &GetPos(void)	{ return m_pos; }						// 位置取得処理
+	D3DXVECTOR3 &GetSize(void)	{ return m_size; }						// 大きさ取得処理
+	D3DXCOLOR	&GetCol(void)	{ return m_col; }						// カラーの取得
 	bool GetbShow(void)			{ return m_bShow; }						// 描画するか取得
 
 protected:

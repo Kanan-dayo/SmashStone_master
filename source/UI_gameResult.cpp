@@ -276,7 +276,7 @@ void CUI_GameResult::Result(void)
 void CUI_GameResult::CursorUp(void)
 {
 	// カーソル位置取得
-	D3DXVECTOR3 posCursor = *m_pPolygon[RESULTUITYPE_CURSOR]->GetPos();
+	D3DXVECTOR3 posCursor = m_pPolygon[RESULTUITYPE_CURSOR]->GetPos();
 	
 	// タイトル位置へ
 	if (posCursor == m_posBegin[RESULTUITYPE_REMATCH])
@@ -296,7 +296,7 @@ void CUI_GameResult::CursorUp(void)
 void CUI_GameResult::CursorDown(void)
 {
 	// カーソル位置取得
-	D3DXVECTOR3 posCursor = *m_pPolygon[RESULTUITYPE_CURSOR]->GetPos();
+	D3DXVECTOR3 posCursor = m_pPolygon[RESULTUITYPE_CURSOR]->GetPos();
 
 	// キャラセレクト位置へ
 	if (posCursor == m_posBegin[RESULTUITYPE_REMATCH])
@@ -315,7 +315,7 @@ void CUI_GameResult::CursorDown(void)
 void CUI_GameResult::CursorDecide(void)
 {
 	// カーソル位置取得
-	D3DXVECTOR3 posCursor = *m_pPolygon[RESULTUITYPE_CURSOR]->GetPos();
+	D3DXVECTOR3 posCursor = m_pPolygon[RESULTUITYPE_CURSOR]->GetPos();
 
 	// もう一度ゲームへ
 	if (posCursor == m_posBegin[RESULTUITYPE_REMATCH])
@@ -351,6 +351,6 @@ void CUI_GameResult::MoveUI(void)
 	D3DXVECTOR3 difPos = POS_END_VICTORY - m_posBegin[RESULTUITYPE_VICTORY];
 	D3DXVECTOR3 difSize = SIZE_END_VICTORY - m_sizeBegin[RESULTUITYPE_VICTORY];
 	// 段々移動
-	m_pPolygon[RESULTUITYPE_VICTORY]->SetPos(*m_pPolygon[RESULTUITYPE_VICTORY]->GetPos() + difPos / (float)TIME_ZOOM_VICTORY);
-	m_pPolygon[RESULTUITYPE_VICTORY]->SetSize(*m_pPolygon[RESULTUITYPE_VICTORY]->GetSize() + difSize / (float)TIME_ZOOM_VICTORY);
+	m_pPolygon[RESULTUITYPE_VICTORY]->SetPos(m_pPolygon[RESULTUITYPE_VICTORY]->GetPos() + difPos / (float)TIME_ZOOM_VICTORY);
+	m_pPolygon[RESULTUITYPE_VICTORY]->SetSize(m_pPolygon[RESULTUITYPE_VICTORY]->GetSize() + difSize / (float)TIME_ZOOM_VICTORY);
 }

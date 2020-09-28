@@ -45,6 +45,7 @@
 #include "polyCollMana.h"
 #include "shadow.h"
 #include "sound.h"
+#include "UI_TimeUp.h"
 
 //==================================================================================================================
 //	マクロ定義
@@ -75,6 +76,7 @@ CMeshSphere			*CGame::m_pMeshSphere			= NULL;							// メッシュ球の情報
 CTime				*CGame::m_pTime					= NULL;							// タイム情報
 CWall				*CGame::m_pWall					= NULL;							// 壁のポインタ
 CUI_game			*CGame::m_pUI					= NULL;							// UIポインタ
+CUITimeUp			*CGame::m_pUITimeUp				= nullptr;						// TimeUpのポインタ
 CUIKO				*CGame::m_pUIKO					= nullptr;						// KOのポインタ
 CUI_GameStart		*CGame::m_pUIGameStart			= nullptr;						// ゲーム開始時のUIのポインタ
 CUI_GameResult		*CGame::m_pUIGameResult			= nullptr;						// ゲームリザルトのUIのポインタ
@@ -131,6 +133,7 @@ void CGame::Init(void)
 	CUI_GameStart::Load();					// 開始UIのロード
 	CUI_GameResult::Load();
 	CUI_game::Load();						// UIロード
+	CUITimeUp::Load();
 	CPolygonCollider::Load();
 	CShadow::Load();						// 影テクスチャロード
 
@@ -210,6 +213,7 @@ void CGame::Uninit(void)
 	CUI_GameStart::Unload();			// 開始時のUIのアンロード
 	CUI_GameResult::Unload();
 	CUI_game::Unload();					// UIアンロード
+	CUITimeUp::Unload();
 	CPolygonCollider::Unload();
 	CShadow::Unload();					// 影テクスチャアンロード
 
@@ -248,6 +252,14 @@ void CGame::Uninit(void)
 		m_pUI = nullptr;
 	}
 
+	// 万が一残っていた場合
+	if (m_pUITimeUp)
+	{
+		m_pUITimeUp->Uninit();
+		delete m_pUITimeUp;
+		m_pUITimeUp = nullptr;
+	}
+
 	// ポーズの終了処理
 	m_pPause->Uninit();
 
@@ -282,27 +294,17 @@ void CGame::Uninit(void)
 //==================================================================================================================
 void CGame::Update(void)
 {
-	// 開始前
-	if (m_gameState == GAMESTATE_BEFORE)
-		GameBefore();
-	// 通常のとき
-	if (m_gameState == GAMESTATE_NORMAL)
-		GameNormal();
-	// ゲーム状態がポーズのとき
-	else if (m_gameState == GAMESTATE_PAUSE)
-		GamePause();
-	// KOのとき
-	else if (m_gameState == GAMESTATE_KO)
-		GameKO();
-	// KOの後
-	else if (m_gameState == GAMESTATE_KO_AFTER)
-		GameKOAfter();
-	// 次のラウンド
-	else if (m_gameState == GAMESTATE_NEXTROUND)
-		NextRound();
-	// リザルト
-	else if (m_gameState == GAMESTATE_RESULT)
-		GameResult();
+	switch (m_gameState)
+	{
+	case GAMESTATE_BEFORE: GameBefore(); break;		// 開始
+	case GAMESTATE_NORMAL: GameNormal(); break;		// ゲーム
+	case GAMESTATE_PAUSE: GamePause(); break;		// ポーズ
+	case GAMESTATE_KO: GameKO(); break;				// KO
+	case GAMESTATE_TIMEUP: GameTimeUp(); break;		// タイムアップ
+	case GAMESTATE_KO_AFTER: GameKOAfter(); break;	// KO後の硬直
+	case GAMESTATE_NEXTROUND: NextRound(); break;	// 次のラウンドへ
+	case GAMESTATE_RESULT: GameResult(); break;		// リザルト
+	};
 
 	if (m_pUI)
 		m_pUI->Update();
@@ -363,6 +365,10 @@ void CGame::Draw(void)
 	// KOの描画
 	if (m_pUIKO)
 		m_pUIKO->Draw();
+
+	// TimeUpの描画
+	if (m_pUITimeUp)
+		m_pUITimeUp->Draw();
 
 	// リザルトのUIの描画
 	if (m_pUIGameResult)
@@ -431,11 +437,16 @@ void CGame::AppearStone(void)
 //==================================================================================================================
 void CGame::GameBefore(void)
 {
+	// タイマー非表示
 	if (m_pTime->GetbActive())
 		m_pTime->SetbActive(false);
-
+	
+	// ラウンドを加算し、UI生成
 	if (!m_pUIGameStart)
+	{
+		m_nRound++;
 		m_pUIGameStart = CUI_GameStart::Create();
+	}
 
 	// カメラの更新処理
 	m_pCamera->Update();
@@ -482,6 +493,10 @@ void CGame::GameNormal(void)
 		// 効果音の再生
 		CRenderer::GetSound()->PlaySound(CSound::SOUND_LABEL_SE_KNOCKOUT);
 	}
+	// タイマーが0
+	if (m_pTime->GetTime() <= 0)
+		// タイムアップ
+		m_gameState = GAMESTATE_TIMEUP;
 
 	// ポーズの切り替え
 	if (CManager::GetInputKeyboard()->GetKeyboardTrigger(DIK_P))
@@ -532,8 +547,30 @@ void CGame::GameKOAfter(void)
 	if (m_pTime->GetbActive())
 		m_pTime->SetbActive(false);
 
+	// nullcheck
+	if (m_pUIKO)
+	{
+		// 破棄
+		m_pUIKO->Uninit();
+		delete m_pUIKO;
+		m_pUIKO = nullptr;
+	}
+
+	if (m_pUITimeUp)
+	{
+		// 終了・破棄
+		m_pUITimeUp->Uninit();
+		delete m_pUITimeUp;
+		m_pUITimeUp = nullptr;
+	}
+
+	// 勝者を判定
+	if (m_nCntAny == 0)
+		JudgeWinner();
+
 	// カウンタの加算
 	m_nCntAny++;
+
 	// 一定時間で次へ
 	if (m_nCntAny >= TIME_KO_AFTER &&
 		m_pPlayer[PLAYER_ONE]->GetStandState() != CCharacter::STANDSTATE_JUMP && 
@@ -543,6 +580,28 @@ void CGame::GameKOAfter(void)
 		m_gameState = GAMESTATE_NEXTROUND;
 		return;
 	}
+
+	// カメラの更新処理
+	m_pCamera->Update();
+	// ライトの更新処理
+	m_pLight->Update();
+}
+
+//==================================================================================================================
+//	タイムアップの更新
+//==================================================================================================================
+void CGame::GameTimeUp(void)
+{
+	if (m_pTime->GetbActive())
+		m_pTime->SetbActive(false);
+
+	// 生成
+	if (!m_pUITimeUp)
+		m_pUITimeUp = CUITimeUp::Create();
+
+	// UIの更新
+	if (m_pUITimeUp)
+		m_pUITimeUp->Update();
 
 	// カメラの更新処理
 	m_pCamera->Update();
@@ -577,28 +636,9 @@ void CGame::SwitchPause(void)
 //==================================================================================================================
 void CGame::NextRound(void)
 {
+	// タイマー停止
 	if (m_pTime->GetbActive())
 		m_pTime->SetbActive(false);
-
-	// nullcheck
-	if (m_pUIKO)
-	{
-		// 破棄
-		m_pUIKO->Uninit();
-		delete m_pUIKO;
-		m_pUIKO = nullptr;
-	}
-
-	// ラウンド数を加算
-	m_nRound++;
-	// プレイヤーのラウンドポイントを加算
-	if (GetPlayer(PLAYER_ONE)->GetLife() <= 0 &&
-		GetPlayer(PLAYER_TWO)->GetLife() <= 0)
-		m_nRound--;
-	else if (GetPlayer(PLAYER_ONE)->GetLife() > 0)
-		m_roundPoint.nX++;
-	else if (GetPlayer(PLAYER_TWO)->GetLife() > 0)
-		m_roundPoint.nY++;
 
 	// どちらかが最大まで得点したら終了
 	if (m_roundPoint.nX == (int)((float)m_nRoundAll / 2.0f + 0.5f) ||
@@ -684,4 +724,30 @@ void CGame::DecideCreateStone(void)
 
 	// カウンタを初期化
 	m_nCntDecide = 0;
+}
+
+//==================================================================================================================
+//	勝者の判定
+//==================================================================================================================
+void CGame::JudgeWinner(void)
+{
+	// プレイヤーのライフの割合
+	float fLifePercent[MAX_PLAYER];
+
+	// プレイヤーのHPを%で決定
+	for (int nCnt = 0; nCnt < MAX_PLAYER; nCnt++)
+	{
+		// % = Life / MaxLife
+		fLifePercent[nCnt] = GetPlayer(nCnt)->GetLife() / GetPlayer(nCnt)->GetMaxLife();
+	}
+
+	// 同士討ちで、ラウンド減算
+	if (fLifePercent[PLAYER_ONE] == fLifePercent[PLAYER_TWO])
+		m_nRound--;
+	// プレイヤー1勝利
+	else if (fLifePercent[PLAYER_ONE] > fLifePercent[PLAYER_TWO])
+		m_roundPoint.nX++;
+	// プレイヤー2勝利
+	else 
+		m_roundPoint.nY++;
 }

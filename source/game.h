@@ -43,6 +43,7 @@ class CUI_GameStart;
 class CUI_GameResult;
 class CRenderer;
 class CUI_game;
+class CUITimeUp;
 class CTransformBar;
 
 //==================================================================================================================
@@ -65,6 +66,7 @@ public:
 		GAMESTATE_START_OVER,	// 初めからやり直す
 		GAMESTATE_BREAK,		// ゲーム中断
 		GAMESTATE_KO,			// KO演出
+		GAMESTATE_TIMEUP,		// タイムアップ
 		GAMESTATE_KO_AFTER,		// KO後
 		GAMESTATE_NEXTROUND,	// 次のラウンドへ
 		GAMESTATE_RESULT,		// リザルト
@@ -113,10 +115,12 @@ private:
 	void GamePause(void);							// ポーズの更新
 	void GameKO(void);								// KOの更新
 	void GameKOAfter(void);							// KOの後の更新
+	void GameTimeUp(void);							// タイムアップの更新
 	void SwitchPause(void);							// ポーズの切り替え
 	void NextRound(void);							// 次のラウンドへ
 	void GameResult(void);							// ゲームのリザルト
 	void DecideCreateStone(void);					// ストーンを生成するか決める
+	void JudgeWinner(void);							// 勝者の判定
 	static GAMESTATE m_gameState;					// ゲーム状態
 	static int m_nPlayerType[MAX_PLAYER];			// キャラクターセレクト時のタイプを保存
 	static CPlayer *m_pPlayer[MAX_PLAYER];			// プレイヤーの配列ポインタ
@@ -137,6 +141,7 @@ private:
 	static CObjectManager *m_pObjMana;				// オブジェクトマネージャーのポインタ
 	static CPolyCollMana *m_pPolyCollMana;			// ポリゴンコライダーマネージャーのポインタ
 	static CUIKO *m_pUIKO;							// KOのポインタ
+	static CUITimeUp *m_pUITimeUp;					// TimeUpのポインタ
 	static CUI_GameStart *m_pUIGameStart;			// ゲーム開始時のUIのポインタ
 	static CUI_GameResult *m_pUIGameResult;			// ゲームリザルトのUIのポインタ
 	static NUM_PLAYER m_winPlayer;					// 勝利したプレイヤー

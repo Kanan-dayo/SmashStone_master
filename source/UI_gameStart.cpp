@@ -169,7 +169,7 @@ void CUI_GameStart::Update(void)
 			MoveUI(m_fase, TIME_ZOOM_GAMESTART_FIGHT);
 		// UIの画面外移動
 		else if (m_nCntAny < TIME_LEAVE_GAMESTART_FIGHT + TIME_DELAY_GAMESTART_FIGHT && m_nCntAny > TIME_DELAY_GAMESTART_FIGHT)
-			m_pPolygon[m_fase]->SetPos(*m_pPolygon[m_fase]->GetPos() + POS_SLIDE_FIGHT / TIME_LEAVE_GAMESTART_FIGHT);
+			m_pPolygon[m_fase]->SetPos(m_pPolygon[m_fase]->GetPos() + POS_SLIDE_FIGHT / TIME_LEAVE_GAMESTART_FIGHT);
 		// モードを切り替えて処理を終了
 		else if (m_nCntAny > TIME_END_GAMESTART)
 			CGame::SetGameState(CGame::GAMESTATE_NORMAL);
@@ -261,7 +261,7 @@ void CUI_GameStart::CreateUI(const int type)
 	m_pPolygon[type] = CPolygon2D::Create();
 	// テクスチャバインド
 	if (type == FASE_RONNDNUM)
-		m_pPolygon[type]->BindTexture(m_pTexture[CGame::GetRound() + 1]);
+		m_pPolygon[type]->BindTexture(m_pTexture[CGame::GetRound()]);
 	else if (type == FASE_FIGHT)
 		m_pPolygon[type]->BindTexture(m_pTexture[GAMEUITEX_FIGHT]);
 	else
@@ -282,6 +282,6 @@ void CUI_GameStart::MoveUI(const int type, const int time)
 	D3DXVECTOR3 difPos = m_posEnd[type] - m_posBegin[type];
 	D3DXVECTOR3 difSize = m_sizeEnd[type] - m_sizeBegin[type];
 	// 段々移動
-	m_pPolygon[type]->SetPos(*m_pPolygon[type]->GetPos() + difPos / (float)time);
-	m_pPolygon[type]->SetSize(*m_pPolygon[type]->GetSize() + difSize / (float)time);
+	m_pPolygon[type]->SetPos(m_pPolygon[type]->GetPos() + difPos / (float)time);
+	m_pPolygon[type]->SetSize(m_pPolygon[type]->GetSize() + difSize / (float)time);
 }
