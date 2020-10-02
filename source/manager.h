@@ -43,6 +43,8 @@ public:
 #ifdef _DEBUG
 	static bool GetShowImGui(void) { return m_bShowWindow; }		// 表示の有無の取得
 	static void SetShowImGui(bool bShow) { m_bShowWindow = bShow; }	// 表示の有無の設定
+	static bool GetShowUI(void) { return m_bDispUI; }		// 表示の有無の取得
+	static void SetShowUI(bool bShow) { m_bDispUI = bShow; }	// 表示の有無の設定
 #endif
 
 protected:
@@ -58,6 +60,7 @@ private:
 	HRESULT SaveDebugInfo(void);			// デバッグ情報の保存
 	static char	m_cFileImGui[64];		// ImGui設定のファイル名
 	static bool	m_bShowWindow;			// 表示の有無
+	static bool m_bDispUI;				// UIの表示の有無
 #endif
 };
 #endif

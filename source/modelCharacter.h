@@ -55,6 +55,7 @@ public:
 	void Uninit();													// 終了
 	void Update();													// 更新
 	void Draw();													// 描画
+	void DrawInvincible(int nInvincibleTime);											// 描画
 	static CModelCharacter *Create(CHARACTER_TYPE type);			// 生成
 	static HRESULT Load(void);										// モデルのロード
 	static void Unload(void);										// モデルの破棄

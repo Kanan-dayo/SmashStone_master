@@ -22,8 +22,12 @@
 #define STONE_SIZE_X 60								// 石大きさX
 #define STONE_SIZE_Y 50								// 石大きさY
 
+#define TIME_END_ZOOM (20)							// ズームが終了する時間
 #define POS_GAMEBG	(D3DXVECTOR3(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0.0f))	// ゲーム背景の座標
 #define SIZE_GAMEBG	(D3DXVECTOR3(SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f))			// ゲーム背景のサイズ
+
+#define SIZE_WINICON_BEGIN	(D3DXVECTOR3(300.0f, 300.0f, 0.0f))					// 勝利アイコンの最初のサイズ
+#define SIZE_WINICON_END	(D3DXVECTOR3(70.0f, 70.0f, 0.0f))					// 勝利アイコンの最後のサイズ
 
 #define UVSIZE_CHARAICON	(D3DXVECTOR2(0.25f, 1.0f))							// キャラアイコンのUVサイズ
 #define UVSIZE_CHARANAME	(D3DXVECTOR2(1.0f, 0.25f))							// キャラ名のUVサイズ
@@ -33,6 +37,7 @@
 //==================================================================================================================
 LPDIRECT3DTEXTURE9 CUI_game::m_pTexBG					= NULL;		// テクスチャ情報
 LPDIRECT3DTEXTURE9 CUI_game::m_pTexture[LOGOTYPE_MAX]	= {};		// テクスチャ情報
+LPDIRECT3DTEXTURE9 CUI_game::m_pTexIcon[ICONTYPE_MAX]   = {};	
 char CUI_game::m_FileBG[MAX_TEXT] = "data/TEXTURE/gameBG.png";		// ゲーム背景
 char *CUI_game::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 {
@@ -44,7 +49,15 @@ char *CUI_game::m_apFileName[LOGOTYPE_MAX] =						// 読み込むモデルのソース先
 	{ "data/TEXTURE/charaName0.png" },	// キャラクターネーム
 };
 
+char *CUI_game::m_apFileIcon[ICONTYPE_MAX] = 
+{
+	{ "data/TEXTURE/winIcon/red.png" },		// 赤アイコン
+	{ "data/TEXTURE/winIcon/green.png" },	// 緑アイコン
+	{ "data/TEXTURE/winIcon/blue.png" }		// 青アイコン
+};
+
 CPolygon2D *CUI_game::m_pPolygon[MAX_PLAYER][LOGOTYPE_MAX] = {};	// プレイヤー関連の画像
+CPolygon2D *CUI_game::m_pPolyIcon[ICONTYPE_MAX] = {};
 
 D3DXVECTOR3 CUI_game::m_posUI[MAX_PLAYER][LOGOTYPE_MAX] =			// UIの座標
 {
@@ -86,7 +99,19 @@ D3DXVECTOR3 CUI_game::m_sizeUI[MAX_PLAYER][LOGOTYPE_MAX] =			// UIのサイズ
 	},
 };
 
+D3DXVECTOR3 CUI_game::m_posIcon[MAX_PLAYER][MAX_WIN] =
+{
+	{
+		D3DXVECTOR3(40.0f, 200.0f, 0.0f), D3DXVECTOR3(100.0f, 200.0f, 0.0f)
+	},
+	{
+		D3DXVECTOR3(1240.0f, 200.0f, 0.0f), D3DXVECTOR3(1180.0f, 200.0f, 0.0f)
+	}
+};
+
 bool CUI_game::m_bDisplay = true;
+int CUI_game::m_nCntIcon = 0;
+CUI_game::ICONSTATE_TYPE CUI_game::m_IconState[ICONTYPE_MAX] = {};
 
 //==================================================================================================================
 //
@@ -113,6 +138,14 @@ CUI_game::~CUI_game()
 //==================================================================================================================
 void CUI_game::Init(void)
 {
+	m_nCntIcon = 0;
+	m_nCntIconState = 0;
+
+	for (int nCnt = 0; nCnt < ICONTYPE_MAX; nCnt++)
+	{
+		m_IconState[nCnt] = ICONSTATE_NONE;
+	}
+
 	// ゲーム開始時のUIをセット
 	SetDefaultUI();
 }
@@ -133,6 +166,16 @@ void CUI_game::Uninit(void)
 				delete m_pPolygon[nCntPlayer][nCntLogo];
 				m_pPolygon[nCntPlayer][nCntLogo] = nullptr;
 			}
+		}
+	}
+
+	for (int nCnt = 0; nCnt < ICONTYPE_MAX; nCnt++)
+	{
+		if (m_pPolyIcon[nCnt])
+		{
+			m_pPolyIcon[nCnt]->Uninit();
+			delete m_pPolyIcon[nCnt];
+			m_pPolyIcon[nCnt] = nullptr;
 		}
 	}
 
@@ -161,6 +204,11 @@ void CUI_game::Update(void)
 				m_pPolygon[nCntPlayer][nCntLogo]->Update();
 		}
 	}
+
+	for (int nCnt = 0; nCnt < ICONTYPE_MAX; nCnt++)
+	{
+		IconUpdate(nCnt);
+	}
 }
 
 //==================================================================================================================
@@ -184,6 +232,12 @@ void CUI_game::Draw(void)
 				m_pPolygon[nCntPlayer][nCntLogo]->Draw();
 		}
 	}
+
+	for (int nCnt = 0; nCnt < ICONTYPE_MAX; nCnt++)
+	{
+		if (m_pPolyIcon[nCnt])
+			m_pPolyIcon[nCnt]->Draw();
+	}
 }
 
 //==================================================================================================================
@@ -199,6 +253,32 @@ CUI_game *CUI_game::Create(void)
 
 	// 値を返す
 	return pUI;
+}
+
+//==================================================================================================================
+// 勝利アイコンの生成
+//==================================================================================================================
+void CUI_game::CreateWinIcon(int nPlayer, int nWin)
+{
+	// 存在するなら、処理しない
+	if (m_pPolyIcon[m_nCntIcon])
+		return;
+
+	// 生成
+	m_pPolyIcon[m_nCntIcon] = CPolygon2D::Create();
+	// テクスチャのバインド
+	m_pPolyIcon[m_nCntIcon]->BindTexture(m_pTexIcon[m_nCntIcon]);
+	// 座標設定
+	m_pPolyIcon[m_nCntIcon]->SetPos(m_posIcon[nPlayer][nWin]);
+	// サイズ設定
+	m_pPolyIcon[m_nCntIcon]->SetSize(SIZE_WINICON_BEGIN);
+	// ポリゴンの原点を設定
+	m_pPolyIcon[m_nCntIcon]->SetPosStart(CPolygon2D::POSSTART_CENTRAL_CENTRAL);
+	// アイコンの状態を変更
+	m_IconState[m_nCntIcon] = ICONSTATE_ZOOM;
+
+	// 勝利アイコンのタイプを加算
+	m_nCntIcon++;
 }
 
 //==================================================================================================================
@@ -218,6 +298,13 @@ HRESULT CUI_game::Load(void)
 	// テクスチャの読み込み
 	D3DXCreateTextureFromFile(pDevice, m_FileBG, &m_pTexBG);
 
+	// テクスチャの最大数までカウント
+	for (int nCnt = 0; nCnt < ICONTYPE_MAX; nCnt++)
+	{
+		// テクスチャの読み込み
+		D3DXCreateTextureFromFile(pDevice, m_apFileIcon[nCnt], &m_pTexIcon[nCnt]);
+	}
+
 	// 値を返す
 	return S_OK;
 }
@@ -232,6 +319,46 @@ void CUI_game::Unload(void)
 	{
 		m_pTexture[nCnt]->Release();		// 開放
 		m_pTexture[nCnt] = NULL;			// NULLにする
+	}
+}
+
+//==================================================================================================================
+// 勝利アイコンの更新
+//==================================================================================================================
+void CUI_game::IconUpdate(int nIcon)
+{
+	// 存在しなければ、処理しない
+	if (!m_pPolyIcon[nIcon])
+		return;
+
+	// 拡大中なら、拡大処理
+	if (m_IconState[nIcon] == ICONSTATE_ZOOM)
+		ZoomWinIcon(nIcon);
+
+	// 更新
+	m_pPolyIcon[nIcon]->Update();
+}
+
+//==================================================================================================================
+// 勝利アイコンの拡大
+//==================================================================================================================
+void CUI_game::ZoomWinIcon(int nIcon)
+{
+	// 時間を加算
+	m_nCntIconState++;
+
+	// アイコンサイズの差
+	D3DXVECTOR3 difSize = SIZE_WINICON_END - SIZE_WINICON_BEGIN;
+	// 現在のサイズ
+	D3DXVECTOR3 size = m_pPolyIcon[nIcon]->GetSize();
+
+	m_pPolyIcon[nIcon]->SetSize(size + difSize / TIME_END_ZOOM);
+
+	// 一定時間でズーム終了
+	if (m_nCntIconState >= TIME_END_ZOOM)
+	{
+		m_nCntIconState = 0;
+		m_IconState[nIcon] = ICONSTATE_SHOW;
 	}
 }
 

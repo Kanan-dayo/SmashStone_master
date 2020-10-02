@@ -14,6 +14,11 @@
 #include "stone.h"
 
 //==================================================================================================================
+// マクロ定義
+//==================================================================================================================
+#define MAX_WIN	(2)		// ラウンドで勝利できる回数
+
+//==================================================================================================================
 // 前方宣言
 //==================================================================================================================
 class CPolygon2D;
@@ -35,6 +40,7 @@ public:
 	void Draw(void);				// 描画処理
 
 	static CUI_game *Create(void);	// 生成処理
+	static void CreateWinIcon(int nPlayer, int nWin);	// 勝利アイコンの生成
 	static HRESULT Load(void);		// テクスチャ情報ロード処理
 	static void Unload(void);		// テクスチャ情報アンロード処理
 
@@ -66,18 +72,43 @@ private:
 		LOGOTYPE_MAX				// 最大
 	} UI_GAME_TYPE;
 
+	typedef enum
+	{	// 勝利時のアイコンの種類
+		ICONTYPE_RED,				// 赤
+		ICONTYPE_GREEN,				// 緑
+		ICONTYPE_BLUE,				// 青
+		ICONTYPE_MAX				// 最大数
+	} UI_WINICON_TYPE;
+	
+	typedef enum
+	{	// 勝利アイコンの状態
+		ICONSTATE_NONE,				// 何もない状態
+		ICONSTATE_ZOOM,				// 拡大
+		ICONSTATE_SHOW				// 見せる
+	} ICONSTATE_TYPE;
+
+	void IconUpdate(int nIcon);
+	void ZoomWinIcon(int nIcon);						// 勝利アイコンの拡大
 	void SetDefaultUI(void);							// 開始時のUIをセット
 
 	static LPDIRECT3DTEXTURE9 m_pTexBG;						// テクスチャ情報
 	static LPDIRECT3DTEXTURE9 m_pTexture[LOGOTYPE_MAX];		// テクスチャ情報
+	static LPDIRECT3DTEXTURE9 m_pTexIcon[ICONTYPE_MAX];		// テクスチャ情報
 	static char m_FileBG[MAX_TEXT];							// ゲームBGのファイル名
 	static char *m_apFileName[LOGOTYPE_MAX];				// ロゴのファイル名
+	static char *m_apFileIcon[ICONTYPE_MAX];				// アイコンのファイル名
 
 	CPolygon2D *m_pPolyBG;									// 表示するBG画像
+	static CPolygon2D *m_pPolyIcon[ICONTYPE_MAX];			// 勝利時のアイコン
 	static CPolygon2D *m_pPolygon[MAX_PLAYER][LOGOTYPE_MAX];// 表示するプレイヤー画像
 	static D3DXVECTOR3 m_posUI[MAX_PLAYER][LOGOTYPE_MAX];	// UIの座標
 	static D3DXVECTOR3 m_sizeUI[MAX_PLAYER][LOGOTYPE_MAX];	// UIのサイズ
+	static D3DXVECTOR3 m_posIcon[MAX_PLAYER][MAX_WIN];		// 勝利アイコンを配置する座標
 
 	static bool m_bDisplay;									// UIを表示するかどうか
+	static int m_nCntIcon;									// 勝利アイコンの数
+
+	static ICONSTATE_TYPE m_IconState[ICONTYPE_MAX];
+	int m_nCntIconState;
 };
 #endif

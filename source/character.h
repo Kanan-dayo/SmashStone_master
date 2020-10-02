@@ -160,6 +160,9 @@ protected:
 	float					  m_nLife;					// ライフ
 	bool					  m_bTrans;					// 変身しているか
 	bool					  m_bInvincible;			// 無敵かどうか
+	int						  m_nMaxInvicible;			// 無敵状態以外での最大無敵時間
+	int						  m_nCntInvicible;			// 無敵時間のカウンタ
+	int						  m_nDebugInvicible;		// 無敵時間のカウンタ
 	static int				  m_nNumCharacter;			// キャラクターの総数
 	int						  m_nAttackFlow;			// 攻撃の流れ
 

@@ -64,6 +64,7 @@ private:
 	void Trans(void);
 	void Control(void);								
 	void Collision(void);							
+	void InvincibleManager(void);
 	void Smash(CInputGamepad *pGamepad, CInputKeyboard *pKey);
 	void NormalAttack(CInputGamepad *pGamepad, CInputKeyboard *pKey);
 	bool Jump(CInputGamepad *pGamepad, CInputKeyboard *pKey);

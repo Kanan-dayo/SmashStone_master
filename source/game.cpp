@@ -530,6 +530,19 @@ void CGame::GameKO(void)
 	if (m_pTime->GetbActive())
 		m_pTime->SetbActive(false);
 
+	// 一時的にゲームUIをなくす
+	if (m_pUI->GetbDisp())
+	{
+#ifdef _DEBUG
+		if (CManager::GetShowUI())
+		{
+#endif
+			m_pUI->SetbDisp(false);
+#ifdef _DEBUG
+		}
+#endif
+	}
+
 	// KOのUIを生成
 	if (!m_pUIKO)
 		m_pUIKO = CUIKO::Create();
@@ -546,6 +559,19 @@ void CGame::GameKOAfter(void)
 {
 	if (m_pTime->GetbActive())
 		m_pTime->SetbActive(false);
+
+	// KO時に消していたUIを再表示
+	if (!m_pUI->GetbDisp())
+	{
+#ifdef _DEBUG
+		if (CManager::GetShowUI())
+		{
+#endif
+			m_pUI->SetbDisp(true);
+#ifdef _DEBUG
+		}
+#endif
+	}
 
 	// nullcheck
 	if (m_pUIKO)
@@ -746,8 +772,18 @@ void CGame::JudgeWinner(void)
 		m_nRound--;
 	// プレイヤー1勝利
 	else if (fLifePercent[PLAYER_ONE] > fLifePercent[PLAYER_TWO])
+	{
+		// 勝利アイコンを生成
+		CUI_game::CreateWinIcon(PLAYER_ONE, m_roundPoint.nX);
+		// 勝ち数を加算
 		m_roundPoint.nX++;
+	}
 	// プレイヤー2勝利
-	else 
+	else
+	{
+		// 勝利アイコンを生成
+		CUI_game::CreateWinIcon(PLAYER_TWO, m_roundPoint.nY);
+		// 勝ち数を加算
 		m_roundPoint.nY++;
+	}
 }

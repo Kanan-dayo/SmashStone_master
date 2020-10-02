@@ -31,6 +31,7 @@ CMouse *CManager::m_pMouse = nullptr;
 #ifdef _DEBUG
 char CManager::m_cFileImGui[64]	= "data/TEXT/DebugInfo.txt";
 bool CManager::m_bShowWindow	= false;
+bool CManager::m_bDispUI = false;
 #endif
 
 //==================================================================================================================
@@ -69,7 +70,7 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	m_pMouse = new CMouse;
 
 	// 初期化処理
-	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
+	if (FAILED(m_pRenderer->Init(hWnd, FALSE)))
 	{
 		return-1;
 	}
@@ -323,7 +324,10 @@ HRESULT CManager::LoadImGuiInfo(void)
 			sscanf(cReadText, "%s %s %d", &cDieText, &cDieText, &bShow);
 			// 表示
 			if (bShow == 1)
+			{
+				CManager::SetShowUI(true);
 				CUI_game::SetbDisp(true);
+			}
 		}
 		// 表示の有無
 		else if (strcmp(cHeadText, "SHOW_DEBUG_TEXT") == 0)
@@ -411,7 +415,7 @@ HRESULT CManager::SaveDebugInfo(void)
 
 	sprintf(cWriteText, "# ゲームUI表示の有無\nSHOW_GAME_UI %s %d\n",
 		&cEqual,
-		CUI_game::GetbDisp());
+		CManager::GetShowUI());
 	fputs(cWriteText, pFile);														// SHOW_GAME_UI = bShow
 	fputs(COMMENT_NEW_LINE, pFile);													// \n
 

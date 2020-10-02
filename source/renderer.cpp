@@ -45,7 +45,7 @@ CResult *CRenderer::m_pResult = NULL;					// リザルト情報
 CTutorial *CRenderer::m_pTutorial = NULL;				// チュートリアル情報
 CSound *CRenderer::m_pSound = NULL;						// 音情報
 CMapSelect *CRenderer::m_pMapSelect = NULL;				// マップ選択画面の情報
-CRenderer::MODE CRenderer::m_mode = CRenderer::MODE_GAME;			// 最初の画面
+CRenderer::MODE CRenderer::m_mode = CRenderer::MODE_TITLE;			// 最初の画面
 
 #ifdef _DEBUG
 bool CRenderer::m_bDisColl = false;						// 当たり判定の可視化フラグ
@@ -686,6 +686,10 @@ void CRenderer::DebugCommand(void)
 		CUI_game::GetbDisp() ?
 			CUI_game::SetbDisp(false) :
 			CUI_game::SetbDisp(true);
+
+		CManager::GetShowUI() ?
+			CManager::SetShowUI(false) :
+			CManager::SetShowUI(true);
 	}
 
 	// デバッグテキスト
@@ -714,7 +718,7 @@ void CRenderer::DebugCommand(void)
 		CDebugProc::Print("ImGui表示中	 [ F2で非表示 ]\n") :
 		CDebugProc::Print("ImGui非表示中 [ F2で表示 ]\n");
 
-	CUI_game::GetbDisp() ?
+	CManager::GetShowUI() ?
 		CDebugProc::Print("ゲームUI表示中	[ F3で非表示 ]\n") :
 		CDebugProc::Print("ゲームUI非表示中 [ F3で表示 ]\n");
 

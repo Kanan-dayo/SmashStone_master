@@ -105,6 +105,67 @@ void CModelParts::Draw(void)
 
 	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
 	{
+		if (pMat[nCntMat].MatD3D.Diffuse.a != 1.0f)
+			pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
+
+		// マテリアルの設定
+		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+		// 描画
+		m_pModelInfo->mesh->DrawSubset(nCntMat);
+	}
+
+	// マテリアルをデフォルトに戻す
+	pDevice->SetMaterial(&matDef);
+}
+
+//=============================================================================
+// 無敵描画
+//=============================================================================
+void CModelParts::DrawInvincible(int nInvincibleTime)
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
+
+	D3DXMATERIAL	*pMat;
+	D3DMATERIAL9	matDef;
+
+	// ワールドマトリックスの計算
+	CKananLibrary::CalcMatrix(&m_mtxWorld, m_pos, m_rot);
+
+	// 親の情報をいれる
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, m_mtxParent);
+
+	// テクスチャの設定
+	if (m_pModelInfo->bTex)
+		pDevice->SetTexture(0, m_pModelInfo->pTexture);
+
+	// ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+
+	// 頂点バッファの型をストリームに伝える
+	pDevice->SetFVF(FVF_VERTEX_3D);
+
+	// 現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	// マテリアル情報に対するポインタを取得
+	pMat = (D3DXMATERIAL*)m_pModelInfo->matBuff->GetBufferPointer();
+
+	for (int nCntMat = 0; nCntMat < (int)m_pModelInfo->matNum; nCntMat++)
+	{
+		// 点滅
+		if (nInvincibleTime % 3 == 0)
+			pMat[nCntMat].MatD3D.Diffuse.a = 1.0f;
+		else if (nInvincibleTime % 3 == 1)
+			pMat[nCntMat].MatD3D.Diffuse.a = 0.8f;
+		else if (nInvincibleTime % 3 == 2)
+			pMat[nCntMat].MatD3D.Diffuse.a = 0.6f;
+		else if (nInvincibleTime % 3 == 3)
+			pMat[nCntMat].MatD3D.Diffuse.a = 0.4f;
+		else if (nInvincibleTime % 3 == 4)
+			pMat[nCntMat].MatD3D.Diffuse.a = 0.2f;
+
 		// マテリアルの設定
 		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
 

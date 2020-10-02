@@ -222,6 +222,21 @@ void CModelCharacter::Draw()
 }
 
 //=============================================================================
+// –³“G•`‰æ	
+//=============================================================================
+void CModelCharacter::DrawInvincible(int nInvincibleTime)
+{
+	// ƒ‚ƒfƒ‹”•ªŒJ‚è•Ô‚·
+	for (int nCnt = 0; nCnt < m_pModelCharacter[m_type].nNumParts; nCnt++)
+	{
+		// nullcheck
+		if (m_pModelParts)
+			// •`‰æ
+			m_pModelParts[nCnt].DrawInvincible(nInvincibleTime);
+	}
+}
+
+//=============================================================================
 // ¶¬
 //=============================================================================
 CModelCharacter *CModelCharacter::Create(CHARACTER_TYPE modeltype)

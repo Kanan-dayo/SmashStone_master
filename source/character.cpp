@@ -56,6 +56,7 @@ CCharacter::CCharacter(PRIORITY nPriority) : CScene(nPriority)
 	m_nAttackFlow		= 0;
 	m_nNumStone 		= 0;
 	m_nLife				= 0;
+	m_nDebugInvicible = 0;
 	m_stateStand		= STANDSTATE_NEUTRAL;
 	m_stateJump			= JUMPSTATE_NONE;
 	m_StateLift			= STATE_NONE;
@@ -86,6 +87,9 @@ CCharacter::~CCharacter()
 //=============================================================================
 void CCharacter::Init()
 {
+	m_nCntInvicible = 0;
+	m_nMaxInvicible = 0;
+	m_nDebugInvicible = 0;
 }
 
 //=============================================================================
@@ -104,6 +108,14 @@ void CCharacter::Update()
 {
 	m_param = CCharaParam::GetPlayerParam((PARAM_TYPE)(m_type / 2));
 	
+	if (m_bInvincible)
+		m_nDebugInvicible++;
+	else
+	{
+		if (m_nDebugInvicible != 0)
+			m_nDebugInvicible = 0;
+	}
+
 	// ˆÚ“®ˆ—
 	Move();
 
@@ -155,7 +167,10 @@ void CCharacter::Update()
 void CCharacter::Draw()
 {
 	// ƒ‚ƒfƒ‹‚Ì•`‰æ
-	m_pModelCharacter->Draw();
+	if (m_bInvincible)
+		m_pModelCharacter->DrawInvincible(m_nDebugInvicible);
+	else
+		m_pModelCharacter->Draw();
 }
 
 //=============================================================================

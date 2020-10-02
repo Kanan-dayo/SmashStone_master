@@ -57,6 +57,9 @@
 #define TIME_GETUP_ACTIVE		(35)		// 起き上がりの時間
 #define TIME_AIR_ATTACK			(30)		// 空中攻撃が敵に当たるまでの時間
 
+#define TIME_INVINCIBLE_GETUP	(15)		// 起き上がり後の無敵時間
+#define TIME_INVINCIBLE_GETUP_ACTIVE (30)	// アクティブな起き上がり後の無敵時間
+
 #define CHARGEPARTICLE_MAX_CHARGE	(12)		// 最大までチャージできる時間
 
 #define DISTANCE_CHASE_ENEMY		(100.0f)	// 敵を追尾する距離
@@ -173,6 +176,9 @@ void CPlayer::Update(void)
 
 	// 変身処理
 	Trans();
+
+	// 無敵の管理
+	InvincibleManager();
 
 #ifdef _DEBUG
 	char cText[8];
@@ -455,6 +461,29 @@ void CPlayer::Collision(void)
 	{
 		m_pos.y = HEIGHT_FLOOR;
 		m_move.y *= -1;
+	}
+}
+
+//==================================================================================================================
+// 無敵時間の管理
+//==================================================================================================================
+void CPlayer::InvincibleManager(void)
+{
+	// 無敵時間内
+	if (m_nCntInvicible < m_nMaxInvicible)
+	{
+		// 時間を加算
+		m_nCntInvicible++;
+		// 無敵化
+		m_bInvincible = true;
+		// 時間を超える
+		if (m_nCntInvicible >= m_nMaxInvicible)
+		{
+			// 無敵解除
+			m_bInvincible = false;
+			m_nCntInvicible = 0;
+			m_nMaxInvicible = 0;
+		}
 	}
 }
 
@@ -1111,8 +1140,10 @@ void CPlayer::MotionGetUp(void)
 
 	if (m_nCntState >= TIME_GETUP)
 	{
+		// 無敵時間を設定
+		m_nMaxInvicible = TIME_INVINCIBLE_GETUP;
+		// ニュートラル
 		m_stateStand = STANDSTATE_NEUTRAL;
-		m_bInvincible = false;
 	}
 }
 
@@ -1131,8 +1162,10 @@ void CPlayer::MotionGetUpActive(void)
 
 	if (m_nCntState >= TIME_GETUP_ACTIVE)
 	{
+		// 無敵時間を設定
+		m_nMaxInvicible = TIME_INVINCIBLE_GETUP_ACTIVE;
+		// ニュートラル
 		m_stateStand = STANDSTATE_NEUTRAL;
-		m_bInvincible = false;
 	}
 }
 
@@ -1253,7 +1286,7 @@ void CPlayer::MotionAirAttack(void)
 
 			float fDisPosY = CGame::GetPlayer(nEnemyID)->GetPos().y + VALUE_DIFPOS_Y - m_pos.y + VALUE_DIFPOS_Y;
 
-			m_move.y = 0.0f;
+			m_move = ZeroVector3;
 
 			// 移動値を決定
 			m_AirMove.x = sqrt(difPos.x * difPos.x) / TIME_AIR_ATTACK;
@@ -1339,6 +1372,8 @@ void CPlayer::ResetPlayer(void)
 	m_bAttakHit = false;
 	m_bAttakHitStone = false;
 	m_bInvincible = false;
+	m_nCntInvicible = 0;
+	m_nMaxInvicible = 0;
 	m_stateStand = STANDSTATE_NEUTRAL;
 	m_stateJump = JUMPSTATE_NONE;
 	m_nCntState = 0;
@@ -1782,10 +1817,10 @@ void CPlayer::TakeAttack3Damage(CPlayer * pAnother)
 	// 変身中以外は吹き飛ぶ
 	if (!m_bTrans)
 	{
-		// 吹き飛び
-		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
 		// 吹き飛びを有効
 		m_stateStand = STANDSTATE_BLOWAWAY;
+		// 吹き飛び
+		BlowAway(pAnother, 0.5f, BLOWAWAYFORCE_NORMAL);
 		if (m_nNumStone > 0)
 		{
 			// 所持ストーンを一つ減らす
@@ -1860,9 +1895,6 @@ inline bool CPlayer::BlowAway(CPlayer *pAnother, const float MoveVecY, const flo
 	MoveVec.y = MoveVecY;
 	MoveVec.z = cosf(pAnother->m_rot.y + D3DX_PI);
 
-	// ぶっ飛びモーション
-	m_pModelCharacter->ResetMotion();
-	m_pModelCharacter->SetMotion(CMotion::PLAYER_BLOWAWAY);
 	// 向きを決定
 	m_rotDest.y = pAnother->m_rot.y + D3DX_PI;
 	// 回転の補間

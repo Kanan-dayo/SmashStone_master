@@ -93,7 +93,7 @@ void CCamera::Init(void)
 	m_rotDest = ZeroVector3;
 	m_mousePos = ZeroVector3;
 	m_fDistance = 0.0f;
-	m_fDisScale = 0.8f;
+	m_fDisScale = 1.0f;
 	nCntRot = 0;										// 回転を始めるカウンタ
 	m_nCntTitleFade = 0;								// タイトルフェードカウンタ
 	m_bCameraMode = false;								// カメラモードかどうか
@@ -514,8 +514,8 @@ CCamera * CCamera::Create(void)
 	else if (CRenderer::GetMode() == CRenderer::MODE_GAME)
 	{// ゲームのとき
 		// カメラの位置設定
-		m_pCamera->SetCameraPos(D3DXVECTOR3(350.0f, 300.0f, -300.0f),
-			D3DXVECTOR3(0.0f, 10.0f, 0.0f), D3DXVECTOR3(0.3f, 0.7f, 0.0f));
+		m_pCamera->SetCameraPos(D3DXVECTOR3(-315.0f, 280.0f, -340.0f),
+			D3DXVECTOR3(-75.0f, 90.0f, -34.0f), D3DXVECTOR3(0.40f, 0.7f, 0.0f));
 	}
 
 	// 値を返す
