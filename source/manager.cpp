@@ -70,7 +70,7 @@ HRESULT CManager::Init(HINSTANCE hInstance,HWND hWnd, BOOL bWindow)
 	m_pMouse = new CMouse;
 
 	// ‰Šú‰»ˆ—
-	if (FAILED(m_pRenderer->Init(hWnd, FALSE)))
+	if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
 	{
 		return-1;
 	}

@@ -67,6 +67,9 @@
 
 #define VALUE_DIFPOS_Y			(30.0f)		// 空中攻撃時の位置のずれ
 
+#define MAX_AIRMOVE_X			(3.0f)
+#define MAX_AIRMOVE_Z			(3.0f)
+
 //==================================================================================================================
 // 静的メンバ変数の初期化
 //==================================================================================================================
@@ -149,6 +152,9 @@ void CPlayer::Uninit(void)
 //==================================================================================================================
 void CPlayer::Update(void)
 {
+	// 変身処理
+	Trans();
+
 	CGame::GAMESTATE gameState = CManager::GetRenderer()->GetGame()->GetGameState();
 	if (m_stateStand != STANDSTATE_SMASHBLOWAWAY &&
 		m_stateStand != STANDSTATE_BLOWAWAY && 
@@ -173,9 +179,6 @@ void CPlayer::Update(void)
 
 	// モーション処理
 	StandMotion();
-
-	// 変身処理
-	Trans();
 
 	// 無敵の管理
 	InvincibleManager();
@@ -1300,9 +1303,9 @@ void CPlayer::MotionAirAttack(void)
 		fmoveY = -0.1f;
 
 	// 移動
-	m_move.x += -m_vecP_to_E.x * m_AirMove.x;
+	m_move.x += -m_vecP_to_E.x * MAX_AIRMOVE_X;
 	m_move.y += fmoveY;
-	m_move.z += -m_vecP_to_E.z * m_AirMove.z;
+	m_move.z += -m_vecP_to_E.z * MAX_AIRMOVE_Z;
 }
 
 //==================================================================================================================
@@ -1377,6 +1380,7 @@ void CPlayer::ResetPlayer(void)
 	m_stateStand = STANDSTATE_NEUTRAL;
 	m_stateJump = JUMPSTATE_NONE;
 	m_nCntState = 0;
+	m_nDebugInvicible = 0;
 	for (int nCnt = 0; nCnt < 3; nCnt++)
 	{
 		m_bGetStoneType[nCnt] = false;

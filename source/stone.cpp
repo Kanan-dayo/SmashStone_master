@@ -474,7 +474,9 @@ void CStone::DisappearanceProc(void)
 		MLB_CASE(STONE_ID_BLUE)C3DParticle::Set(&m_pos, &m_rot, C3DParticle::STONEDISAPPEA_B);
 	MLB_DEFAULT:break;
 	}
+	// ボックスコライダーの設定を外す
 	C3DBoxCollider::unset(this->m_nBoxClliderID);
+	// シーンのリリース
 	CScene::Release();
 }
 
@@ -499,8 +501,8 @@ void CStone::AllDisappearance(void)
 	{
 		// 次のポインタを保存
 		CScene *pSceneNext = pScene->GetNext();
-		// 今のポインタをリリース
-		pScene->Release();
+		// ストーンの消滅処理
+		((CStone *)pScene)->DisappearanceProc();
 		// 今のポインタを次のポインタに上書きする
 		pScene = pSceneNext;
 	}

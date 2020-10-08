@@ -774,6 +774,7 @@ HRESULT CKananLibrary::GetMoveByGamepad(CInputGamepad * pGamepad)
 	// 入力されていない
 	if ((!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_A) &&
 		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_B) &&
+		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_Y) && 
 		!pGamepad->GetTrigger(CInputGamepad::JOYPADKEY_X)))
 	{
 		// 操作していない
@@ -803,13 +804,20 @@ int CKananLibrary::DecideRandomValue(int nMaxSelectType, bool * bSelect, bool co
 		}
 		// 負の選択肢からの場合
 		else
+		{
 			if (!bSelect[nCnt])
 				RandRange++;
+		}
 	}
 
 	// 0のときに、元の値を返す
 	if (RandRange <= 0)
-		return nMaxSelectType;
+	{
+		cout << "元の値" << endl;
+		return 0;
+	}
+
+	cout << nMaxSelectType << endl;
 
 	// 選択肢の数だけメモリ確保
 	int *RandType = new int[RandRange];
@@ -844,8 +852,11 @@ int CKananLibrary::DecideRandomValue(int nMaxSelectType, bool * bSelect, bool co
 		}
 	}
 
+	int  nRand = rand() % RandRange;
+	cout << nRand << endl;
+
 	// 出力用
-	int outValue = RandType[rand() % RandRange];
+	int outValue = RandType[nRand];
 	// ポインタの破棄
 	delete[] RandType;
 
